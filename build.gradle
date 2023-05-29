@@ -1,0 +1,59 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    apply from: 'dependencies.gradle'
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath classPaths.gradlePath
+        classpath classPaths.kotlinGradlePath
+        classpath classPaths.hiltPath
+        classpath classPaths.navigationSafe
+    }
+}
+
+plugins {
+    id "org.jlleitschuh.gradle.ktlint" version "10.2.1"
+    id "io.gitlab.arturbosch.detekt" version "1.22.0"
+}
+
+def projectSource = file(projectDir)
+def configFile = files("$rootDir/config/detekt/detekt.yml")
+//def baselineFile = file("$rootDir/config/detekt/baseline.xml")
+def kotlinFiles = "**/*.kt"
+def resourceFiles = "**/resources/**"
+def buildFiles = "**/build/**"
+
+
+apply plugin: 'io.gitlab.arturbosch.detekt'
+
+tasks.register("detektAll", Detekt) {
+    description = "Custom DETEKT build for all modules"
+    parallel = true
+    ignoreFailures = false
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    setSource(projectSource)
+//    baseline.set(baselineFile)
+    config.setFrom(configFile)
+    include(kotlinFiles)
+    exclude(resourceFiles, buildFiles)
+    reports {
+        html.enabled = true
+        xml.enabled = false
+        txt.enabled = false
+    }
+}
+
+dependencies {
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0"
+    detektPlugins "com.twitter.compose.rules:detekt:0.0.26"
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

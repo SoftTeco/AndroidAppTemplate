@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/destination_api">
+
+    <action
+        android:id="@+id/action_global_mainNavHostFragment"
+        app:destination="@id/mainNavHostFragment"
+        app:popUpTo="@id/app_nav"
+        app:popUpToInclusive="true" />
+
+    <fragment
+        android:id="@+id/destination_api"
+        android:name="com.softteco.template.presentation.features.apis.ApiListFragment"
+        android:label="@string/api"
+        tools:layout="@layout/fragment_api_list">
+
+        <action
+            android:id="@+id/apis_to_details"
+            app:destination="@id/destination_api_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/destination_favorites"
+        android:name="com.softteco.template.presentation.features.favorites.FavoritesFragment"
+        android:label="@string/favorites"
+        tools:layout="@layout/fragment_api_list">
+        <action
+            android:id="@+id/favorites_to_details"
+            app:destination="@id/destination_api_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/destination_api_details"
+        android:name="com.softteco.template.presentation.features.details.ApiDetailsFragment">
+        <argument
+            android:name="apiEntry"
+            app:argType="com.softteco.template.domain.model.ApiEntry" />
+    </fragment>
+
+</navigation>
