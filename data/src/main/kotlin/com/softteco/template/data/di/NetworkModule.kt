@@ -2,7 +2,14 @@ package com.softteco.template.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.softteco.template.data.Config
+import com.softteco.template.data.repository.user.UserRepositoryImpl
 import com.softteco.template.data.source.remote.PublicApi
+import com.softteco.template.data.source.remote.UserApiService
+import com.softteco.template.domain.repository.user.UserRepository
+import com.softteco.template.domain.usecase.user.Login
+import com.softteco.template.domain.usecase.user.Registration
+import com.softteco.template.domain.usecase.user.RestorePassword
+import com.softteco.template.domain.usecase.user.UseCases
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -51,4 +58,18 @@ object NetworkModule {
     fun provideApiService(retrofit: Retrofit): PublicApi {
         return retrofit.create(PublicApi::class.java)
     }
+
+    @Provides
+    fun provideUserRepository(
+        apiService: UserApiService
+    ): UserRepository = UserRepositoryImpl(apiService)
+
+    @Provides
+    fun provideUseCases(
+        repo: UserRepository
+    ) = UseCases(
+        login = Login(repo),
+        register = Registration(repo),
+        restorePassword = RestorePassword(repo)
+    )
 }
