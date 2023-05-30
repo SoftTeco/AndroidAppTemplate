@@ -10,7 +10,7 @@ import com.softteco.template.presentation.login.loginComponents.ProgressBar
 fun RegistrationUserResult(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    when(val addUserResponse = viewModel.registerResponse) {
+    when (val addUserResponse = viewModel.registerResponse) {
         is Response.Loading -> ProgressBar()
         is Response.Success -> Unit
         is Response.Failure -> print(addUserResponse.e)//TODO

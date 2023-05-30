@@ -2,6 +2,7 @@ package com.softteco.template.presentation.login.loginComponents.password
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -13,6 +14,7 @@ import com.softteco.template.domain.model.user.ForgotPasswordDto
 
 import com.softteco.template.presentation.login.AuthViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestorePasswordScreen() {
     // State for form fields

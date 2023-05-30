@@ -10,7 +10,7 @@ import com.softteco.template.presentation.login.loginComponents.ProgressBar
 fun RestorePasswordResult(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    when(val restorePasswordResponse = viewModel.restorePasswordResponse) {
+    when (val restorePasswordResponse = viewModel.restorePasswordResponse) {
         is Response.Loading -> ProgressBar()
         is Response.Success -> Unit
         is Response.Failure -> print(restorePasswordResponse.e)//TODO

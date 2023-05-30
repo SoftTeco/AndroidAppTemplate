@@ -1,10 +1,7 @@
 package com.softteco.template.presentation.login.loginComponents.login
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.domain.model.user.LoginAuthDto
 import com.softteco.template.presentation.login.AuthViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen() {
 

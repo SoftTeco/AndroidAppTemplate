@@ -1,10 +1,7 @@
 package com.softteco.template.presentation.login.loginComponents.registration
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +11,7 @@ import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.login.AuthViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen() {
     // State for form fields
@@ -157,14 +155,14 @@ fun RegistrationScreen() {
             onClick = {
                 authViewModel.register(
                     CreateUserDto(
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                    confirmPassword,
-                    country,
-                    birthday
-                )
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                        confirmPassword,
+                        country,
+                        birthday
+                    )
                 )
             },
             modifier = Modifier.padding(vertical = 16.dp)

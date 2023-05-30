@@ -1,13 +1,16 @@
 package com.softteco.template.presentation.login.loginComponents.login
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.softteco.template.domain.model.user.Response
+import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.ProgressBar
 
 @Composable
 fun LoginUserResult(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    when(val loginResponse = viewModel.loginResponse) {
+    when (val loginResponse = viewModel.loginResponse) {
         is Response.Loading -> ProgressBar()
         is Response.Success -> Unit
         is Response.Failure -> print(loginResponse.e)//TODO

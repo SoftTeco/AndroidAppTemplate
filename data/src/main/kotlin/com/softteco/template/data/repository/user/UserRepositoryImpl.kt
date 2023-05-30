@@ -31,7 +31,7 @@ class UserRepositoryImpl @Inject constructor(
     ): RegisterResponse {
         return try {
             apiService.registration(
-            user
+                user
             )
             Response.Success(true)
         } catch (e: Exception) {

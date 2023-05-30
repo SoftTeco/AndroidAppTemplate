@@ -28,10 +28,18 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
         }
     }
 
+
     /**
      * Method to navigate Fragment to API list Screen.
      */
     private fun gotoApis() = findNavController().navigate(
         SplashFragmentDirections.splashToMainNavHostFragment()
     )
+
+    /**
+     * Method to navigate Fragment to Login Screen.
+     */
+//    private fun gotoLogin() = findNavController().navigate(
+//        SplashFragmentDirections.splashToLoginFragment()
+//    )
 }

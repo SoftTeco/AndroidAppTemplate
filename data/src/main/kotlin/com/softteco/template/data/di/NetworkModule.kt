@@ -20,6 +20,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -58,6 +59,11 @@ object NetworkModule {
     fun provideApiService(retrofit: Retrofit): PublicApi {
         return retrofit.create(PublicApi::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideLoginService(retrofit: Retrofit): UserApiService =
+        retrofit.create(UserApiService::class.java)
 
     @Provides
     fun provideUserRepository(

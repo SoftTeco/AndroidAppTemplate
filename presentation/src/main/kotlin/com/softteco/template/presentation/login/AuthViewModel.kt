@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewModel() {
-    
+
     var loginResponse by mutableStateOf<LoginResponse>(Response.Success(false))
 
     var registerResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
@@ -28,7 +28,7 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
     var restorePasswordResponse by mutableStateOf<RestorePasswordResponse>(Response.Success(false))
 
     fun login(
-      userAuth: LoginAuthDto
+        userAuth: LoginAuthDto
     ) = viewModelScope.launch {
         loginResponse = Response.Loading
         loginResponse =
@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
             registerResponse = Response.Loading
             registerResponse =
                 useCase.register(
-               user
+                    user
                 )
         }
     }
