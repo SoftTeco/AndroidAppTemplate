@@ -1,78 +1,130 @@
 package com.softteco.template.presentation.login.loginComponents.login
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.softteco.template.domain.model.user.LoginAuthDto
-import com.softteco.template.presentation.login.AuthViewModel
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
+import com.softteco.template.presentation.R
+import com.softteco.template.presentation.login.loginComponents.Routes
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
 
-    val authViewModel: AuthViewModel = hiltViewModel()
+    //val authViewModel: AuthViewModel = hiltViewModel()
     // State for form fields
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-    // State for error messages
-    val emailError by remember { mutableStateOf("") }
-    val passwordError by remember { mutableStateOf("") }
-
+    Box(modifier = Modifier.fillMaxSize()) {
+        ClickableText(
+            text = AnnotatedString("Sign up here"),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(20.dp),
+            onClick = { },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                textDecoration = TextDecoration.Underline,
+                color = Color.Blue
+            )
+        )
+    }
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.padding(20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            isError = emailError.isNotEmpty(),
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (emailError.isNotEmpty()) {
-            Text(
-                text = emailError,
-                color = MaterialTheme.colorScheme.error,
+
+        val username = remember { mutableStateOf(TextFieldValue()) }
+        val password = remember { mutableStateOf(TextFieldValue()) }
+
+        Text(text = "Login", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive))
+
+        Spacer(modifier = Modifier.height(20.dp))
+        TextField(
+            label = { Text(text = "Username") },
+            value = username.value,
+            onValueChange = { username.value = it })
+
+        Spacer(modifier = Modifier.height(20.dp))
+        TextField(
+            label = { Text(text = "Password") },
+            value = password.value,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            onValueChange = { password.value = it })
+
+        Spacer(modifier = Modifier.height(20.dp))
+        Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+            Button(
+                onClick = { },
+                shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            )
+                    .height(50.dp)
+            ) {
+                Text(text = "Login")
+            }
         }
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            isError = passwordError.isNotEmpty(),
-            modifier = Modifier.fillMaxWidth()
+
+        Spacer(modifier = Modifier.height(20.dp))
+        ClickableText(
+            text = AnnotatedString("Forgot password?"),
+            onClick = { },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default
+            )
         )
-        if (passwordError.isNotEmpty()) {
-            Text(
-                text = passwordError,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+
+        ClickableText(
+            text = AnnotatedString("Registration"),
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(20.dp),
+            onClick = { navController.navigate(Routes.Registration.route) },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                textDecoration = TextDecoration.Underline,
+                color = Color.Blue
             )
-        }
-        Button(
-            onClick = { authViewModel.login(LoginAuthDto(email, password)) },
-            modifier = Modifier.padding(vertical = 16.dp)
-        ) {
-            Text(text = "Login")
-        }
-        LoginUserResult()
+        )
+
+        ClickableText(
+            text = AnnotatedString("Forgot password?"),
+            onClick = { navController.navigate(Routes.RestorePassword.route) },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default
+            )
+        )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//    LoginScreen()
+//}

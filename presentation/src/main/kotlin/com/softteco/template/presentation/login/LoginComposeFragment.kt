@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import com.softteco.template.presentation.login.loginComponents.MainScreenLogin
 import com.softteco.template.presentation.login.loginComponents.login.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,7 +18,7 @@ class LoginComposeFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                LoginScreen()
+                MainScreenLogin()
             }
         }
     }
