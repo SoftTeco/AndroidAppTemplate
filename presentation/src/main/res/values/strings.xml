@@ -22,14 +22,12 @@
     <string name="password">Enter Password*</string>
     <string name="confirm_password">Confirm Password*</string>
     <string name="required">Required</string>
-    <string name="forgot_password">Forgot password?</string>
+    <string name="forgot_password">Forgot password</string>
     <string name="first_name">First Name*</string>
     <string name="last_name">Last Name*</string>
     <string name="country">Country*</string>
     <string name="birth_day">Birth Day*</string>
     <string name="password_not_matching">Password not matching</string>
     <string name="check_email">Check your email</string>
-
-
 
 </resources>

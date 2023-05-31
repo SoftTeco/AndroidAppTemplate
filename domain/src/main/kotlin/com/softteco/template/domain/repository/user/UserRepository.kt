@@ -11,7 +11,6 @@ typealias RegisterResponse = Response<Boolean>
 typealias RestorePasswordResponse = Response<Boolean>
 
 interface UserRepository {
-
     suspend fun login(userAuth: LoginAuthDto): LoginResponse
 
     suspend fun registration(user: CreateUserDto): RegisterResponse

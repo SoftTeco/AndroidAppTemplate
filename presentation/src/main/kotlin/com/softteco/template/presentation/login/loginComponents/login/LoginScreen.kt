@@ -63,12 +63,7 @@ fun LoginScreen(navController: NavHostController) {
         val passwordErrorState = remember { mutableStateOf(false) }
         val password = remember { mutableStateOf(TextFieldValue()) }
 
-        Text(
-            text = stringResource(id = R.string.login),
-            style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Monospace)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
+       Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = email.value,
