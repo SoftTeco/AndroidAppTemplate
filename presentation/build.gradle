@@ -103,6 +103,7 @@ dependencies {
     // Compose
     compose.each { implementation it.value }
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "androidx.compose.material:material-icons-extended:1.1.1"
 
     // Other
     implementation other.timber

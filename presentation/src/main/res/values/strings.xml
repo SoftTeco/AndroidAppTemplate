@@ -18,8 +18,9 @@
 
     <string name="sign_up">Sign up</string>
     <string name="login">Login</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
+    <string name="email">Enter Email*</string>
+    <string name="password">Enter Password*</string>
+    <string name="required">Required</string>
     <string name="forgot_password">Forgot password?</string>
 
 

@@ -14,7 +14,7 @@ fun CustomTopAppBar(navController: NavHostController, title: String, showBackIco
         title = {
             Text(text = title)
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Cyan),
+        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent),
         navigationIcon = {
             if (showBackIcon && navController.previousBackStackEntry != null) {
                 run {

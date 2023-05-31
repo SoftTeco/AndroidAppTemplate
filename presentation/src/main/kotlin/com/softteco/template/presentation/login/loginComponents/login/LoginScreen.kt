@@ -3,7 +3,10 @@ package com.softteco.template.presentation.login.loginComponents.login
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardOptions
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,9 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +59,8 @@ fun LoginScreen(navController: NavHostController) {
     ) {
 
         val email = remember { mutableStateOf(TextFieldValue()) }
+        val emailErrorState = remember { mutableStateOf(false) }
+        val passwordErrorState = remember { mutableStateOf(false) }
         val password = remember { mutableStateOf(TextFieldValue()) }
 
         Text(
@@ -64,29 +69,82 @@ fun LoginScreen(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            label = { Text(text = stringResource(id = R.string.email)) },
+
+        OutlinedTextField(
             value = email.value,
-            onValueChange = { email.value = it })
+            onValueChange = {
+                if (emailErrorState.value) {
+                    emailErrorState.value = false
+                }
+                email.value = it
+            },
+            isError = emailErrorState.value,
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = stringResource(id = R.string.email))
+            },
+        )
+        if (emailErrorState.value) {
+            Text(text = stringResource(id = R.string.required), color = Color.Red)
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            label = { Text(text = stringResource(id = R.string.password)) },
+        Spacer(Modifier.size(16.dp))
+
+        val passwordVisibility = remember { mutableStateOf(true) }
+
+        OutlinedTextField(
             value = password.value,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            onValueChange = { password.value = it })
+            onValueChange = {
+                if (passwordErrorState.value) {
+                    passwordErrorState.value = false
+                }
+                password.value = it
+            },
+            isError = passwordErrorState.value,
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = stringResource(id = R.string.password))
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    passwordVisibility.value = !passwordVisibility.value
+                }) {
+                    Icon(
+                        imageVector = if (passwordVisibility.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                        contentDescription = "visibility",
+                        tint = Color.Black
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
+        )
+        if (passwordErrorState.value) {
+            Text(text = stringResource(id = R.string.required), color = Color.Red)
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    authViewModel.login(
-                        LoginAuthDto(
-                            email.value.text,
-                            password.value.text
-                        )
-                    )
+                    when {
+                        email.value.text.isEmpty() -> {
+                            emailErrorState.value = true
+                        }
+                        password.value.text.isEmpty() -> {
+                            passwordErrorState.value = true
+                        }
+                        else -> {
+                            passwordErrorState.value = false
+                            emailErrorState.value = false
+                            authViewModel.login(
+                                LoginAuthDto(
+                                    email.value.text,
+                                    password.value.text
+                                )
+                            )
+                        }
+                    }
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
@@ -96,7 +154,7 @@ fun LoginScreen(navController: NavHostController) {
                 Text(text = stringResource(id = R.string.login))
             }
         }
-
+        LoginUserResult()
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.forgot_password)),
