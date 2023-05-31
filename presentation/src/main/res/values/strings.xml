@@ -28,6 +28,7 @@
     <string name="country">Country*</string>
     <string name="birth_day">Birth Day*</string>
     <string name="password_not_matching">Password not matching</string>
+    <string name="check_email">Check your email</string>
 
 
 
