@@ -8,9 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -20,12 +18,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.softteco.template.domain.model.user.LoginAuthDto
 import com.softteco.template.presentation.R
+import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.Routes
 
 
@@ -33,11 +32,11 @@ import com.softteco.template.presentation.login.loginComponents.Routes
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
-    //val authViewModel: AuthViewModel = hiltViewModel()
-    // State for form fields
+    val authViewModel: AuthViewModel = hiltViewModel()
+
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
-            text = AnnotatedString("Sign up here"),
+            text = AnnotatedString(stringResource(id = R.string.sign_up)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(20.dp),
@@ -53,23 +52,26 @@ fun LoginScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.padding(20.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = CenterHorizontally
     ) {
 
-        val username = remember { mutableStateOf(TextFieldValue()) }
+        val email = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
 
-        Text(text = "Login", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive))
+        Text(
+            text = stringResource(id = R.string.login),
+            style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Monospace)
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            label = { Text(text = "Username") },
-            value = username.value,
-            onValueChange = { username.value = it })
+            label = { Text(text = stringResource(id = R.string.email)) },
+            value = email.value,
+            onValueChange = { email.value = it })
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            label = { Text(text = "Password") },
+            label = { Text(text = stringResource(id = R.string.password)) },
             value = password.value,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -78,42 +80,26 @@ fun LoginScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
-                onClick = { },
+                onClick = {
+                    authViewModel.login(
+                        LoginAuthDto(
+                            email.value.text,
+                            password.value.text
+                        )
+                    )
+                },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text(text = "Login")
+                Text(text = stringResource(id = R.string.login))
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
-            text = AnnotatedString("Forgot password?"),
-            onClick = { },
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontFamily = FontFamily.Default
-            )
-        )
-
-        ClickableText(
-            text = AnnotatedString("Registration"),
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(20.dp),
-            onClick = { navController.navigate(Routes.Registration.route) },
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontFamily = FontFamily.Default,
-                textDecoration = TextDecoration.Underline,
-                color = Color.Blue
-            )
-        )
-
-        ClickableText(
-            text = AnnotatedString("Forgot password?"),
+            text = AnnotatedString(stringResource(id = R.string.forgot_password)),
             onClick = { navController.navigate(Routes.RestorePassword.route) },
             style = TextStyle(
                 fontSize = 14.sp,
