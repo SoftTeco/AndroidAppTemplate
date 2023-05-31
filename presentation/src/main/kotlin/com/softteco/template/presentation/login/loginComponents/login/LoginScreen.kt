@@ -43,9 +43,9 @@ fun LoginScreen(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(20.dp),
-            onClick = { },
+            onClick = { navController.navigate(Routes.Registration.route)},
             style = TextStyle(
-                fontSize = 14.sp,
+                fontSize = 20.sp,
                 fontFamily = FontFamily.Default,
                 textDecoration = TextDecoration.Underline,
                 color = Color.Blue

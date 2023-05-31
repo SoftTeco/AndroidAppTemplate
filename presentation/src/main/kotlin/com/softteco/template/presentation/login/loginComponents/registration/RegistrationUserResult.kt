@@ -1,6 +1,8 @@
 package com.softteco.template.presentation.login.loginComponents.registration
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.domain.model.user.Response
 import com.softteco.template.presentation.login.AuthViewModel
@@ -13,6 +15,12 @@ fun RegistrationUserResult(
     when (val addUserResponse = viewModel.registerResponse) {
         is Response.Loading -> ProgressBar()
         is Response.Success -> Unit
-        is Response.Failure -> print(addUserResponse.e)//TODO
+        is Response.Failure -> {
+            Toast.makeText(
+                LocalContext.current,
+                addUserResponse.e.toString(),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }
