@@ -1,5 +1,7 @@
 package com.softteco.template.domain.di
 
+import com.softteco.template.domain.usecase.account.GetAccountUseCase
+import com.softteco.template.domain.usecase.account.GetAccountUseCaseImpl
 import com.softteco.template.domain.usecase.apientry.FetchApiEntriesUseCase
 import com.softteco.template.domain.usecase.apientry.FetchApiEntriesUseCaseImpl
 import com.softteco.template.domain.usecase.apientry.GetAllApiEntriesUseCase
@@ -34,4 +36,10 @@ abstract class UseCaseModule {
     internal abstract fun bindGetApiEntryByNameUseCase(
         useCaseImpl: GetApiEntryByNameUseCaseImpl1
     ): GetApiEntryByNameUseCase
+
+    @Binds
+    @Singleton
+    internal abstract fun bindGetAllAccountUseCase(
+        useCaseImpl: GetAccountUseCaseImpl
+    ): GetAccountUseCase
 }

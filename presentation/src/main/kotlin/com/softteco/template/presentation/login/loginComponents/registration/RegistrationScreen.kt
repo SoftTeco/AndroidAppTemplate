@@ -23,9 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
+import com.softteco.template.presentation.login.AuthViewModelDb
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 
 
@@ -42,7 +44,7 @@ fun RegistrationScreen(navController: NavHostController) {
 @Composable
 fun ScaffoldWithTopBar(navController: NavHostController) {
 
-    val authViewModel: AuthViewModel = hiltViewModel()
+    val authViewModel: AuthViewModelDb = hiltViewModel()
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)
@@ -286,15 +288,16 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                             birthDayErrorState.value = true
                         }
                         else -> {
-                            authViewModel.register(
-                                CreateUserDto(
+                            authViewModel.save(
+                                Account(
+                                    1,
                                     firstName.value.text,
                                     lastName.value.text,
+                                    country.value.text,
+                                    birthDay.value.text,
                                     email.value.text,
                                     password.value.text,
-                                    confirmPassword.value.text,
-                                    country.value.text,
-                                    birthDay.value.text
+                                    "",
                                 )
                             )
                         }

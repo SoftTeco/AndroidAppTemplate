@@ -4,13 +4,13 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class CreateUserDto(
+data class Account(
+    val id: Int? = null,
     val firstName: String,
     val lastName: String,
-    val email: String,
-    val password: String,
-    val confirmPassword: String,
     val country: String,
     val birthday: String,
-    val id:Int?=null
+    val email: String,
+    val password: String,
+    val avatar: String
 ) : Parcelable
