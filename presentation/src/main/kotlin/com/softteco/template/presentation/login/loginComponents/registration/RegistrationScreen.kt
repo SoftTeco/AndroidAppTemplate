@@ -24,9 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softteco.template.domain.model.user.Account
-import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
-import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.AuthViewModelDb
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 
@@ -147,8 +145,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
             Spacer(Modifier.size(16.dp))
             val passwordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(
-                value = password.value,
+            OutlinedTextField(value = password.value,
                 onValueChange = {
                     if (passwordErrorState.value) {
                         passwordErrorState.value = false
@@ -179,8 +176,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
             Spacer(Modifier.size(16.dp))
             val cPasswordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(
-                value = confirmPassword.value,
+            OutlinedTextField(value = confirmPassword.value,
                 onValueChange = {
                     if (confirmPasswordErrorState.value) {
                         confirmPasswordErrorState.value = false
@@ -288,7 +284,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                             birthDayErrorState.value = true
                         }
                         else -> {
-                            authViewModel.save(
+                            authViewModel.register(
                                 Account(
                                     1,
                                     firstName.value.text,
@@ -307,7 +303,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                     Text(text = stringResource(id = R.string.sign_up), color = Color.White)
                 },
             )
-            RegistrationUserResult()
+            RegistrationUserResultDb()
         }
     })
 }

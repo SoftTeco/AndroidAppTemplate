@@ -5,11 +5,13 @@ import com.softteco.template.data.Config
 import com.softteco.template.data.repository.user.UserRepositoryImpl
 import com.softteco.template.data.source.remote.PublicApi
 import com.softteco.template.data.source.remote.UserApiService
+import com.softteco.template.domain.repository.AccountRepository
 import com.softteco.template.domain.repository.user.UserRepository
-import com.softteco.template.domain.usecase.user.Login
-import com.softteco.template.domain.usecase.user.Registration
-import com.softteco.template.domain.usecase.user.RestorePassword
-import com.softteco.template.domain.usecase.user.UseCases
+import com.softteco.template.domain.usecase.account.LoginDb
+import com.softteco.template.domain.usecase.account.RegistrationDb
+import com.softteco.template.domain.usecase.account.RestorePasswordDb
+import com.softteco.template.domain.usecase.account.UseCasesDb
+import com.softteco.template.domain.usecase.user.*
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -77,5 +79,14 @@ object NetworkModule {
         login = Login(repo),
         register = Registration(repo),
         restorePassword = RestorePassword(repo)
+    )
+
+    @Provides
+    fun provideUseCasesDb(
+        repo: AccountRepository
+    ) = UseCasesDb(
+        login = LoginDb(repo),
+        register = RegistrationDb(repo),
+        restorePassword = RestorePasswordDb(repo)
     )
 }
