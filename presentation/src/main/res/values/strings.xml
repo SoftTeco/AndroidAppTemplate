@@ -30,6 +30,7 @@
     <string name="password_not_matching">Password not matching</string>
     <string name="check_email">Check your email</string>
     <string name="ok">OK</string>
+    <string name="restore">Restore</string>
     <string name="registration_notification">You have registered!</string>
 
 </resources>

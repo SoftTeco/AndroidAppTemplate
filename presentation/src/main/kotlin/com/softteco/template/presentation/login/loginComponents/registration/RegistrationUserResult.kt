@@ -3,10 +3,12 @@ package com.softteco.template.presentation.login.loginComponents.registration
 import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.Response
+import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.AuthViewModelDb
 import com.softteco.template.presentation.login.loginComponents.CustomAlertDialog
@@ -33,7 +35,7 @@ fun RegistrationUserResult(
                     dialogOpen = !dialogOpen
                 }, {
                     navController.navigate(Routes.Login.route)
-                })
+                }, stringResource(id = R.string.registration_notification))
             }
 
         }

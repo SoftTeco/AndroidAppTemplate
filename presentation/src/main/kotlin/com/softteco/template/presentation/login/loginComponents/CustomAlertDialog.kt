@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.softteco.template.presentation.R
 
 @Composable
-fun CustomAlertDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
+fun CustomAlertDialog(onDismiss: () -> Unit, onExit: () -> Unit, message: String) {
 
     AlertDialog(
         onDismissRequest = {
@@ -29,7 +29,7 @@ fun CustomAlertDialog(onDismiss: () -> Unit, onExit: () -> Unit) {
         },
 
         text = {
-            Text(text = stringResource(id = R.string.registration_notification))
+            Text(text = message)
 
         },
         modifier = Modifier

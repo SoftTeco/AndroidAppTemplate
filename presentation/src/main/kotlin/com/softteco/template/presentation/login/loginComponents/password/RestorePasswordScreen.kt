@@ -88,10 +88,10 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
                         .fillMaxWidth()
                         .height(50.dp)
                 ) {
-                    Text(text = stringResource(id = R.string.login))
+                    Text(text = stringResource(id = R.string.restore))
                 }
             }
         }
     })
-    RestorePasswordResult() //TODO
+    RestorePasswordResult()
 }
