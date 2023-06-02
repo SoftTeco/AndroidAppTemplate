@@ -11,6 +11,5 @@ data class CreateUserDto(
     val password: String,
     val confirmPassword: String,
     val country: String,
-    val birthday: String,
-    val id:Int?=null
+    val birthday: String
 ) : Parcelable

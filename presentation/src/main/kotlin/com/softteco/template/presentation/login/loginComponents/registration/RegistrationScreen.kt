@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softteco.template.domain.model.user.Account
+import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
+import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.AuthViewModelDb
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 
@@ -42,7 +44,7 @@ fun RegistrationScreen(navController: NavHostController) {
 @Composable
 fun ScaffoldWithTopBar(navController: NavHostController) {
 
-    val authViewModel: AuthViewModelDb = hiltViewModel()
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)
@@ -145,7 +147,8 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
             Spacer(Modifier.size(16.dp))
             val passwordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(value = password.value,
+            OutlinedTextField(
+                value = password.value,
                 onValueChange = {
                     if (passwordErrorState.value) {
                         passwordErrorState.value = false
@@ -176,7 +179,8 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
             Spacer(Modifier.size(16.dp))
             val cPasswordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(value = confirmPassword.value,
+            OutlinedTextField(
+                value = confirmPassword.value,
                 onValueChange = {
                     if (confirmPasswordErrorState.value) {
                         confirmPasswordErrorState.value = false
@@ -285,15 +289,14 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         }
                         else -> {
                             authViewModel.register(
-                                Account(
-                                    1,
+                                CreateUserDto(
                                     firstName.value.text,
                                     lastName.value.text,
-                                    country.value.text,
-                                    birthDay.value.text,
                                     email.value.text,
                                     password.value.text,
-                                    "",
+                                    confirmPassword.value.text,
+                                    country.value.text,
+                                    birthDay.value.text
                                 )
                             )
                         }
@@ -303,7 +306,13 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                     Text(text = stringResource(id = R.string.sign_up), color = Color.White)
                 },
             )
-            RegistrationUserResultDb()
+            RegistrationUserResult(
+                hiltViewModel(), Account(
+                    null, firstName.value.text,
+                    lastName.value.text, country.value.text,
+                    birthDay.value.text, email.value.text, password.value.text, ""
+                )
+            )
         }
     })
 }
