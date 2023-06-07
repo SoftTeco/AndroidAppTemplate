@@ -5,13 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.domain.model.user.CreateUserDto
-import com.softteco.template.domain.model.user.ForgotPasswordDto
-import com.softteco.template.domain.model.user.LoginAuthDto
+import com.softteco.template.domain.model.user.*
 import com.softteco.template.domain.repository.user.LoginResponse
 import com.softteco.template.domain.repository.user.RegisterResponse
 import com.softteco.template.domain.repository.user.RestorePasswordResponse
-import com.softteco.template.domain.model.user.Response
+import com.softteco.template.domain.repository.user.ResetPasswordResponse
 
 import com.softteco.template.domain.usecase.user.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +24,8 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
     var registerResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
 
     var restorePasswordResponse by mutableStateOf<RestorePasswordResponse>(Response.Success(false))
+
+    var resetPasswordResponse by mutableStateOf<ResetPasswordResponse>(Response.Success(false))
 
     fun login(
         userAuth: LoginAuthDto
@@ -51,6 +51,13 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
         viewModelScope.launch {
             restorePasswordResponse = Response.Loading
             restorePasswordResponse = useCase.restorePassword(email)
+        }
+    }
+
+    fun resetPassword(resetPasswordDto: ResetPasswordDto) {
+        viewModelScope.launch {
+            resetPasswordResponse = Response.Loading
+            resetPasswordResponse = useCase.resetPassword(resetPasswordDto)
         }
     }
 }

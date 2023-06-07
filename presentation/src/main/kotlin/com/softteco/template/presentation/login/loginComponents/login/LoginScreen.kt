@@ -153,7 +153,7 @@ fun LoginScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.forgot_password)),
-            onClick = { navController.navigate(Routes.RestorePassword.route) },
+            onClick = { navController.navigate(Routes.ResetPassword.route) },
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default

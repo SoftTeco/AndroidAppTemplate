@@ -7,9 +7,10 @@ import androidx.navigation.compose.rememberNavController
 import com.softteco.template.presentation.login.loginComponents.login.LoginScreen
 import com.softteco.template.presentation.login.loginComponents.password.RestorePasswordScreen
 import com.softteco.template.presentation.login.loginComponents.registration.RegistrationScreen
+import com.softteco.template.presentation.login.loginComponents.reset.ResetPasswordScreen
 
 @Composable
-fun MainScreenLogin(){
+fun MainScreenLogin() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Routes.Login.route) {
@@ -24,6 +25,10 @@ fun MainScreenLogin(){
 
         composable(Routes.RestorePassword.route) { navBackStack ->
             RestorePasswordScreen(navController = navController)
+        }
+
+        composable(Routes.ResetPassword.route) { navBackStack ->
+            ResetPasswordScreen(navController = navController)
         }
     }
 }

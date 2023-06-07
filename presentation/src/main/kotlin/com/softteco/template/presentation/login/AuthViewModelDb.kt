@@ -23,18 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModelDb @Inject constructor(private val useCase: UseCasesDb) : ViewModel() {
 
-    private val _saveRandomDataOutput = MutableStateFlow<Output.Status?>(null)
-    internal val saveRandomDataOutput: StateFlow<Output.Status?> = _saveRandomDataOutput
-
     var registerResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
 
-//    internal fun save(account: Account) {
-//        viewModelScope.launch {
-//            accountRepository.addAccount(account).collect {
-//                _saveRandomDataOutput.value = it
-//            }
-//        }
-//    }
+    var restorePasswordResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
 
     fun register(account: Account) {
         viewModelScope.launch {
@@ -42,6 +33,16 @@ class AuthViewModelDb @Inject constructor(private val useCase: UseCasesDb) : Vie
             registerResponse =
                 useCase.register(
                 account
+                )
+        }
+    }
+
+    fun restorePassword(account: Account) {
+        viewModelScope.launch {
+            registerResponse = Response.Loading
+            registerResponse =
+                useCase.register(
+                    account
                 )
         }
     }

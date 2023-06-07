@@ -1,12 +1,10 @@
 package com.softteco.template.data.source.remote
 
-import com.softteco.template.domain.model.user.CreateUserDto
-import com.softteco.template.domain.model.user.ForgotPasswordDto
-import com.softteco.template.domain.model.user.LoginAuthDto
-import com.softteco.template.domain.model.user.Response
+import com.softteco.template.domain.model.user.*
 
 import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface UserApiService {
@@ -19,4 +17,7 @@ interface UserApiService {
 
     @POST("/forgotPassword")
     suspend fun restorePassword(@Body email: ForgotPasswordDto): Response<ResponseBody>
+
+    @PATCH("/resetPassword")
+    suspend fun resetPassword(@Body resetPasswordDto: ResetPasswordDto): Response<ResponseBody>
 }

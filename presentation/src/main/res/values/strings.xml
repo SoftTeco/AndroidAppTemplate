@@ -32,5 +32,12 @@
     <string name="ok">OK</string>
     <string name="restore">Restore</string>
     <string name="registration_notification">You have registered!</string>
+    <string name="password_recovery">Password recovery</string>
+    <string name="create_password">Create a new password</string>
+    <string name="set_password">Set new password</string>
+    <string name="password_requirement">Password requirement:</string>
+    <string name="password_requirement_1">- at least 8 characters</string>
+    <string name="password_requirement_2">- must contain uppercase and lowercase letters, as well as numbers</string>
+    <string name="success">Success</string>
 
 </resources>
