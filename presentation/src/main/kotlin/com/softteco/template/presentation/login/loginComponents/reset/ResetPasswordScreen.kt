@@ -29,18 +29,19 @@ import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 import com.softteco.template.presentation.login.loginComponents.password.RestorePasswordResult
+import java.sql.ResultSet
 
 @Composable
-fun ResetPasswordScreen(navController: NavHostController) {
+fun ResetPasswordScreen(navController: NavHostController, token: String) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ScaffoldWithTopBarForgotPass(navController)
+        ScaffoldWithTopBarForgotPass(navController, token)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
+fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String) {
     val authViewModel: AuthViewModel = hiltViewModel()
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.password_recovery), true)
@@ -171,7 +172,13 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
                                 confirmPasswordErrorState.value = true
                             }
                             else -> {
-                                //authViewModel.restorePassword(ResetPasswordDto())
+                                authViewModel.resetPassword(
+                                    ResetPasswordDto(
+                                        token,
+                                        password.value.text,
+                                        confirmPassword.value.text
+                                    )
+                                )
                             }
                         }
                     },
@@ -185,5 +192,5 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
             }
         }
     })
-    RestorePasswordResult()
+    ResetPasswordResult()
 }
