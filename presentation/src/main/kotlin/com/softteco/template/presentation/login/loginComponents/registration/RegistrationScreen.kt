@@ -24,11 +24,12 @@ import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
+import com.softteco.template.presentation.login.loginComponents.Routes
+import java.util.*
 
 
 @Composable
 fun RegistrationScreen(navController: NavHostController) {
-
     Box(modifier = Modifier.fillMaxSize()) {
         ScaffoldWithTopBar(navController)
     }
@@ -38,7 +39,7 @@ fun RegistrationScreen(navController: NavHostController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldWithTopBar(navController: NavHostController) {
-
+    var signUp by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
 
     Scaffold(topBar = {
@@ -291,18 +292,21 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                             )
                         }
                     }
+                    signUp = true
                 },
                 content = {
                     Text(text = stringResource(id = R.string.sign_up), color = Color.White)
                 },
             )
-            RegistrationUserResult(
-                hiltViewModel(), Account(
-                    null, firstName.value.text,
-                    lastName.value.text, country.value.text,
-                    birthDay.value.text, email.value.text, password.value.text, ""
+            if (signUp) {
+                RegistrationUserResult(
+                    hiltViewModel(), Account(
+                        firstName.hashCode(), firstName.value.text,
+                        lastName.value.text, country.value.text,
+                        birthDay.value.text, email.value.text, password.value.text, ""
+                    )
                 )
-            )
+            }
         }
     })
 }

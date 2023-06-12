@@ -39,5 +39,5 @@
     <string name="password_requirement_1">- at least 8 characters</string>
     <string name="password_requirement_2">- must contain uppercase and lowercase letters, as well as numbers</string>
     <string name="success">Success</string>
-
+    <string name="set_password_success">Your password was changed</string>
 </resources>

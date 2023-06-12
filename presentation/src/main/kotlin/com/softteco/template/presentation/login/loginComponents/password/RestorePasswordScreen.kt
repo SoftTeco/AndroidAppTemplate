@@ -30,6 +30,7 @@ fun RestorePasswordScreen(navController: NavHostController) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
+    var restorePas by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.forgot_password), true)
@@ -82,6 +83,7 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
                                 )
                             }
                         }
+                        restorePas = true
                     },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
@@ -93,5 +95,7 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
             }
         }
     })
-    RestorePasswordResult()
+    if (restorePas) {
+        RestorePasswordResult()
+    }
 }

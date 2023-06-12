@@ -7,9 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +17,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,8 +25,6 @@ import com.softteco.template.domain.model.user.ResetPasswordDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
-import com.softteco.template.presentation.login.loginComponents.password.RestorePasswordResult
-import java.sql.ResultSet
 
 @Composable
 fun ResetPasswordScreen(navController: NavHostController, token: String) {
@@ -43,6 +38,8 @@ fun ResetPasswordScreen(navController: NavHostController, token: String) {
 @Composable
 fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String) {
     val authViewModel: AuthViewModel = hiltViewModel()
+    var resetPas by remember { mutableStateOf(false) }
+
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.password_recovery), true)
     }, content = {
@@ -181,6 +178,7 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String
                                 )
                             }
                         }
+                        resetPas = true
                     },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
@@ -192,5 +190,7 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String
             }
         }
     })
-    ResetPasswordResult()
+    if (resetPas) {
+        ResetPasswordResult()
+    }
 }
