@@ -1,6 +1,8 @@
 package com.softteco.template.presentation.login.loginComponents.registration
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,7 +26,7 @@ import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
-import com.softteco.template.presentation.login.loginComponents.Routes
+import com.softteco.template.presentation.login.loginComponents.DropDownListComponent
 import java.util.*
 
 
@@ -41,6 +43,8 @@ fun RegistrationScreen(navController: NavHostController) {
 fun ScaffoldWithTopBar(navController: NavHostController) {
     var signUp by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
+    var countryList = listOf("Belarus", "USA")
+
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)
@@ -55,7 +59,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         val email = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
         val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
-        val country = remember { mutableStateOf(TextFieldValue()) }
+        val country = remember { mutableStateOf("") }
         val birthDay = remember { mutableStateOf(TextFieldValue()) }
 
         val firstNameErrorState = remember { mutableStateOf(false) }
@@ -67,6 +71,14 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         val birthDayErrorState = remember { mutableStateOf(false) }
 
         val scrollState = rememberScrollState()
+
+        val isOpen = remember { mutableStateOf(false) }
+        val openCloseOfDropDownList: (Boolean) -> Unit = {
+            isOpen.value = it
+        }
+        val userSelectedString: (String) -> Unit = {
+            country.value = it
+        }
 
         Column(
             modifier = Modifier
@@ -207,21 +219,40 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                 Text(text = msg, color = Color.Red)
             }
             Spacer(Modifier.size(16.dp))
-            OutlinedTextField(
-                value = country.value,
-                onValueChange = {
-                    if (countryErrorState.value) {
-                        countryErrorState.value = false
-                    }
-                    country.value = it
-                },
 
-                modifier = Modifier.fillMaxWidth(),
-                isError = emailErrorState.value,
-                label = {
-                    Text(text = stringResource(id = R.string.country))
-                },
-            )
+
+            Box {
+                Column {
+                    OutlinedTextField(
+                        value = country.value,
+                        onValueChange = {
+                            if (countryErrorState.value) {
+                                countryErrorState.value = false
+                            }
+                            country.value = it
+                        },
+
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = emailErrorState.value,
+                        label = {
+                            Text(text = stringResource(id = R.string.country))
+                        },
+                    )
+                    DropDownListComponent(
+                        requestToOpen = isOpen.value,
+                        list = countryList,
+                        openCloseOfDropDownList,
+                        userSelectedString
+                    )
+                }
+                Spacer(modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    .padding(10.dp)
+                    .clickable(onClick = { isOpen.value = true })
+                )
+            }
+
             if (emailErrorState.value) {
                 Text(text = stringResource(id = R.string.required), color = Color.Red)
             }
@@ -272,7 +303,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         confirmPassword.value.text != password.value.text -> {
                             confirmPasswordErrorState.value = true
                         }
-                        country.value.text.isEmpty() -> {
+                        country.value.isEmpty() -> {
                             countryErrorState.value = true
                         }
                         birthDay.value.text.isEmpty() -> {
@@ -286,7 +317,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                                     email.value.text,
                                     password.value.text,
                                     confirmPassword.value.text,
-                                    country.value.text,
+                                    country.value,
                                     birthDay.value.text
                                 )
                             )
@@ -302,7 +333,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                 RegistrationUserResult(
                     hiltViewModel(), Account(
                         firstName.hashCode(), firstName.value.text,
-                        lastName.value.text, country.value.text,
+                        lastName.value.text, country.value,
                         birthDay.value.text, email.value.text, password.value.text, ""
                     )
                 )
