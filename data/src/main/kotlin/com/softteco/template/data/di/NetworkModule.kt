@@ -20,6 +20,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -43,6 +44,7 @@ object NetworkModule {
     }
 
     @Provides
+    @Named("PublicApi")
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         val moshi = Moshi.Builder().build()
         val converterFactory: Converter.Factory = MoshiConverterFactory.create(moshi)
@@ -56,13 +58,41 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideApiService(retrofit: Retrofit): PublicApi {
+    @Named("CountriesApi")
+    fun provideRetrofitCountries(okHttpClient: OkHttpClient): Retrofit {
+        val moshi = Moshi.Builder().build()
+        val converterFactory: Converter.Factory = MoshiConverterFactory.create(moshi)
+
+        return Retrofit.Builder()
+            .baseUrl(Config.COUNTRIES_URL)
+            .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    @Named("UserApi")
+    fun provideRetrofitUser(okHttpClient: OkHttpClient): Retrofit {
+        val moshi = Moshi.Builder().build()
+        val converterFactory: Converter.Factory = MoshiConverterFactory.create(moshi)
+
+        return Retrofit.Builder()
+            .baseUrl(Config.USER_URL)
+            .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    fun provideApiService(@Named("PublicApi") retrofit: Retrofit): PublicApi {
         return retrofit.create(PublicApi::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideLoginService(retrofit: Retrofit): UserApiService =
+    fun provideLoginService(@Named("UserApi") retrofit: Retrofit): UserApiService =
         retrofit.create(UserApiService::class.java)
 
     @Provides

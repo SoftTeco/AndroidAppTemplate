@@ -5,12 +5,13 @@ import com.softteco.template.data.source.remote.model.ApiEntryApiModels
 import com.softteco.template.domain.model.Output
 import retrofit2.Retrofit
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * RemoteDataSource of Apis API service
  * @param publicApi the object of api service
  */
-class ApisRemoteDataSource @Inject constructor(
+class ApisRemoteDataSource @Inject constructor(@Named("PublicApi")
     retrofit: Retrofit,
     private val publicApi: PublicApi
 ) : BaseRemoteDataSource(retrofit) {
