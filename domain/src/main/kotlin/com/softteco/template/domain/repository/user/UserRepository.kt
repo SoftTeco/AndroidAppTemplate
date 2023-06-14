@@ -3,10 +3,10 @@ package com.softteco.template.domain.repository.user
 import com.softteco.template.domain.model.user.*
 
 
-typealias LoginResponse = Response<Boolean>
-typealias RegisterResponse = Response<Boolean>
-typealias RestorePasswordResponse = Response<Boolean>
-typealias ResetPasswordResponse = Response<Boolean>
+typealias LoginResponse = ApiResponse<Boolean>
+typealias RegisterResponse = ApiResponse<Boolean>
+typealias RestorePasswordResponse = ApiResponse<Boolean>
+typealias ResetPasswordResponse = ApiResponse<Boolean>
 
 interface UserRepository {
     suspend fun login(userAuth: LoginAuthDto): LoginResponse

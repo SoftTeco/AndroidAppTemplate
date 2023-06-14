@@ -95,6 +95,7 @@ dependencies {
 
     //Coroutines
     implementation kotlin.kotlinxCoroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 
     // UI
     implementation androidx.recycler

@@ -5,32 +5,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.domain.model.Output
 import com.softteco.template.domain.model.user.Account
-import com.softteco.template.domain.model.user.CreateUserDto
-import com.softteco.template.domain.model.user.Response
-import com.softteco.template.domain.repository.AccountRepository
+import com.softteco.template.domain.model.user.ApiResponse
 import com.softteco.template.domain.repository.user.RegisterResponse
 import com.softteco.template.domain.usecase.account.UseCasesDb
-import com.softteco.template.domain.usecase.user.UseCases
-import com.softteco.template.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModelDb @Inject constructor(private val useCase: UseCasesDb) : ViewModel() {
 
-    var registerResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
+    var registerApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
 
-    var restorePasswordResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
+    var restorePasswordApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
 
     fun register(account: Account) {
         viewModelScope.launch {
-            registerResponse = Response.Loading
-            registerResponse =
+            registerApiResponse = ApiResponse.Loading
+            registerApiResponse =
                 useCase.register(
                 account
                 )
@@ -39,8 +32,8 @@ class AuthViewModelDb @Inject constructor(private val useCase: UseCasesDb) : Vie
 
     fun restorePassword(account: Account) {
         viewModelScope.launch {
-            registerResponse = Response.Loading
-            registerResponse =
+            registerApiResponse = ApiResponse.Loading
+            registerApiResponse =
                 useCase.register(
                     account
                 )

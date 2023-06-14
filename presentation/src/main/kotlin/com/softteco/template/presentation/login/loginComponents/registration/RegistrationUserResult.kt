@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.softteco.template.domain.model.user.Account
-import com.softteco.template.domain.model.user.Response
+import com.softteco.template.domain.model.user.ApiResponse
 
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.AuthViewModelDb
@@ -21,13 +21,13 @@ fun RegistrationUserResult(
     viewModel: AuthViewModel = hiltViewModel(),
     account: Account,
 ) {
-    when (val addUserResponse = viewModel.registerResponse) {
-        is Response.Loading -> ProgressBar()
-        is Response.Success -> {
+    when (val addUserResponse = viewModel.registerApiResponse) {
+        is ApiResponse.Loading -> ProgressBar()
+        is ApiResponse.Success -> {
             WriteUserToDb(account = account)
             CustomAlertDialog(onGoToScreen = { /*TODO*/ }, message = "hh")
         }
-        is Response.Failure -> {
+        is ApiResponse.Failure -> {
             Toast.makeText(
                 LocalContext.current, addUserResponse.e.toString(), Toast.LENGTH_SHORT
             ).show()

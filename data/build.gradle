@@ -57,6 +57,7 @@ dependencies {
     kapt network.moshiCodegen
     implementation network.okhttp
     implementation network.okhttpLoggingInterceptor
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     //Room Database
     implementation androidx.roomDb

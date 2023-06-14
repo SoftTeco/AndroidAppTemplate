@@ -10,14 +10,14 @@ import retrofit2.http.POST
 interface UserApiService {
 
     @POST("/login")
-    suspend fun login(@Body userAuth: LoginAuthDto): Response<ResponseBody>
+    suspend fun login(@Body userAuth: LoginAuthDto): ApiResponse<ResponseBody>
 
     @POST("/registration")
-    suspend fun registration(@Body user: CreateUserDto): Response<ResponseBody>
+    suspend fun registration(@Body user: CreateUserDto): ApiResponse<ResponseBody>
 
     @POST("/forgotPassword")
-    suspend fun restorePassword(@Body email: ForgotPasswordDto): Response<ResponseBody>
+    suspend fun restorePassword(@Body email: ForgotPasswordDto): ApiResponse<ResponseBody>
 
     @PATCH("/resetPassword")
-    suspend fun resetPassword(@Body resetPasswordDto: ResetPasswordDto): Response<ResponseBody>
+    suspend fun resetPassword(@Body resetPasswordDto: ResetPasswordDto): ApiResponse<ResponseBody>
 }

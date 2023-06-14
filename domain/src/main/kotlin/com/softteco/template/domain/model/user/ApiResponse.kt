@@ -1,13 +1,13 @@
 package com.softteco.template.domain.model.user
 
-sealed class Response<out T> {
-    object Loading: Response<Nothing>()
+sealed class ApiResponse<out T> {
+    object Loading: ApiResponse<Nothing>()
 
     data class Success<out T>(
         val data: T
-    ): Response<T>()
+    ): ApiResponse<T>()
 
     data class Failure(
         val e: Exception?
-    ): Response<Nothing>()
+    ): ApiResponse<Nothing>()
 }

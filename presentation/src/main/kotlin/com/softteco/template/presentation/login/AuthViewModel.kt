@@ -19,19 +19,20 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewModel() {
 
-    var loginResponse by mutableStateOf<LoginResponse>(Response.Success(false))
+    var loginApiResponse by mutableStateOf<LoginResponse>(ApiResponse.Success(false))
 
-    var registerResponse by mutableStateOf<RegisterResponse>(Response.Success(false))
+    var registerApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
 
-    var restorePasswordResponse by mutableStateOf<RestorePasswordResponse>(Response.Success(false))
+    var restorePasswordApiResponse by mutableStateOf<RestorePasswordResponse>(ApiResponse.Success(false))
 
-    var resetPasswordResponse by mutableStateOf<ResetPasswordResponse>(Response.Success(false))
+    var resetPasswordApiResponse by mutableStateOf<ResetPasswordResponse>(ApiResponse.Success(false))
+
 
     fun login(
         userAuth: LoginAuthDto
     ) = viewModelScope.launch {
-        loginResponse = Response.Loading
-        loginResponse =
+        loginApiResponse = ApiResponse.Loading
+        loginApiResponse =
             useCase.login(userAuth)
     }
 
@@ -39,8 +40,8 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
         user: CreateUserDto
     ) {
         viewModelScope.launch {
-            registerResponse = Response.Loading
-            registerResponse =
+            registerApiResponse = ApiResponse.Loading
+            registerApiResponse =
                 useCase.register(
                     user
                 )
@@ -49,15 +50,15 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
 
     fun restorePassword(email: ForgotPasswordDto) {
         viewModelScope.launch {
-            restorePasswordResponse = Response.Loading
-            restorePasswordResponse = useCase.restorePassword(email)
+            restorePasswordApiResponse = ApiResponse.Loading
+            restorePasswordApiResponse = useCase.restorePassword(email)
         }
     }
 
     fun resetPassword(resetPasswordDto: ResetPasswordDto) {
         viewModelScope.launch {
-            resetPasswordResponse = Response.Loading
-            resetPasswordResponse = useCase.resetPassword(resetPasswordDto)
+            resetPasswordApiResponse = ApiResponse.Loading
+            resetPasswordApiResponse = useCase.resetPassword(resetPasswordDto)
         }
     }
 }

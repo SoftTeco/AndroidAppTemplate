@@ -17,9 +17,9 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun login(userAuth: LoginAuthDto): LoginResponse {
         return try {
             apiService.login(userAuth)
-            Response.Success(true)
+            ApiResponse.Success(true)
         } catch (e: Exception) {
-            Response.Failure(e)
+            ApiResponse.Failure(e)
         }
     }
 
@@ -30,9 +30,9 @@ class UserRepositoryImpl @Inject constructor(
             apiService.registration(
                 user
             )
-            Response.Success(true)
+            ApiResponse.Success(true)
         } catch (e: Exception) {
-            Response.Failure(e)
+            ApiResponse.Failure(e)
         }
     }
 
@@ -41,9 +41,9 @@ class UserRepositoryImpl @Inject constructor(
             apiService.restorePassword(
                 email
             )
-            Response.Success(true)
+            ApiResponse.Success(true)
         } catch (e: Exception) {
-            Response.Failure(e)
+            ApiResponse.Failure(e)
         }
     }
 
@@ -52,9 +52,9 @@ class UserRepositoryImpl @Inject constructor(
             apiService.resetPassword(
                 resetPassword
             )
-            Response.Success(true)
+            ApiResponse.Success(true)
         } catch (e: Exception) {
-            Response.Failure(e)
+            ApiResponse.Failure(e)
         }
     }
 }
