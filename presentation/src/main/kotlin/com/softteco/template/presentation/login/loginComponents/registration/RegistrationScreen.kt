@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.softteco.template.domain.model.DataObject
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.domain.model.user.ApiResponse
@@ -48,11 +49,17 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
     var signUp by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
     val countryViewModel: CountryViewModel = hiltViewModel()
-    var countryList = listOf("Belarus", "USA")
+    val countryList = mutableListOf<String>()
+
+    fun createCountryList(list: List<DataObject>) {
+        for (item in list) {
+            countryList.add(item.country)
+        }
+    }
 
     when (val countriesResponse = countryViewModel.countriesResponse) {
         is ApiResponse.Loading -> ProgressBar()
-        is ApiResponse.Success -> countryList = listOf(countriesResponse.data.data.toString()) //TODO
+        is ApiResponse.Success -> createCountryList(countriesResponse.data.data)
         is ApiResponse.Failure -> print(countriesResponse.e)
     }
 

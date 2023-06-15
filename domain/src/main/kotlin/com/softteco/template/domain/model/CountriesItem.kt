@@ -13,5 +13,5 @@ data class CountriesItem
 
 @Parcelize
 data class DataObject(
-    private val country: String,
+    val country: String,
 ) : Parcelable
