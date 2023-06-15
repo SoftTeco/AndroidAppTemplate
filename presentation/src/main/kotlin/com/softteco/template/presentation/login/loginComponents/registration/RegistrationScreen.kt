@@ -1,23 +1,20 @@
 package com.softteco.template.presentation.login.loginComponents.registration
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -28,9 +25,8 @@ import com.softteco.template.domain.model.user.ApiResponse
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.CountryViewModel
-import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
-import com.softteco.template.presentation.login.loginComponents.DropDownListComponent
-import com.softteco.template.presentation.login.loginComponents.ProgressBar
+import com.softteco.template.presentation.login.loginComponents.*
+import com.softteco.template.presentation.login.loginComponents.login.PasswordFieldComponent
 import java.util.*
 
 
@@ -96,6 +92,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         val userSelectedString: (String) -> Unit = {
             country.value = it
         }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -105,125 +102,45 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         ) {
 
             Spacer(Modifier.size(16.dp))
-            OutlinedTextField(
-                value = firstName.value,
-                onValueChange = {
-                    if (firstNameErrorState.value) {
-                        firstNameErrorState.value = false
-                    }
-                    firstName.value = it
-                },
 
-                modifier = Modifier.fillMaxWidth(),
-                isError = firstNameErrorState.value,
-                label = {
-                    Text(text = stringResource(id = R.string.first_name))
-                },
+            SimpleField(
+                fieldName = firstName,
+                fieldNameErrorState = firstNameErrorState,
+                fieldNameStr = R.string.first_name
             )
-            if (firstNameErrorState.value) {
-                Text(text = stringResource(id = R.string.first_name), color = Color.Red)
-            }
             Spacer(Modifier.size(16.dp))
 
-            OutlinedTextField(
-                value = lastName.value,
-                onValueChange = {
-                    if (lastNameErrorState.value) {
-                        lastNameErrorState.value = false
-                    }
-                    lastName.value = it
-                },
-
-                modifier = Modifier.fillMaxWidth(),
-                isError = lastNameErrorState.value,
-                label = {
-                    Text(text = stringResource(id = R.string.last_name))
-                },
+            SimpleField(
+                fieldName = lastName,
+                fieldNameErrorState = lastNameErrorState,
+                fieldNameStr = R.string.last_name
             )
-            if (lastNameErrorState.value) {
-                Text(text = stringResource(id = R.string.required), color = Color.Red)
-            }
             Spacer(Modifier.size(16.dp))
 
-            OutlinedTextField(
-                value = email.value,
-                onValueChange = {
-                    if (emailErrorState.value) {
-                        emailErrorState.value = false
-                    }
-                    email.value = it
-                },
-
-                modifier = Modifier.fillMaxWidth(),
-                isError = emailErrorState.value,
-                label = {
-                    Text(text = stringResource(id = R.string.email))
-                },
+            EmailFieldComponent(
+                fieldName = email,
+                fieldNameErrorState = emailErrorState,
+                fieldNameStr = R.string.email
             )
-            if (emailErrorState.value) {
-                Text(text = stringResource(id = R.string.required), color = Color.Red)
-            }
-
             Spacer(Modifier.size(16.dp))
             val passwordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(
-                value = password.value,
-                onValueChange = {
-                    if (passwordErrorState.value) {
-                        passwordErrorState.value = false
-                    }
-                    password.value = it
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = stringResource(id = R.string.password))
-                },
-                isError = passwordErrorState.value,
-                trailingIcon = {
-                    IconButton(onClick = {
-                        passwordVisibility.value = !passwordVisibility.value
-                    }) {
-                        Icon(
-                            imageVector = if (passwordVisibility.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = "visibility",
-                            tint = Color.Black
-                        )
-                    }
-                },
-                visualTransformation = if (passwordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
-            )
-            if (passwordErrorState.value) {
-                Text(text = stringResource(id = R.string.required), color = Color.Red)
-            }
 
+            PasswordFieldComponent(
+                fieldName = password,
+                fieldNameErrorState = passwordErrorState,
+                fieldNameStr = R.string.password,
+                passwordVisibility = passwordVisibility
+            )
             Spacer(Modifier.size(16.dp))
             val cPasswordVisibility = remember { mutableStateOf(true) }
-            OutlinedTextField(
-                value = confirmPassword.value,
-                onValueChange = {
-                    if (confirmPasswordErrorState.value) {
-                        confirmPasswordErrorState.value = false
-                    }
-                    confirmPassword.value = it
-                },
-                modifier = Modifier.fillMaxWidth(),
-                isError = confirmPasswordErrorState.value,
-                label = {
-                    Text(text = stringResource(id = R.string.confirm_password))
-                },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        cPasswordVisibility.value = !cPasswordVisibility.value
-                    }) {
-                        Icon(
-                            imageVector = if (cPasswordVisibility.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = "visibility",
-                            tint = Color.Black
-                        )
-                    }
-                },
-                visualTransformation = if (cPasswordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None
+
+            PasswordFieldComponent(
+                fieldName = confirmPassword,
+                fieldNameErrorState = confirmPasswordErrorState,
+                fieldNameStr = R.string.confirm_password,
+                passwordVisibility = cPasswordVisibility
             )
+
             if (confirmPasswordErrorState.value) {
                 val msg = if (confirmPassword.value.text.isEmpty()) {
                     stringResource(id = R.string.required)
@@ -270,30 +187,17 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                 )
             }
 
-            if (emailErrorState.value) {
+            if (countryErrorState.value) {
                 Text(text = stringResource(id = R.string.required), color = Color.Red)
             }
 
             Spacer(Modifier.size(16.dp))
-            OutlinedTextField(
-                value = birthDay.value,
-                onValueChange = {
-                    if (birthDayErrorState.value) {
-                        birthDayErrorState.value = false
-                    }
-                    birthDay.value = it
-                },
 
-                modifier = Modifier.fillMaxWidth(),
-                isError = emailErrorState.value,
-                label = {
-                    Text(text = stringResource(id = R.string.birth_day))
-                },
+            DatePicker(
+                fieldName = birthDay,
+                fieldNameErrorState = birthDayErrorState,
+                fieldNameStr = R.string.birth_day
             )
-            if (emailErrorState.value) {
-                Text(text = stringResource(id = R.string.required), color = Color.Red)
-            }
-
             Spacer(Modifier.size(16.dp))
             Button(
                 shape = RoundedCornerShape(50.dp),
@@ -327,6 +231,13 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                             birthDayErrorState.value = true
                         }
                         else -> {
+                            firstNameErrorState.value = false
+                            lastNameErrorState.value = false
+                            emailErrorState.value = false
+                            passwordErrorState.value = false
+                            confirmPasswordErrorState.value = false
+                            countryErrorState.value = false
+                            birthDayErrorState.value = false
                             authViewModel.register(
                                 CreateUserDto(
                                     firstName.value.text,
@@ -349,9 +260,14 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             if (signUp) {
                 RegistrationUserResult(
                     hiltViewModel(), Account(
-                        firstName.hashCode(), firstName.value.text,
-                        lastName.value.text, country.value,
-                        birthDay.value.text, email.value.text, password.value.text, ""
+                        firstName.hashCode(),
+                        firstName.value.text,
+                        lastName.value.text,
+                        country.value,
+                        birthDay.value.text,
+                        email.value.text,
+                        password.value.text,
+                        ""
                     )
                 )
             }
