@@ -23,10 +23,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
+import com.softteco.template.domain.model.user.ApiResponse
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
+import com.softteco.template.presentation.login.CountryViewModel
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 import com.softteco.template.presentation.login.loginComponents.DropDownListComponent
+import com.softteco.template.presentation.login.loginComponents.ProgressBar
 import java.util.*
 
 
@@ -41,10 +44,17 @@ fun RegistrationScreen(navController: NavHostController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldWithTopBar(navController: NavHostController) {
+
     var signUp by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
+    val countryViewModel: CountryViewModel = hiltViewModel()
     var countryList = listOf("Belarus", "USA")
 
+    when (val countriesResponse = countryViewModel.countriesResponse) {
+        is ApiResponse.Loading -> ProgressBar()
+        is ApiResponse.Success -> countryList = listOf(countriesResponse.data.data.toString()) //TODO
+        is ApiResponse.Failure -> print(countriesResponse.e)
+    }
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)
@@ -79,7 +89,6 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         val userSelectedString: (String) -> Unit = {
             country.value = it
         }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -245,11 +254,12 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         userSelectedString
                     )
                 }
-                Spacer(modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Transparent)
-                    .padding(10.dp)
-                    .clickable(onClick = { isOpen.value = true })
+                Spacer(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(Color.Transparent)
+                        .padding(10.dp)
+                        .clickable(onClick = { isOpen.value = true })
                 )
             }
 
