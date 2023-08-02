@@ -1,8 +1,6 @@
 package com.softteco.template.presentation.login.loginComponents.registration
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -128,7 +126,6 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             PasswordFieldComponent(
                 fieldName = password,
                 fieldNameErrorState = passwordErrorState,
-                fieldNameStr = R.string.password,
                 passwordVisibility = passwordVisibility
             )
             Spacer(Modifier.size(16.dp))
@@ -137,7 +134,6 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             PasswordFieldComponent(
                 fieldName = confirmPassword,
                 fieldNameErrorState = confirmPasswordErrorState,
-                fieldNameStr = R.string.confirm_password,
                 passwordVisibility = cPasswordVisibility
             )
 
@@ -193,8 +189,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
             Spacer(Modifier.size(16.dp))
 
-            DatePicker(
-                fieldName = birthDay,
+            FieldDatePicker(
                 fieldNameErrorState = birthDayErrorState,
                 fieldNameStr = R.string.birth_day
             )

@@ -20,7 +20,6 @@ import com.softteco.template.presentation.R
 fun PasswordFieldComponent(
     fieldName: MutableState<TextFieldValue>,
     fieldNameErrorState: MutableState<Boolean>,
-    fieldNameStr: Int,
     passwordVisibility: MutableState<Boolean>
 ) {
 

@@ -20,8 +20,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePicker(
-    fieldName: MutableState<TextFieldValue>,
+fun FieldDatePicker(
     fieldNameErrorState: MutableState<Boolean>,
     fieldNameStr: Int
 ) {
@@ -53,12 +52,12 @@ fun DatePicker(
     }
 
     OutlinedTextField(
-        value = fieldName.value,
+        value = mDate.value,
         onValueChange = {
             if (fieldNameErrorState.value) {
                 fieldNameErrorState.value = false
             }
-            fieldName.value = it
+            mDate.value = it
 
         },
         readOnly = true,
