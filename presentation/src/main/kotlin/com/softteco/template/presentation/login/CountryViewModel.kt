@@ -9,8 +9,10 @@ import com.softteco.template.domain.model.CountriesItem
 import com.softteco.template.domain.model.user.ApiResponse
 import com.softteco.template.domain.usecase.user.CountryUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,11 +20,13 @@ class CountryViewModel @Inject constructor(private val useCase: CountryUseCases)
     var countriesResponse by mutableStateOf<ApiResponse<CountriesItem>>(ApiResponse.Loading)
 
     init {
-        getCountries()
+        viewModelScope.launch(Dispatchers.IO){
+            getCountries()
+        }
     }
 
-    private fun getCountries() = viewModelScope.launch {
-        useCase.country().collect { response ->
+    private fun getCountries() = viewModelScope.launch(Dispatchers.Main) {
+            useCase.country().collect { response ->
                 countriesResponse = response
             }
     }
