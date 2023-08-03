@@ -16,15 +16,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.softteco.template.domain.model.DataObject
 import com.softteco.template.domain.model.user.Account
-import com.softteco.template.domain.model.user.ApiResponse
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.CountryViewModel
 import com.softteco.template.presentation.login.loginComponents.*
 import com.softteco.template.presentation.login.loginComponents.login.PasswordFieldComponent
+import kotlinx.coroutines.*
 import java.util.*
 
 
@@ -39,22 +38,15 @@ fun RegistrationScreen(navController: NavHostController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldWithTopBar(navController: NavHostController) {
-
     var signUp by remember { mutableStateOf(false) }
+
     val authViewModel: AuthViewModel = hiltViewModel()
     val countryViewModel: CountryViewModel = hiltViewModel()
     val countryList = mutableListOf<String>()
 
-    fun createCountryList(list: List<DataObject>) {
-        for (item in list) {
-            countryList.add(item.country)
-        }
-    }
-
-    when (val countriesResponse = countryViewModel.countriesResponse) {
-        is ApiResponse.Loading -> ProgressBar()
-        is ApiResponse.Success -> createCountryList(countriesResponse.data.data)
-        is ApiResponse.Failure -> print(countriesResponse.e)
+    val countryListData = countryViewModel.state.value.list
+    for (s in countryListData) {
+        countryList.add(s.countryName)
     }
 
     Scaffold(topBar = {
@@ -64,6 +56,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         val firstName = remember {
             mutableStateOf(TextFieldValue())
         }
+
         val lastName = remember {
             mutableStateOf(TextFieldValue())
         }

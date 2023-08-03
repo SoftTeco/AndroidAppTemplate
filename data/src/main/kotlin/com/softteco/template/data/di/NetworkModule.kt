@@ -112,13 +112,6 @@ object NetworkModule {
     ): UserRepository = UserRepositoryImpl(apiService)
 
     @Provides
-    fun provideCountryUseCase(
-        repo: CountryRepository
-    ) = CountryUseCases(
-        country = Country(repo),
-    )
-
-    @Provides
     fun provideUseCases(
         repo: UserRepository
     ) = UseCases(
