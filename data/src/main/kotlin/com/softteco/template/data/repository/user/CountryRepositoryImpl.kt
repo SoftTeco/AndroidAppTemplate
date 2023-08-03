@@ -20,7 +20,7 @@ class CountryRepositoryImpl @Inject constructor(
         return safeCall { apiService.getCountries() }
     }
 
-    fun <T> safeCall(
+    private fun <T> safeCall(
         apiCall: suspend () -> Response<T>
     ): Flow<ApiResponse<T>> = flow {
         emit(ApiResponse.Loading)
