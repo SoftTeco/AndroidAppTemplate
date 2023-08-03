@@ -5,5 +5,5 @@ import com.softteco.template.domain.model.user.ApiResponse
 import kotlinx.coroutines.flow.Flow
 
 interface CountryRepository {
-   suspend fun getCountries(): Flow<ApiResponse<CountriesItem>>
+   fun getCountries(): Flow<ApiResponse<CountriesItem>>
 }

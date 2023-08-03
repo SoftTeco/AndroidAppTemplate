@@ -16,11 +16,11 @@ class CountryRepositoryImpl @Inject constructor(
     private val apiService: CountryApiService
 ) : CountryRepository {
 
-    override suspend fun getCountries(): Flow<ApiResponse<CountriesItem>> {
+    override fun getCountries(): Flow<ApiResponse<CountriesItem>> {
         return safeCall { apiService.getCountries() }
     }
 
-    suspend fun <T> safeCall(
+    fun <T> safeCall(
         apiCall: suspend () -> Response<T>
     ): Flow<ApiResponse<T>> = flow {
         emit(ApiResponse.Loading)
