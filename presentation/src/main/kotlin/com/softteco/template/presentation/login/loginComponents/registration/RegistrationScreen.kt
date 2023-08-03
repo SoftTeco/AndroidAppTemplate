@@ -71,7 +71,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
         val password = remember { mutableStateOf(TextFieldValue()) }
         val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
         val country = remember { mutableStateOf("") }
-        val birthDay = remember { mutableStateOf(TextFieldValue()) }
+        val birthDay = remember { mutableStateOf("") }
 
         val firstNameErrorState = remember { mutableStateOf(false) }
         val lastNameErrorState = remember { mutableStateOf(false) }
@@ -190,6 +190,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             Spacer(Modifier.size(16.dp))
 
             FieldDatePicker(
+                birthDay,
                 fieldNameErrorState = birthDayErrorState,
                 fieldNameStr = R.string.birth_day
             )
@@ -222,10 +223,11 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         country.value.isEmpty() -> {
                             countryErrorState.value = true
                         }
-                        birthDay.value.text.isEmpty() -> {
+                        birthDay.value.isEmpty() -> {
                             birthDayErrorState.value = true
                         }
                         else -> {
+                            signUp = true
                             firstNameErrorState.value = false
                             lastNameErrorState.value = false
                             emailErrorState.value = false
@@ -241,12 +243,11 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                                     password.value.text,
                                     confirmPassword.value.text,
                                     country.value,
-                                    birthDay.value.text
+                                    birthDay.value
                                 )
                             )
                         }
                     }
-                    signUp = true
                 },
                 content = {
                     Text(text = stringResource(id = R.string.sign_up), color = Color.White)
@@ -259,7 +260,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         firstName.value.text,
                         lastName.value.text,
                         country.value,
-                        birthDay.value.text,
+                        birthDay.value,
                         email.value.text,
                         password.value.text,
                         ""

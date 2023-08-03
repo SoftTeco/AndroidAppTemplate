@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +20,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FieldDatePicker(
+    resDate:MutableState<String>,
     fieldNameErrorState: MutableState<Boolean>,
     fieldNameStr: Int
 ) {
@@ -39,12 +39,12 @@ fun FieldDatePicker(
 
     mCalendar.time = Date()
 
-    val mDate = remember { mutableStateOf("") }
+   // resDate = remember { mutableStateOf("") }
 
     val mDatePickerDialog = DatePickerDialog(
         mContext,
         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-            mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
+            resDate.value  = "$mDayOfMonth.${mMonth + 1}.$mYear"
         }, mYear, mMonth, mDay
     )
     val source = remember {
@@ -52,13 +52,12 @@ fun FieldDatePicker(
     }
 
     OutlinedTextField(
-        value = mDate.value,
+        value = resDate.value,
         onValueChange = {
             if (fieldNameErrorState.value) {
                 fieldNameErrorState.value = false
             }
-            mDate.value = it
-
+            resDate.value = it
         },
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),
