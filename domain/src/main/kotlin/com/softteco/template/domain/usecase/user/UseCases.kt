@@ -7,3 +7,7 @@ data class UseCases(
     val restorePassword: RestorePassword,
     val resetPassword: ResetPassword
 )
+
+data class CountryUseCases(
+    val country: Country
+)
