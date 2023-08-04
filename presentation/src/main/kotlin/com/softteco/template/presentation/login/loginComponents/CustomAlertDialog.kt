@@ -16,9 +16,7 @@ import com.softteco.template.presentation.R
 @Composable
 fun CustomAlertDialog(onGoToScreen: () -> Unit, message: String) {
 
-   // val shouldShowDialog = remember { mutableStateOf(true) }
-
-        AlertDialog(
+    AlertDialog(
             onDismissRequest = {},
             confirmButton = {
                 TextButton(onClick = {
