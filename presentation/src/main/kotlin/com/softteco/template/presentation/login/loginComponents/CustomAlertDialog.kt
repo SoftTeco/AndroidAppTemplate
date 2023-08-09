@@ -17,25 +17,25 @@ import com.softteco.template.presentation.R
 fun CustomAlertDialog(onGoToScreen: () -> Unit, message: String) {
 
     AlertDialog(
-            onDismissRequest = {},
-            confirmButton = {
-                TextButton(onClick = {
-                    onGoToScreen.invoke()
-                }) {
-                    Text(text = stringResource(id = R.string.ok))
-                }
-            },
+        onDismissRequest = {},
+        confirmButton = {
+            TextButton(onClick = {
+                onGoToScreen.invoke()
+            }) {
+                Text(text = stringResource(id = R.string.ok))
+            }
+        },
 
-            text = {
-                Text(text = message)
+        text = {
+            Text(text = message)
 
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp),
-            shape = RoundedCornerShape(5.dp),
-            containerColor = Color.White
-        )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        shape = RoundedCornerShape(5.dp),
+        containerColor = Color.White
+    )
 
 }
 

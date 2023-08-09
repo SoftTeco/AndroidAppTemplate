@@ -20,7 +20,6 @@ class CountryViewModel @Inject constructor(private val useCase: CountryUseCases)
     init {
         getList()
     }
-
     private fun getList() {
         useCase().onEach {
             when (it) {

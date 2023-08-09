@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
 
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.ApiResponse
@@ -23,21 +23,23 @@ import com.softteco.template.presentation.login.loginComponents.Routes
 fun RegistrationUserResult(
     viewModel: AuthViewModel = hiltViewModel(),
     account: Account,
+    navController: NavController
 ) {
 
-    val navController = rememberNavController()
     val context = LocalContext.current
     when (val addUserResponse = viewModel.registerApiResponse) {
         is ApiResponse.Loading -> ProgressBar()
         is ApiResponse.Success -> {
             WriteUserToDb(account = account)
-            CustomAlertDialog(onGoToScreen = { navController.navigate(Routes.Login.route) }, message = context.getString(R.string.registration_success))
+            CustomAlertDialog(
+                onGoToScreen = { navController.navigate(Routes.Login.route) },
+                message = context.getString(R.string.registration_success)
+            )
         }
         is ApiResponse.Failure -> {
-//            Toast.makeText(
-//              context, addUserResponse.e.toString(), Toast.LENGTH_SHORT
-//            ).show()
-            CustomAlertDialog(onGoToScreen = { navController.navigate(Routes.Login.route) }, message = context.getString(R.string.registration_success))
+            Toast.makeText(
+                context, addUserResponse.e.toString(), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }

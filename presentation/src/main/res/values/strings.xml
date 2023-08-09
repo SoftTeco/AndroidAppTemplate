@@ -40,6 +40,7 @@
     <string name="password_requirement_2">- must contain uppercase and lowercase letters, as well as numbers</string>
     <string name="success">Success</string>
     <string name="set_password_success">Your password was changed</string>
+    <string name="reset_password_success">Your password was reset</string>
     <string name="registration_success">You are registered. Please, log in</string>
 
 </resources>

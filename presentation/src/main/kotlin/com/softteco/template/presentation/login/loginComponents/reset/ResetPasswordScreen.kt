@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.ResetPasswordDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
@@ -39,6 +40,12 @@ fun ResetPasswordScreen(navController: NavHostController, token: String) {
 fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String) {
     val authViewModel: AuthViewModel = hiltViewModel()
     var resetPas by remember { mutableStateOf(false) }
+
+    val password = remember { mutableStateOf(TextFieldValue()) }
+    val passwordErrorState = remember { mutableStateOf(false) }
+
+    val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
+    val confirmPasswordErrorState = remember { mutableStateOf(false) }
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.password_recovery), true)
@@ -75,12 +82,6 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            val password = remember { mutableStateOf(TextFieldValue()) }
-            val passwordErrorState = remember { mutableStateOf(false) }
-
-            val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
-            val confirmPasswordErrorState = remember { mutableStateOf(false) }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -191,6 +192,6 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String
         }
     })
     if (resetPas) {
-        ResetPasswordResult()
+        ResetPasswordResult(authViewModel, navController)
     }
 }

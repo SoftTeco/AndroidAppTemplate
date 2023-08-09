@@ -26,5 +26,4 @@ abstract class AccountDatabase : RoomDatabase() {
                 .build()
         }
     }
-
 }

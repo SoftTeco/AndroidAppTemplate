@@ -257,7 +257,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         email.value.text,
                         password.value.text,
                         ""
-                    )
+                    ), navController
                 )
             }
         }

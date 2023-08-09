@@ -23,7 +23,11 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
 
     var registerApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
 
-    var restorePasswordApiResponse by mutableStateOf<RestorePasswordResponse>(ApiResponse.Success(false))
+    var restorePasswordApiResponse by mutableStateOf<RestorePasswordResponse>(
+        ApiResponse.Success(
+            false
+        )
+    )
 
     var resetPasswordApiResponse by mutableStateOf<ResetPasswordResponse>(ApiResponse.Success(false))
 

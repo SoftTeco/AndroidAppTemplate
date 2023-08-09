@@ -13,14 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import com.softteco.template.presentation.R
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FieldDatePicker(
-    resDate:MutableState<String>,
+    resDate: MutableState<String>,
     fieldNameErrorState: MutableState<Boolean>,
     fieldNameStr: Int
 ) {
@@ -39,12 +38,12 @@ fun FieldDatePicker(
 
     mCalendar.time = Date()
 
-   // resDate = remember { mutableStateOf("") }
+    // resDate = remember { mutableStateOf("") }
 
     val mDatePickerDialog = DatePickerDialog(
         mContext,
         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-            resDate.value  = "$mDayOfMonth.${mMonth + 1}.$mYear"
+            resDate.value = "$mDayOfMonth.${mMonth + 1}.$mYear"
         }, mYear, mMonth, mDay
     )
     val source = remember {

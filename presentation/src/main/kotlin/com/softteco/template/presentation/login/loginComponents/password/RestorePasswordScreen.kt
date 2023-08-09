@@ -96,6 +96,6 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
         }
     })
     if (restorePas) {
-        RestorePasswordResult()
+        RestorePasswordResult(authViewModel, navController)
     }
 }

@@ -18,19 +18,7 @@ class AuthViewModelDb @Inject constructor(private val useCase: UseCasesDb) : Vie
 
     var registerApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
 
-    var restorePasswordApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
-
     fun register(account: Account) {
-        viewModelScope.launch {
-            registerApiResponse = ApiResponse.Loading
-            registerApiResponse =
-                useCase.register(
-                account
-                )
-        }
-    }
-
-    fun restorePassword(account: Account) {
         viewModelScope.launch {
             registerApiResponse = ApiResponse.Loading
             registerApiResponse =
