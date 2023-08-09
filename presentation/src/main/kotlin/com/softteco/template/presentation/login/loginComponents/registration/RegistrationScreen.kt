@@ -21,6 +21,7 @@ import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.CountryViewModel
+import com.softteco.template.presentation.login.PasValidationViewModel
 import com.softteco.template.presentation.login.loginComponents.*
 import com.softteco.template.presentation.login.loginComponents.login.PasswordFieldComponent
 import kotlinx.coroutines.*
@@ -41,6 +42,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
     var signUp by remember { mutableStateOf(false) }
 
     val authViewModel: AuthViewModel = hiltViewModel()
+    val pasViewModel: PasValidationViewModel = hiltViewModel()
     val countryViewModel: CountryViewModel = hiltViewModel()
     val countryList = mutableListOf<String>()
 
@@ -61,7 +63,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             mutableStateOf(TextFieldValue())
         }
         val email = remember { mutableStateOf(TextFieldValue()) }
-        val password = remember { mutableStateOf(TextFieldValue()) }
+
         val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
         val country = remember { mutableStateOf("") }
         val birthDay = remember { mutableStateOf("") }
@@ -116,8 +118,8 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             Spacer(Modifier.size(16.dp))
             val passwordVisibility = remember { mutableStateOf(true) }
 
-            PasswordFieldComponent(
-                fieldName = password,
+            PasswordFieldComponentWithValidation(
+                pasViewModel,
                 fieldNameErrorState = passwordErrorState,
                 passwordVisibility = passwordVisibility
             )
@@ -133,7 +135,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
             if (confirmPasswordErrorState.value) {
                 val msg = if (confirmPassword.value.text.isEmpty()) {
                     stringResource(id = R.string.required)
-                } else if (confirmPassword.value.text != password.value.text) {
+                } else if (confirmPassword.value.text != pasViewModel.password) {
                     stringResource(id = R.string.password_not_matching)
                 } else {
                     ""
@@ -204,13 +206,13 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         email.value.text.isEmpty() -> {
                             emailErrorState.value = true
                         }
-                        password.value.text.isEmpty() -> {
+                      pasViewModel.password.isEmpty() -> {
                             passwordErrorState.value = true
                         }
                         confirmPassword.value.text.isEmpty() -> {
                             confirmPasswordErrorState.value = true
                         }
-                        confirmPassword.value.text != password.value.text -> {
+                        confirmPassword.value.text != pasViewModel.password -> {
                             confirmPasswordErrorState.value = true
                         }
                         country.value.isEmpty() -> {
@@ -233,7 +235,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                                     firstName.value.text,
                                     lastName.value.text,
                                     email.value.text,
-                                    password.value.text,
+                                    pasViewModel.password,
                                     confirmPassword.value.text,
                                     country.value,
                                     birthDay.value
@@ -255,7 +257,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         country.value,
                         birthDay.value,
                         email.value.text,
-                        password.value.text,
+                        pasViewModel.password,
                         ""
                     ), navController
                 )

@@ -42,5 +42,7 @@
     <string name="set_password_success">Your password was changed</string>
     <string name="reset_password_success">Your password was reset</string>
     <string name="registration_success">You are registered. Please, log in</string>
+    <string name="registration_password_condition1">Minimum 6 characters</string>
+    <string name="registration_password_condition2">Has capitalized letter</string>
 
 </resources>
