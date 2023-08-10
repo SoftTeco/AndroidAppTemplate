@@ -2,13 +2,10 @@ package com.softteco.template.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.softteco.template.data.Config
-import com.softteco.template.data.repository.user.CountryRepositoryImpl
 import com.softteco.template.data.repository.user.UserRepositoryImpl
-import com.softteco.template.data.source.remote.CountryApiService
 import com.softteco.template.data.source.remote.PublicApi
 import com.softteco.template.data.source.remote.UserApiService
 import com.softteco.template.domain.repository.AccountRepository
-import com.softteco.template.domain.repository.user.CountryRepository
 import com.softteco.template.domain.repository.user.UserRepository
 import com.softteco.template.domain.usecase.account.RegistrationDb
 import com.softteco.template.domain.usecase.account.UseCasesDb
@@ -22,7 +19,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
@@ -60,18 +56,6 @@ object NetworkModule {
             .client(okHttpClient)
             .build()
     }
-
-    @Provides
-    @Named("CountriesApi")
-    fun provideRetrofitCountries(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(Config.COUNTRIES_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .client(okHttpClient)
-            .build()
-    }
-
     @Provides
     @Named("UserApi")
     fun provideRetrofitUser(okHttpClient: OkHttpClient): Retrofit {
@@ -95,16 +79,6 @@ object NetworkModule {
     @Provides
     fun provideLoginService(@Named("UserApi") retrofit: Retrofit): UserApiService =
         retrofit.create(UserApiService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideCountryService(@Named("CountriesApi") retrofit: Retrofit): CountryApiService =
-        retrofit.create(CountryApiService::class.java)
-
-    @Provides
-    fun provideCountryRepository(
-        apiService: CountryApiService
-    ): CountryRepository = CountryRepositoryImpl(apiService)
 
     @Provides
     fun provideUserRepository(

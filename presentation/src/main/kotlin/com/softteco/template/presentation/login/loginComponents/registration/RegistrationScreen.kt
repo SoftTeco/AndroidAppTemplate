@@ -20,7 +20,6 @@ import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
-import com.softteco.template.presentation.login.CountryViewModel
 import com.softteco.template.presentation.login.PasValidationViewModel
 import com.softteco.template.presentation.login.loginComponents.*
 import com.softteco.template.presentation.login.loginComponents.login.PasswordFieldComponent
@@ -43,13 +42,9 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val pasViewModel: PasValidationViewModel = hiltViewModel()
-    val countryViewModel: CountryViewModel = hiltViewModel()
-    val countryList = mutableListOf<String>()
-
-    val countryListData = countryViewModel.state.value.list
-    for (s in countryListData) {
-        countryList.add(s.countryName)
-    }
+      val countryList = mutableListOf<String>()
+    countryList.add(0,"jjjj")
+    countryList.add(1,"jjjj")
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)

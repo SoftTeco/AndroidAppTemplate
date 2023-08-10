@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath classPaths.gradlePath
+        classpath "com.android.tools.build:gradle:gradleVersion"
         classpath classPaths.kotlinGradlePath
         classpath classPaths.hiltPath
         classpath classPaths.navigationSafe
