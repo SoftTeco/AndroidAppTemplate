@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -26,7 +27,6 @@ import com.softteco.template.presentation.login.loginComponents.login.PasswordFi
 import kotlinx.coroutines.*
 import java.util.*
 
-
 @Composable
 fun RegistrationScreen(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -34,7 +34,7 @@ fun RegistrationScreen(navController: NavHostController) {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldWithTopBar(navController: NavHostController) {
@@ -42,14 +42,26 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val pasViewModel: PasValidationViewModel = hiltViewModel()
-      val countryList = mutableListOf<String>()
-    countryList.add(0,"jjjj")
-    countryList.add(1,"jjjj")
+
+    val countryList = mutableListOf<String>()
+    val context = LocalContext.current
+
+    fun getCountriesList(): List<String> {
+        return context.assets.open("listCountries.txt").bufferedReader().use {
+            it.readLines()
+        }
+    }
+
+    suspend fun setList() = coroutineScope {
+        val message: Deferred<List<String>> = async { getCountriesList() }
+        countryList.addAll(message.await())
+    }
 
     Scaffold(topBar = {
         CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)
     }, content = {
-
+        val coroutineScope = rememberCoroutineScope()
+        coroutineScope.launch { setList() }
         val firstName = remember {
             mutableStateOf(TextFieldValue())
         }
@@ -201,7 +213,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         email.value.text.isEmpty() -> {
                             emailErrorState.value = true
                         }
-                      pasViewModel.password.isEmpty() -> {
+                        pasViewModel.password.isEmpty() -> {
                             passwordErrorState.value = true
                         }
                         confirmPassword.value.text.isEmpty() -> {
