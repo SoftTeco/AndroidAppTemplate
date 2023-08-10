@@ -16,15 +16,14 @@ import com.softteco.template.presentation.login.loginComponents.Routes
 
 @Composable
 fun RestorePasswordResult(
-    viewModel: AuthViewModel = hiltViewModel(),
-    navController: NavController
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     when (val restorePasswordResponse = viewModel.restorePasswordApiResponse) {
         is ApiResponse.Loading -> ProgressBar()
         is ApiResponse.Success -> {
             CustomAlertDialog(
-                onGoToScreen = { navController.navigate(Routes.Login.route) },
+                onGoToScreen = { },
                 message = context.getString(R.string.set_password_success)
             )
         }

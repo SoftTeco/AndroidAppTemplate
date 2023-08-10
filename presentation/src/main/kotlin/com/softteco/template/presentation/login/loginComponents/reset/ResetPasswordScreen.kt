@@ -48,7 +48,7 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String
     val confirmPasswordErrorState = remember { mutableStateOf(false) }
 
     Scaffold(topBar = {
-        CustomTopAppBar(navController, stringResource(id = R.string.password_recovery), true)
+        CustomTopAppBar(stringResource(id = R.string.password_recovery), true)
     }, content = {
 
         Column(

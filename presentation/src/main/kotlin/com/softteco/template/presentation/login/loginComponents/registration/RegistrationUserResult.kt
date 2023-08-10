@@ -23,7 +23,6 @@ import com.softteco.template.presentation.login.loginComponents.Routes
 fun RegistrationUserResult(
     viewModel: AuthViewModel = hiltViewModel(),
     account: Account,
-    navController: NavController
 ) {
 
     val context = LocalContext.current
@@ -32,7 +31,7 @@ fun RegistrationUserResult(
         is ApiResponse.Success -> {
             WriteUserToDb(account = account)
             CustomAlertDialog(
-                onGoToScreen = { navController.navigate(Routes.Login.route) },
+                onGoToScreen = {  },
                 message = context.getString(R.string.registration_success)
             )
         }

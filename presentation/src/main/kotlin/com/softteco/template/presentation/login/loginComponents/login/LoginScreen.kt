@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -24,16 +25,18 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import androidx.navigation.NavDirections
+
 import com.softteco.template.domain.model.user.LoginAuthDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
-import com.softteco.template.presentation.login.loginComponents.Routes
+import com.softteco.template.presentation.login.LoginComposeFragmentDirections
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
+                onNavigateToResetPassword: (NavDirections) -> Unit) {
 
     val authViewModel: AuthViewModel = hiltViewModel()
 
@@ -43,7 +46,10 @@ fun LoginScreen(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(20.dp),
-            onClick = { navController.navigate(Routes.Registration.route)},
+            onClick = {onNavigateToRegistration(
+                LoginComposeFragmentDirections.actionLoginComposeFragmentToRegistrationComposeFragment())
+
+               },
             style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = FontFamily.Default,
@@ -153,7 +159,8 @@ fun LoginScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.forgot_password)),
-            onClick = { navController.navigate(Routes.RestorePassword.route) },
+            onClick = { onNavigateToResetPassword(
+                LoginComposeFragmentDirections.actionLoginComposeFragmentToForgotPasswordComposeFragment()) },
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default

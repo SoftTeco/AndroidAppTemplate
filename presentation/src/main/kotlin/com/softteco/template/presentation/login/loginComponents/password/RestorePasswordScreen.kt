@@ -20,25 +20,24 @@ import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 
 
 @Composable
-fun RestorePasswordScreen(navController: NavHostController) {
+fun RestorePasswordScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
-        ScaffoldWithTopBarForgotPass(navController)
+        ScaffoldWithTopBarForgotPass()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
+fun ScaffoldWithTopBarForgotPass() {
     var restorePas by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
     Scaffold(topBar = {
-        CustomTopAppBar(navController, stringResource(id = R.string.forgot_password), true)
+        CustomTopAppBar(stringResource(id = R.string.forgot_password), true)
     }, content = {
 
         Column(
             modifier = Modifier.padding(20.dp, 150.dp, 20.dp),
-
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -96,6 +95,6 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController) {
         }
     })
     if (restorePas) {
-        RestorePasswordResult(authViewModel, navController)
+        RestorePasswordResult(authViewModel)
     }
 }

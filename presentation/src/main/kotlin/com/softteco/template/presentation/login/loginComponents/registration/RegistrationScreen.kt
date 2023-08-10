@@ -28,16 +28,16 @@ import kotlinx.coroutines.*
 import java.util.*
 
 @Composable
-fun RegistrationScreen(navController: NavHostController) {
+fun RegistrationScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
-        ScaffoldWithTopBar(navController)
+        ScaffoldWithTopBar()
     }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldWithTopBar(navController: NavHostController) {
+fun ScaffoldWithTopBar() {
     var signUp by remember { mutableStateOf(false) }
 
     val authViewModel: AuthViewModel = hiltViewModel()
@@ -58,7 +58,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
     }
 
     Scaffold(topBar = {
-        CustomTopAppBar(navController, stringResource(id = R.string.sign_up), true)
+        CustomTopAppBar(stringResource(id = R.string.sign_up), true)
     }, content = {
         val coroutineScope = rememberCoroutineScope()
         coroutineScope.launch { setList() }
@@ -266,7 +266,7 @@ fun ScaffoldWithTopBar(navController: NavHostController) {
                         email.value.text,
                         pasViewModel.password,
                         ""
-                    ), navController
+                    )
                 )
             }
         }

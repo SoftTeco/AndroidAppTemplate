@@ -15,21 +15,11 @@ import com.softteco.template.presentation.login.loginComponents.reset.ResetPassw
 
 @Composable
 fun MainScreenLogin() {
-    val navController = rememberNavController()
+    val navControllerefr = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.Login.route) {
+    NavHost(navController = navControllerefr, startDestination = Routes.Login.route) {
 
-        composable(Routes.Login.route) {
-            LoginScreen(navController = navController)
-        }
 
-        composable(Routes.Registration.route) {
-            RegistrationScreen(navController = navController)
-        }
-
-        composable(Routes.RestorePassword.route) {
-            RestorePasswordScreen(navController = navController)
-        }
 
         composable(Routes.ResetPassword.route,
             deepLinks = listOf(
@@ -44,7 +34,7 @@ fun MainScreenLogin() {
                 }
             )) { navBackStack ->
             val token = navBackStack.arguments?.getString("token")
-            ResetPasswordScreen(navController = navController, token = token!!)
+            ResetPasswordScreen(navController = navControllerefr, token = token!!)
         }
     }
 }

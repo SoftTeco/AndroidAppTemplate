@@ -22,6 +22,22 @@
     <fragment
         android:id="@+id/loginComposeFragment"
         android:name="com.softteco.template.presentation.login.LoginComposeFragment"
-        android:label="LoginComposeFragment" />
+        android:label="LoginComposeFragment" >
+        <action
+            android:id="@+id/action_loginComposeFragment_to_registrationComposeFragment"
+            app:destination="@id/registrationComposeFragment" />
+        <action
+            android:id="@+id/action_loginComposeFragment_to_forgotPasswordComposeFragment"
+            app:destination="@id/forgotPasswordComposeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationComposeFragment"
+        android:name="com.softteco.template.presentation.login.RegistrationComposeFragment"
+        android:label="RegistrationComposeFragment" />
+    <fragment
+        android:id="@+id/forgotPasswordComposeFragment"
+        android:name="com.softteco.template.presentation.login.ForgotPasswordComposeFragment"
+        android:label="fragment_forgot_password_compose"
+        tools:layout="@layout/fragment_forgot_password_compose" />
 
 </navigation>
