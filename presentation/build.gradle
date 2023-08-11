@@ -106,6 +106,8 @@ dependencies {
     compose.each { implementation it.value }
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation "androidx.compose.material:material-icons-extended:1.1.1"
+    implementation "androidx.activity:activity:1.7.2"
+    implementation "androidx.fragment:fragment:1.6.1"
 
     // Other
     implementation other.timber

@@ -1,22 +1,30 @@
 package com.softteco.template.presentation.login.loginComponents.registration
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDirections
+import coil.compose.AsyncImage
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
@@ -91,6 +99,9 @@ fun ScaffoldWithTopBar(onNavigateToLogin: (NavDirections) -> Unit) {
         }
         val userSelectedString: (String) -> Unit = {
             country.value = it
+        }
+        var selectedImageUri by remember {
+            mutableStateOf<Uri?>(null)
         }
 
         Column(
@@ -197,7 +208,57 @@ fun ScaffoldWithTopBar(onNavigateToLogin: (NavDirections) -> Unit) {
                 fieldNameStr = R.string.birth_day
             )
             Spacer(Modifier.size(16.dp))
-            Button(
+            Card(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxWidth(),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp
+                            )
+                        ) {
+
+                            val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+                                contract = ActivityResultContracts.PickVisualMedia(),
+                                onResult = { uri -> selectedImageUri = uri }
+                            )
+
+                            var photoPickerOpen by remember {
+                                mutableStateOf(false)
+                            }
+
+                            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+                                val (photo) = createRefs()
+                                if (!photoPickerOpen) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_add_photo),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .constrainAs(photo) {
+                                                top.linkTo(parent.top)
+                                                start.linkTo(parent.start)
+                                            }
+                                            .clickable(onClick = {
+                                                singlePhotoPickerLauncher.launch(
+                                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                                )
+                                                photoPickerOpen = true
+                                            })
+                                    )
+                                } else {
+                                    AsyncImage(
+                                        model = selectedImageUri,
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
+                        }
+
+
+
+        Spacer(Modifier.size(16.dp))
+        Button(
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .fillMaxWidth()
