@@ -22,13 +22,19 @@
         <activity
             android:name="com.softteco.template.presentation.MainActivity"
             android:exported="true">
+            <nav-graph android:value="@navigation/app_nav" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:host="host"
+                    android:host="@string/APP_LINK_URL"
                     android:scheme="https" />
             </intent-filter>
         </activity>

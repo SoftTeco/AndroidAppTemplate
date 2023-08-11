@@ -41,7 +41,10 @@
     <fragment
         android:id="@+id/forgotPasswordComposeFragment"
         android:name="com.softteco.template.presentation.login.ForgotPasswordComposeFragment"
-        android:label="fragment_forgot_password_compose"
-        tools:layout="@layout/fragment_forgot_password_compose" />
+        android:label="fragment_forgot_password_compose" />
+    <fragment
+        android:id="@+id/resetPasswordComposeFragment"
+        android:name="com.softteco.template.presentation.login.ResetPasswordComposeFragment"
+        android:label="ResetPasswordComposeFragment" />
 
 </navigation>
