@@ -208,57 +208,7 @@ fun ScaffoldWithTopBar(onNavigateToLogin: (NavDirections) -> Unit) {
                 fieldNameStr = R.string.birth_day
             )
             Spacer(Modifier.size(16.dp))
-            Card(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .fillMaxWidth(),
-                            elevation = CardDefaults.cardElevation(
-                                defaultElevation = 8.dp
-                            )
-                        ) {
-
-                            val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
-                                contract = ActivityResultContracts.PickVisualMedia(),
-                                onResult = { uri -> selectedImageUri = uri }
-                            )
-
-                            var photoPickerOpen by remember {
-                                mutableStateOf(false)
-                            }
-
-                            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-                                val (photo) = createRefs()
-                                if (!photoPickerOpen) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_add_photo),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .constrainAs(photo) {
-                                                top.linkTo(parent.top)
-                                                start.linkTo(parent.start)
-                                            }
-                                            .clickable(onClick = {
-                                                singlePhotoPickerLauncher.launch(
-                                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                                )
-                                                photoPickerOpen = true
-                                            })
-                                    )
-                                } else {
-                                    AsyncImage(
-                                        model = selectedImageUri,
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                            }
-                        }
-
-
-
-        Spacer(Modifier.size(16.dp))
-        Button(
+            Button(
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .fillMaxWidth()
