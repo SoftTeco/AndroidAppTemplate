@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
             mBundle.putString("PASSED_TOKEN",token)
             val navController = findNavController(R.id.app_nav)
             navController.navigateUp() // to clear previous navigation history
-            navController.navigate(//TODO)
+            navController.navigate(R.id.resetPasswordComposeFragment)
             navController.setGraph(navController.graph,mBundle)
         }
     }
