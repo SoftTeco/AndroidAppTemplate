@@ -40,6 +40,8 @@ fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
 
     val authViewModel: AuthViewModel = hiltViewModel()
 
+    var logIn by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.sign_up)),
@@ -136,6 +138,7 @@ fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
                             passwordErrorState.value = true
                         }
                         else -> {
+                            logIn = true
                             passwordErrorState.value = false
                             emailErrorState.value = false
                             authViewModel.login(
@@ -155,7 +158,9 @@ fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
                 Text(text = stringResource(id = R.string.login))
             }
         }
-        LoginUserResult()
+        if (logIn){
+            LoginUserResult()
+        }
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.forgot_password)),

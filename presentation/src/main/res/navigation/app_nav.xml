@@ -33,7 +33,11 @@
     <fragment
         android:id="@+id/registrationComposeFragment"
         android:name="com.softteco.template.presentation.login.RegistrationComposeFragment"
-        android:label="RegistrationComposeFragment" />
+        android:label="RegistrationComposeFragment" >
+        <action
+            android:id="@+id/action_registrationComposeFragment_to_loginComposeFragment"
+            app:destination="@id/loginComposeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/forgotPasswordComposeFragment"
         android:name="com.softteco.template.presentation.login.ForgotPasswordComposeFragment"

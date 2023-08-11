@@ -17,28 +17,30 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDirections
-import androidx.navigation.NavHostController
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.fragment.findNavController
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.PasValidationViewModel
+import com.softteco.template.presentation.login.RegistrationComposeFragmentDirections
 import com.softteco.template.presentation.login.loginComponents.*
 import com.softteco.template.presentation.login.loginComponents.login.PasswordFieldComponent
 import kotlinx.coroutines.*
 import java.util.*
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(onNavigateToLogin: (NavDirections) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ScaffoldWithTopBar()
+        ScaffoldWithTopBar(onNavigateToLogin)
     }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldWithTopBar() {
+fun ScaffoldWithTopBar(onNavigateToLogin: (NavDirections) -> Unit) {
     var signUp by remember { mutableStateOf(false) }
 
     val authViewModel: AuthViewModel = hiltViewModel()
@@ -267,7 +269,7 @@ fun ScaffoldWithTopBar() {
                         email.value.text,
                         pasViewModel.password,
                         ""
-                    )
+                    ), onNavigateToLogin =onNavigateToLogin
                 )
             }
         }

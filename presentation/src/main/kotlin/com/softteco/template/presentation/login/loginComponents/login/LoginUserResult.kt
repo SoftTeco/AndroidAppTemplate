@@ -14,7 +14,7 @@ fun LoginUserResult(
 ) {
     when (val loginResponse = viewModel.loginApiResponse) {
         is ApiResponse.Loading -> ProgressBar()
-        is ApiResponse.Success -> Unit
+        is ApiResponse.Success -> Unit //TODO (go to user's screen)
         is ApiResponse.Failure -> {
             Toast.makeText(
                 LocalContext.current,

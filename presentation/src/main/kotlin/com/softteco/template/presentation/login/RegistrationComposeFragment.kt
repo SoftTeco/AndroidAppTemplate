@@ -19,7 +19,7 @@ class RegistrationComposeFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                RegistrationScreen()
+                RegistrationScreen(onNavigateToLogin = { dest -> findNavController().navigate(dest) })
             }
         }
     }

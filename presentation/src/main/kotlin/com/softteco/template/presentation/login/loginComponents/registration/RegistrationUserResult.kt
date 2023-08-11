@@ -5,24 +5,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.ApiResponse
 import com.softteco.template.presentation.R
+import com.softteco.template.presentation.login.*
 
-import com.softteco.template.presentation.login.AuthViewModel
-import com.softteco.template.presentation.login.AuthViewModelDb
 import com.softteco.template.presentation.login.loginComponents.CustomAlertDialog
 
 import com.softteco.template.presentation.login.loginComponents.ProgressBar
-import com.softteco.template.presentation.login.loginComponents.Routes
 
 
 @Composable
 fun RegistrationUserResult(
     viewModel: AuthViewModel = hiltViewModel(),
     account: Account,
+    onNavigateToLogin: (NavDirections) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -31,7 +30,12 @@ fun RegistrationUserResult(
         is ApiResponse.Success -> {
             WriteUserToDb(account = account)
             CustomAlertDialog(
-                onGoToScreen = {  },
+                onGoToScreen = {
+                    onNavigateToLogin(
+                        RegistrationComposeFragmentDirections
+                            .actionRegistrationComposeFragmentToLoginComposeFragment()
+                    )
+                },
                 message = context.getString(R.string.registration_success)
             )
         }

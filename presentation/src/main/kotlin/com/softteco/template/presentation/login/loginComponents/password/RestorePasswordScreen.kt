@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.softteco.template.domain.model.user.ForgotPasswordDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
@@ -32,6 +31,7 @@ fun RestorePasswordScreen() {
 fun ScaffoldWithTopBarForgotPass() {
     var restorePas by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = hiltViewModel()
+
     Scaffold(topBar = {
         CustomTopAppBar(stringResource(id = R.string.forgot_password), true)
     }, content = {
@@ -95,6 +95,6 @@ fun ScaffoldWithTopBarForgotPass() {
         }
     })
     if (restorePas) {
-        RestorePasswordResult(authViewModel)
+        RestorePasswordResult()
     }
 }
