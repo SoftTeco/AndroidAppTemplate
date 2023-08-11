@@ -17,14 +17,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDirections
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
-import androidx.navigation.fragment.findNavController
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.CreateUserDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.PasValidationViewModel
-import com.softteco.template.presentation.login.RegistrationComposeFragmentDirections
 import com.softteco.template.presentation.login.loginComponents.*
 import com.softteco.template.presentation.login.loginComponents.login.PasswordFieldComponent
 import kotlinx.coroutines.*
@@ -269,7 +266,7 @@ fun ScaffoldWithTopBar(onNavigateToLogin: (NavDirections) -> Unit) {
                         email.value.text,
                         pasViewModel.password,
                         ""
-                    ), onNavigateToLogin =onNavigateToLogin
+                    ), onNavigateToLogin = onNavigateToLogin
                 )
             }
         }

@@ -17,7 +17,6 @@ import javax.inject.Inject
 class AuthViewModelDb @Inject constructor(private val useCase: UseCasesDb) : ViewModel() {
 
     var registerApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
-
     fun register(account: Account) {
         viewModelScope.launch {
             registerApiResponse = ApiResponse.Loading

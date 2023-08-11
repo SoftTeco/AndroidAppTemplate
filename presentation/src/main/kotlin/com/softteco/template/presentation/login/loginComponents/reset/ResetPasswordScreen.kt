@@ -21,8 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDirections
-import androidx.navigation.NavHostController
-import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.ResetPasswordDto
 import com.softteco.template.presentation.R
 import com.softteco.template.presentation.login.AuthViewModel
@@ -193,6 +191,6 @@ fun ScaffoldWithTopBarForgotPass(onNavigateToLogin: (NavDirections) -> Unit, tok
         }
     })
     if (resetPas) {
-        ResetPasswordResult(authViewModel, onNavigateToLogin =onNavigateToLogin)
+        ResetPasswordResult(authViewModel, onNavigateToLogin = onNavigateToLogin)
     }
 }

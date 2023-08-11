@@ -30,8 +30,6 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
     )
 
     var resetPasswordApiResponse by mutableStateOf<ResetPasswordResponse>(ApiResponse.Success(false))
-
-
     fun login(
         userAuth: LoginAuthDto
     ) = viewModelScope.launch {

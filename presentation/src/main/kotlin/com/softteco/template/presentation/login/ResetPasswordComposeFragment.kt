@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import com.softteco.template.presentation.login.loginComponents.registration.RegistrationScreen
 import com.softteco.template.presentation.login.loginComponents.reset.ResetPasswordScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ResetPasswordComposeFragment: Fragment() {
+class ResetPasswordComposeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -21,7 +19,10 @@ class ResetPasswordComposeFragment: Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                ResetPasswordScreen(onNavigateToLogin = { dest -> findNavController().navigate(dest) }, arguments?.getString("PASSED_TOKEN")!!)
+                ResetPasswordScreen(
+                    onNavigateToLogin = { dest -> findNavController().navigate(dest) },
+                    arguments?.getString("PASSED_TOKEN")!!
+                )
             }
         }
     }

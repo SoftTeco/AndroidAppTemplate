@@ -35,8 +35,10 @@ import com.softteco.template.presentation.login.LoginComposeFragmentDirections
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
-                onNavigateToResetPassword: (NavDirections) -> Unit) {
+fun LoginScreen(
+    onNavigateToRegistration: (NavDirections) -> Unit,
+    onNavigateToResetPassword: (NavDirections) -> Unit
+) {
 
     val authViewModel: AuthViewModel = hiltViewModel()
 
@@ -48,10 +50,12 @@ fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(20.dp),
-            onClick = {onNavigateToRegistration(
-                LoginComposeFragmentDirections.actionLoginComposeFragmentToRegistrationComposeFragment())
+            onClick = {
+                onNavigateToRegistration(
+                    LoginComposeFragmentDirections.actionLoginComposeFragmentToRegistrationComposeFragment()
+                )
 
-               },
+            },
             style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = FontFamily.Default,
@@ -71,7 +75,7 @@ fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
         val passwordErrorState = remember { mutableStateOf(false) }
         val password = remember { mutableStateOf(TextFieldValue()) }
 
-       Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = email.value,
@@ -158,14 +162,17 @@ fun LoginScreen(onNavigateToRegistration: (NavDirections) -> Unit,
                 Text(text = stringResource(id = R.string.login))
             }
         }
-        if (logIn){
+        if (logIn) {
             LoginUserResult()
         }
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.forgot_password)),
-            onClick = { onNavigateToResetPassword(
-                LoginComposeFragmentDirections.actionLoginComposeFragmentToForgotPasswordComposeFragment()) },
+            onClick = {
+                onNavigateToResetPassword(
+                    LoginComposeFragmentDirections.actionLoginComposeFragmentToForgotPasswordComposeFragment()
+                )
+            },
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default

@@ -28,7 +28,6 @@ fun SimpleField(
             fieldName.value = it
         },
 
-
         modifier = Modifier.fillMaxWidth(),
         isError = fieldNameErrorState.value,
         label = {

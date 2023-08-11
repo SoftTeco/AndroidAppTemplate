@@ -36,6 +36,5 @@ fun CustomAlertDialog(onGoToScreen: () -> Unit, message: String) {
         shape = RoundedCornerShape(5.dp),
         containerColor = Color.White
     )
-
 }
 
