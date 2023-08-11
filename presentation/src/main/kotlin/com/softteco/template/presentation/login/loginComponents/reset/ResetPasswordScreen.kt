@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDirections
 import androidx.navigation.NavHostController
 import com.softteco.template.domain.model.user.Account
 import com.softteco.template.domain.model.user.ResetPasswordDto
@@ -28,16 +29,16 @@ import com.softteco.template.presentation.login.AuthViewModel
 import com.softteco.template.presentation.login.loginComponents.CustomTopAppBar
 
 @Composable
-fun ResetPasswordScreen(navController: NavHostController, token: String) {
+fun ResetPasswordScreen(onNavigateToLogin: (NavDirections) -> Unit, token: String) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ScaffoldWithTopBarForgotPass(navController, token)
+        ScaffoldWithTopBarForgotPass(onNavigateToLogin, token)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String) {
+fun ScaffoldWithTopBarForgotPass(onNavigateToLogin: (NavDirections) -> Unit, token: String) {
     val authViewModel: AuthViewModel = hiltViewModel()
     var resetPas by remember { mutableStateOf(false) }
 
@@ -192,6 +193,6 @@ fun ScaffoldWithTopBarForgotPass(navController: NavHostController, token: String
         }
     })
     if (resetPas) {
-        ResetPasswordResult(authViewModel, navController)
+        ResetPasswordResult(authViewModel, onNavigateToLogin =onNavigateToLogin)
     }
 }
