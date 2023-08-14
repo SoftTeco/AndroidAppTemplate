@@ -26,9 +26,6 @@
         <action
             android:id="@+id/action_loginComposeFragment_to_registrationComposeFragment"
             app:destination="@id/registrationComposeFragment" />
-        <action
-            android:id="@+id/action_loginComposeFragment_to_forgotPasswordComposeFragment"
-            app:destination="@id/forgotPasswordComposeFragment" />
     </fragment>
     <fragment
         android:id="@+id/registrationComposeFragment"
@@ -38,13 +35,5 @@
             android:id="@+id/action_registrationComposeFragment_to_loginComposeFragment"
             app:destination="@id/loginComposeFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/forgotPasswordComposeFragment"
-        android:name="com.softteco.template.presentation.login.ForgotPasswordComposeFragment"
-        android:label="fragment_forgot_password_compose" />
-    <fragment
-        android:id="@+id/resetPasswordComposeFragment"
-        android:name="com.softteco.template.presentation.login.ResetPasswordComposeFragment"
-        android:label="ResetPasswordComposeFragment" />
 
 </navigation>

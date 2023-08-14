@@ -8,8 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.softteco.template.domain.model.user.*
 import com.softteco.template.domain.repository.user.LoginResponse
 import com.softteco.template.domain.repository.user.RegisterResponse
-import com.softteco.template.domain.repository.user.RestorePasswordResponse
-import com.softteco.template.domain.repository.user.ResetPasswordResponse
 
 import com.softteco.template.domain.usecase.user.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,13 +21,6 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
 
     var registerApiResponse by mutableStateOf<RegisterResponse>(ApiResponse.Success(false))
 
-    var restorePasswordApiResponse by mutableStateOf<RestorePasswordResponse>(
-        ApiResponse.Success(
-            false
-        )
-    )
-
-    var resetPasswordApiResponse by mutableStateOf<ResetPasswordResponse>(ApiResponse.Success(false))
     fun login(
         userAuth: LoginAuthDto
     ) = viewModelScope.launch {
@@ -47,20 +38,6 @@ class AuthViewModel @Inject constructor(private val useCase: UseCases) : ViewMod
                 useCase.register(
                     user
                 )
-        }
-    }
-
-    fun restorePassword(email: ForgotPasswordDto) {
-        viewModelScope.launch {
-            restorePasswordApiResponse = ApiResponse.Loading
-            restorePasswordApiResponse = useCase.restorePassword(email)
-        }
-    }
-
-    fun resetPassword(resetPasswordDto: ResetPasswordDto) {
-        viewModelScope.launch {
-            resetPasswordApiResponse = ApiResponse.Loading
-            resetPasswordApiResponse = useCase.resetPassword(resetPasswordDto)
         }
     }
 }

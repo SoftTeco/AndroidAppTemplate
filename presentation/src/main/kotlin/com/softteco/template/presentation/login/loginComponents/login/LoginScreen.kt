@@ -170,9 +170,7 @@ fun LoginScreen(
         ClickableText(
             text = AnnotatedString(stringResource(id = R.string.forgot_password)),
             onClick = {
-                onNavigateToResetPassword(
-                    LoginComposeFragmentDirections.actionLoginComposeFragmentToForgotPasswordComposeFragment()
-                )
+               //TODO - go to Forgot Password
             },
             style = TextStyle(
                 fontSize = 14.sp,

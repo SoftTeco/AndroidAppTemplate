@@ -1,7 +1,6 @@
 package com.softteco.template.data.di
 
 import android.content.Context
-import com.softteco.template.data.source.local.AccountDatabase
 import com.softteco.template.data.source.local.EntryDatabase
 import dagger.Module
 import dagger.Provides
@@ -20,12 +19,4 @@ class LocalDatabaseModule {
 
     @Provides
     fun provideApiEntryDao(entryDatabase: EntryDatabase) = entryDatabase.apiEntryDao()
-
-    @Singleton
-    @Provides
-    fun provideAccountDatabase(@ApplicationContext appContext: Context) = AccountDatabase.create(appContext)
-
-    @Provides
-    fun provideAccountDao(accountDatabase: AccountDatabase) = accountDatabase.accountDao()
-
 }
