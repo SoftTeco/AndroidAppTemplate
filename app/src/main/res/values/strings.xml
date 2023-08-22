@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Template</string>
+    <string name="error_example">Network Error!</string>
+</resources>

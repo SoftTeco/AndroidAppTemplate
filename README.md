@@ -1,18 +1,16 @@
-<img src="presentation/src/main/ic_launcher-playstore.png" alt="icon" width="100"/>
+<img src="app/src/main/ic_launcher-playstore.png" alt="icon" width="100"/>
 
 # Template
 
-Sample application to demonstrate Multi-module Clean MVVM Architecture and usage of Android Hilt,
-Kotlin Flow, ConstraintLayout, View-Binding, Navigation Graph, Jetpack Compose etc.
+Sample application to demonstrate usage of Jetpack Compose, Kotlin Flow, Android Hilt, etc.
 
 ## Overview
 
-* Material Design & ConstraintLayout
-* View Binding & Jetpack Compose
+* Jetpack Compose
+* Compose Navigation
+* Showing Snackbars with Compose
 * Coroutines & Kotlin Flow
 * Android Hilt - for Dependency Injection
-* Multi-module Clean MVVM Architecture (For smooth scalability)
-* Navigation Graph - NavController for Fragment transitions
 * Unit testing - with Mockito & JUnit
 * Retrofit - for Network Requests
 * Coil - for Image loading
