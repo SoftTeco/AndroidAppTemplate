@@ -59,10 +59,12 @@ task clean(type: Delete) {
 
 ext.getPropertyByName = { name ->
     Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    if (!properties.hasProperty(name)) {
-        return properties.getProperty(name)
-    } else {
-        return "\"${System.env.BASE_URL}\""
+    File propertiesFile = project.rootProject.file('local.properties')
+    if(propertiesFile.exists()) {
+        properties.load(propertiesFile.newDataInputStream())
+        if (properties.containsKey(name)) {
+            return properties.getProperty(name)
+        }
     }
+    return "\"${System.env.BASE_URL}\""
 }
