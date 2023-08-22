@@ -1,4 +1,4 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -35,9 +35,6 @@ android {
 
     buildTypes {
 
-        val envBaseUrl = "\"${System.getenv("BASE_URL")}\""
-        val baseUrl = gradleLocalProperties(rootDir).getProperty("BASE_URL", envBaseUrl)
-
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -45,11 +42,11 @@ android {
                 "proguard-rules.pro"
             )
             isDebuggable = false
-            buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "BASE_URL", getPropertyByName("BASE_URL"))
         }
         debug {
             isDebuggable = true
-            buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "BASE_URL", getPropertyByName("BASE_URL"))
         }
     }
     compileOptions {
@@ -71,6 +68,21 @@ android {
         }
     }
 }
+
+fun getPropertyByName(name: String): String {
+    project.rootProject.file("local.properties").let { file ->
+        if (file.exists()) {
+            Properties().let { properties ->
+                properties.load(file.inputStream())
+                if (properties.containsKey(name)) {
+                    return properties.getProperty(name)
+                }
+            }
+        }
+        return "\"${System.getenv(name)}\""
+    }
+}
+
 
 kapt {
     correctErrorTypes = true
