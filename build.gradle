@@ -28,7 +28,6 @@ def kotlinFiles = "**/*.kt"
 def resourceFiles = "**/resources/**"
 def buildFiles = "**/build/**"
 
-
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 tasks.register("detektAll", Detekt) {
@@ -56,4 +55,14 @@ dependencies {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext.getPropertyByName = { name ->
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    if (!properties.hasProperty(name)) {
+        return properties.getProperty(name)
+    } else {
+        return "\"${System.env.BASE_URL}\""
+    }
 }
