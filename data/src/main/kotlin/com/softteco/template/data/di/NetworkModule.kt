@@ -1,7 +1,7 @@
 package com.softteco.template.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.softteco.template.data.Config
+import com.softteco.template.data.BuildConfig
 import com.softteco.template.data.source.remote.PublicApi
 import com.squareup.moshi.Moshi
 import dagger.Module
@@ -40,7 +40,7 @@ object NetworkModule {
         val converterFactory: Converter.Factory = MoshiConverterFactory.create(moshi)
 
         return Retrofit.Builder()
-            .baseUrl(Config.BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .client(okHttpClient)
