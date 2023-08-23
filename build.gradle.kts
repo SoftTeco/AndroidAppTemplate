@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application) apply false
+    id("com.android.application") version libs.versions.applicationPlugin apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.ktlint)
