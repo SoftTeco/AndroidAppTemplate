@@ -8,30 +8,37 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.data.profile.entity.Profile
+import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
-import com.softteco.template.ui.widgets.TextSnackbarContainer
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
-    onBackClick: () -> Unit,
+    onSignatureClicked: () -> Unit = {},
 ) {
-    Layout(viewModel.state.collectAsState().value, onBackClick, modifier)
+    val state by viewModel.state.collectAsState()
+
+    ScreenContent(
+        state = state,
+        onSignatureClicked = onSignatureClicked,
+        modifier = modifier,
+    )
 }
 
 @Composable
-private fun Layout(
+private fun ScreenContent(
     state: ProfileViewModel.State,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSignatureClicked: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = Modifier,
@@ -43,25 +50,20 @@ private fun Layout(
             Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
                 state.profile?.let { Text(it.name) }
                 state.greeting?.let { Text(it) }
-                Button(onClick = onBackClick) {
-                    Text("Back")
+                Button(onClick = onSignatureClicked) {
+                    Text("To Signature")
                 }
             }
         }
     }
 }
 
-// region Previews
-
 @Preview
 @Composable
 private fun Preview() {
     AppTheme {
-        Layout(
+        ScreenContent(
             ProfileViewModel.State(Profile("", "John"), "Hi", onDismissSnackbar = {}),
-            onBackClick = {}
         )
     }
 }
-
-// endregion
