@@ -1,6 +1,5 @@
 package com.softteco.template.ui.feature.profile
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,30 +8,43 @@ import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
+import com.softteco.template.ui.components.SnackBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
-    private val profileState = MutableStateFlow<Profile?>(null)
-    private val greetingState = MutableStateFlow<String?>(null)
-    private val snackbarState = MutableStateFlow<Int?>(null)
+    private val profileState = MutableStateFlow(Profile())
+    private val greetingState = MutableStateFlow("")
+    private val snackbarState = MutableStateFlow(SnackBarState())
+    private val loading = MutableStateFlow(true)
 
-    val state = combine(profileState, greetingState, snackbarState) { user, greeting, snackbar ->
-        mapToState(user, greeting, snackbar)
+    val state = combine(
+        loading,
+        profileState,
+        greetingState,
+        snackbarState
+    ) { loading, user, greeting, snackbar ->
+        State(
+            loading = loading,
+            profile = user,
+            greeting = greeting,
+            snackbar = snackbar
+        )
     }.stateIn(
         viewModelScope,
         SharingStarted.Lazily,
-        mapToState(profileState.value, greetingState.value, snackbarState.value)
+        State()
     )
 
     init {
@@ -49,40 +61,33 @@ class ProfileViewModel @Inject constructor(
                     is Result.Error -> handleError(result.error)
                 }
             }
+            loading.value = false
         }
-    }
-
-    private fun mapToState(
-        profile: Profile?,
-        greeting: String?,
-        showSnackbar: Int?
-    ): State {
-        return State(
-            profile,
-            greeting,
-            showSnackbar,
-            onDismissSnackbar = { snackbarState.value = null }
-        )
     }
 
     private fun handleError(error: ErrorEntity) {
         if (error.isDisplayable) {
-            snackbarState.value = when (error) {
+            val textId = when (error) {
                 ErrorEntity.AccessDenied -> R.string.error_example
                 ErrorEntity.Network -> R.string.error_example
                 ErrorEntity.NotFound -> R.string.error_example
                 ErrorEntity.ServiceUnavailable -> R.string.error_example
                 ErrorEntity.Unknown -> R.string.error_example
             }
+            snackbarState.value = SnackBarState(
+                textId = textId,
+                show = true,
+            )
         }
     }
 
+    fun dismissSnackbar() = snackbarState.update { SnackBarState() }
+
     @Immutable
     data class State(
-        val profile: Profile?,
-        val greeting: String?,
-        @StringRes
-        val showSnackbar: Int? = null,
-        val onDismissSnackbar: () -> Unit,
+        val loading: Boolean = true,
+        val profile: Profile = Profile(),
+        val greeting: String = "",
+        val snackbar: SnackBarState = SnackBarState(),
     )
 }

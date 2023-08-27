@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.data.profile.entity.Profile
+import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
@@ -31,6 +32,7 @@ fun ProfileScreen(
         state = state,
         onSignatureClicked = onSignatureClicked,
         modifier = modifier,
+        onDismissSnackbar = { viewModel.dismissSnackbar() }
     )
 }
 
@@ -38,20 +40,25 @@ fun ProfileScreen(
 private fun ScreenContent(
     state: ProfileViewModel.State,
     modifier: Modifier = Modifier,
-    onSignatureClicked: () -> Unit = {}
+    onSignatureClicked: () -> Unit = {},
+    onDismissSnackbar: () -> Unit = {},
 ) {
     TextSnackbarContainer(
         modifier = Modifier,
-        snackbarText = stringResource(state.showSnackbar ?: android.R.string.unknownName),
-        showSnackbar = state.showSnackbar != null,
-        onDismissSnackbar = { state.onDismissSnackbar() }
+        snackbarText = stringResource(state.snackbar.textId),
+        showSnackbar = state.snackbar.show,
+        onDismissSnackbar = onDismissSnackbar,
     ) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
-                state.profile?.let { Text(it.name) }
-                state.greeting?.let { Text(it) }
+                if (state.loading) {
+                    Text("Loading...") // string resources should be used
+                } else {
+                    Text(state.profile.name)
+                    Text(state.greeting)
+                }
                 Button(onClick = onSignatureClicked) {
-                    Text("To Signature")
+                    Text("To Signature") // string resources should be used
                 }
             }
         }
@@ -63,7 +70,17 @@ private fun ScreenContent(
 private fun Preview() {
     AppTheme {
         ScreenContent(
-            ProfileViewModel.State(Profile("", "John"), "Hi", onDismissSnackbar = {}),
+            ProfileViewModel.State(
+                profile = Profile(
+                    id = "1",
+                    name = "Jonn"
+                ),
+                greeting = "Hello",
+                snackbar = SnackBarState(
+                    textId = 0,
+                    show = false
+                )
+            )
         )
     }
 }
