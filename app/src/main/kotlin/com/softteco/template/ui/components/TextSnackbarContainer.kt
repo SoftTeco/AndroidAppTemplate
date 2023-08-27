@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.softteco.template.ui.widgets
+package com.softteco.template.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
