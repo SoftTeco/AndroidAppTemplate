@@ -1,34 +1,28 @@
 package com.softteco.template.ui
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.softteco.template.ui.feature.home.HomeScreen
-import com.softteco.template.ui.feature.profile.ProfileScreen
+import com.softteco.template.navigation.AppBottomBar
+import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.navigation.Graph
 
 @Composable
-fun AppContent() {
+fun AppContent(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    AppNavHost(navController = navController)
-}
 
-@Composable
-private fun AppNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Destination.Home.route) {
-        composable(Destination.Home.route) {
-            HomeScreen(onProfileClick = {
-                navController.navigate(Destination.Profile.route)
-            })
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        bottomBar = {
+            AppBottomBar(navController = navController)
         }
-        composable(Destination.Profile.route) {
-            ProfileScreen(onBackClick = { navController.navigateUp() })
-        }
+    ) { paddingValues ->
+        AppNavHost(
+            navController = navController,
+            startDestination = Graph.BottomBar.route,
+            paddingValues = paddingValues
+        )
     }
-}
-
-sealed class Destination(val route: String) {
-    object Home : Destination("home")
-    object Profile : Destination("profile")
 }
