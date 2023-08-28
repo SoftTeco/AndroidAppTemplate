@@ -77,3 +77,8 @@ fun TextSnackbarContainer(
         }
     }
 }
+
+data class SnackBarState(
+    val textId: Int = android.R.string.unknownName,
+    val show: Boolean = false,
+)
