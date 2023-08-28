@@ -31,8 +31,7 @@ fun ProfileScreen(
     ScreenContent(
         state = state,
         onSignatureClicked = onSignatureClicked,
-        modifier = modifier,
-        onDismissSnackbar = { viewModel.dismissSnackbar() }
+        modifier = modifier
     )
 }
 
@@ -40,14 +39,13 @@ fun ProfileScreen(
 private fun ScreenContent(
     state: ProfileViewModel.State,
     modifier: Modifier = Modifier,
-    onSignatureClicked: () -> Unit = {},
-    onDismissSnackbar: () -> Unit = {},
+    onSignatureClicked: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = Modifier,
         snackbarText = stringResource(state.snackbar.textId),
         showSnackbar = state.snackbar.show,
-        onDismissSnackbar = onDismissSnackbar,
+        onDismissSnackbar = state.dismissSnackBar,
     ) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {

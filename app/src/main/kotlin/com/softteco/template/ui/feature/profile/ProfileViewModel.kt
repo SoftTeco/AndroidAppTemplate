@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -39,7 +38,8 @@ class ProfileViewModel @Inject constructor(
             loading = loading,
             profile = user,
             greeting = greeting,
-            snackbar = snackbar
+            snackbar = snackbar,
+            dismissSnackBar = { snackbarState.value = SnackBarState() }
         )
     }.stateIn(
         viewModelScope,
@@ -81,13 +81,12 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun dismissSnackbar() = snackbarState.update { SnackBarState() }
-
     @Immutable
     data class State(
-        val loading: Boolean = true,
+        val loading: Boolean = false,
         val profile: Profile = Profile(),
         val greeting: String = "",
         val snackbar: SnackBarState = SnackBarState(),
+        val dismissSnackBar: () -> Unit = {},
     )
 }
