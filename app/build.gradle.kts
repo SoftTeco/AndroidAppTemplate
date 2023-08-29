@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.android.junit5)
 }
 
 android {
@@ -116,4 +117,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    testImplementation(libs.org.jetbrains.kotlinx.coroutines.test)
+    testImplementation(libs.org.junit.jupiter.jupiter)
+    testImplementation(libs.org.junit.vintage.engine)
+    testImplementation(libs.io.mockk.mockk)
+    testImplementation(libs.app.cash.turbine)
+    testImplementation(libs.io.kotest.kotest.assertions)
 }
