@@ -9,4 +9,5 @@
     <string name="login">Log in</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="loading">Loading…</string>
 </resources>

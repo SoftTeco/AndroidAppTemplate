@@ -10,7 +10,7 @@ class LoginRepositoryImpl @Inject constructor(
 	private val userApi: UserApi,
 	private val errorHandler: ErrorHandler,
 ) : LoginRepository {
-	override suspend fun login(userAuth: LoginAuthDto): Result<String> {
+	override suspend fun login(userAuth: LoginAuthDto): Result<Boolean> {
 		return try {
 			Result.Success(userApi.login(userAuth))
 

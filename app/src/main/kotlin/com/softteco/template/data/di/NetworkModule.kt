@@ -65,7 +65,7 @@ object NetworkModule {
 	@Provides
 	@Singleton
 	fun provideLoginApi(okHttpClient: OkHttpClient): UserApi {
-		val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
+		val retrofit = buildRetrofit(okHttpClient, "http://209.38.220.2:3148/swagger/api/") //TODO
 		return retrofit.create(UserApi::class.java)
 	}
 }
