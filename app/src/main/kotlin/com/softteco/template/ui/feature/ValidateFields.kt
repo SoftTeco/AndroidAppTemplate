@@ -1,26 +1,19 @@
 package com.softteco.template.ui.feature
 
-import javax.annotation.concurrent.Immutable
+import com.softteco.template.Constants
 
 class ValidateFields {
 	fun execute(fieldValue: String): FieldValidationState {
-		val isEmpty = isEmpty(fieldValue)
-		val hasError = listOf(
-			isEmpty
-		).all { it }
+		val isEmailCorrect = isEmailCorrect(fieldValue)
 
 		return FieldValidationState(
-			successful = hasError,
-			isEmpty = isEmpty
+			isEmailCorrect = isEmailCorrect
 		)
 	}
-
-	private fun isEmpty(value: String): Boolean =
-		value.isEmpty()
+	private fun isEmailCorrect(value: String): Boolean =
+		value.matches(Regex(Constants.EMAIL_PATTERN))
 }
 
-@Immutable
 data class FieldValidationState(
-	var successful: Boolean = false,
-	var isEmpty: Boolean = false
+	var isEmailCorrect: Boolean = false
 )

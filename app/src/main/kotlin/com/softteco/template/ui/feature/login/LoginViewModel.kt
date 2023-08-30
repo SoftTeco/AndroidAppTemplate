@@ -30,7 +30,7 @@ class LoginViewModel @Inject constructor(
 	private val loginRepository: LoginRepository,
 ) : ViewModel() {
 
-	private val validatePassword: ValidateFields = ValidateFields()
+	private val validateFields: ValidateFields = ValidateFields()
 
 	private val snackbarState = MutableStateFlow(SnackBarState())
 	private val loading = MutableStateFlow(true)
@@ -93,15 +93,12 @@ class LoginViewModel @Inject constructor(
 	)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	val fieldValidationError =
+	var fieldValidationError =
 		snapshotFlow { value }
-			.mapLatest { validatePassword.execute(it) }
+			.mapLatest { validateFields.execute(it) }
 			.stateIn(
 				scope = viewModelScope,
 				started = SharingStarted.WhileSubscribed(5000L),
 				initialValue = FieldValidationState()
 			)
-	fun changeFieldValue(value: String) {
-		this.value = value
-	}
 }

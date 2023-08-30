@@ -57,7 +57,6 @@ private fun ScreenContent(
 	onLoginClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
-	val fieldError by viewModel.fieldValidationError.collectAsState()
 	val context = LocalContext.current
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
@@ -113,9 +112,13 @@ private fun ScreenContent(
 							Dimens.Padding0
 						)
 					) {
+						viewModel.value = email
+						val emailError by viewModel.fieldValidationError.collectAsState()
 						Button(
 							onClick = {
-								if (email.isEmpty() || password.isEmpty()) {
+								if (!emailError.isEmailCorrect ||
+									email.isEmpty() || password.isEmpty()
+								) {
 									Toast.makeText(
 										context,
 										context.getText(R.string.empty_fields_error),
