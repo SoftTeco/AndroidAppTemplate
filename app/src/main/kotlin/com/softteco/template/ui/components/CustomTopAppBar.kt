@@ -17,28 +17,28 @@ import com.softteco.template.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopAppBar(
-	modifier: Modifier = Modifier,
-	title: String,
-	showBackIcon: Boolean,
-	onBackClicked: () -> Unit = {},
+    title: String,
+    showBackIcon: Boolean,
+    modifier: Modifier = Modifier,
+    onBackClicked: () -> Unit = {},
 ) {
-	TopAppBar(
-		modifier = modifier,
-		title = {
-			Text(text = title)
-		},
-		colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent),
-		navigationIcon = {
-			if (showBackIcon) {
-				run {
-					IconButton(onClick = { onBackClicked() }) {
-						Icon(
-							imageVector = Icons.Filled.ArrowBack,
-							contentDescription = stringResource(R.string.back_description)
-						)
-					}
-				}
-			}
-		},
-	)
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(text = title)
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent),
+        navigationIcon = {
+            if (showBackIcon) {
+                run {
+                    IconButton(onClick = { onBackClicked() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_description)
+                        )
+                    }
+                }
+            }
+        },
+    )
 }

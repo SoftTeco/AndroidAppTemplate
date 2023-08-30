@@ -16,45 +16,45 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 @Composable
 fun FieldDatePicker(
-	modifier: Modifier = Modifier,
-	onResDate: String,
-	fieldErrorState: Boolean,
-	fieldNameStr: Int,
-	onFieldValueChanged: ((String) -> Unit) = {}
+    onResDate: String,
+    fieldErrorState: Boolean,
+    fieldNameStr: Int,
+    modifier: Modifier = Modifier,
+    onFieldValueChanged: ((String) -> Unit) = {}
 ) {
-	val dialogState = rememberMaterialDialogState()
-	MaterialDialog(
-		dialogState = dialogState,
-		buttons = {
-			positiveButton(stringResource(id = R.string.ok))
-			negativeButton(stringResource(id = R.string.cancel))
-		}
-	) {
-		datepicker { date ->
-			onFieldValueChanged(date.toString())
-		}
-	}
-	val source = remember {
-		MutableInteractionSource()
-	}
+    val dialogState = rememberMaterialDialogState()
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton(stringResource(id = R.string.ok))
+            negativeButton(stringResource(id = R.string.cancel))
+        }
+    ) {
+        datepicker { date ->
+            onFieldValueChanged(date.toString())
+        }
+    }
+    val source = remember {
+        MutableInteractionSource()
+    }
 
-	OutlinedTextField(
-		value = onResDate,
-		onValueChange = {
-			onFieldValueChanged(it)
-		},
-		readOnly = true,
-		modifier = modifier,
-		isError = fieldErrorState,
-		label = {
-			Text(text = stringResource(id = fieldNameStr))
-		},
-		interactionSource = source
-	)
-	if (fieldErrorState) {
-		Text(text = stringResource(id = R.string.required), color = Color.Red)
-	}
-	if (source.collectIsPressedAsState().value) {
-		dialogState.show()
-	}
+    OutlinedTextField(
+        value = onResDate,
+        onValueChange = {
+            onFieldValueChanged(it)
+        },
+        readOnly = true,
+        modifier = modifier,
+        isError = fieldErrorState,
+        label = {
+            Text(text = stringResource(id = fieldNameStr))
+        },
+        interactionSource = source
+    )
+    if (fieldErrorState) {
+        Text(text = stringResource(id = R.string.required), color = Color.Red)
+    }
+    if (source.collectIsPressedAsState().value) {
+        dialogState.show()
+    }
 }

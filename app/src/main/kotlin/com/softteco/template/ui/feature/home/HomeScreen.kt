@@ -19,41 +19,41 @@ import com.softteco.template.ui.theme.Dimens
 
 @Composable
 fun HomeScreen(
-	viewModel: HomeViewModel = hiltViewModel(),
-	onApiSampleClicked: () -> Unit = {},
-	onGoLoggingClicked: () -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel(),
+    onApiSampleClicked: () -> Unit = {},
+    onGoLoggingClicked: () -> Unit = {},
 ) {
-	ScreenContent(
-		state = viewModel.state.collectAsState().value,
-		onApiSampleClicked = { onApiSampleClicked() },
-		onGoLoggingClicked = { onGoLoggingClicked() }
-	)
+    ScreenContent(
+        state = viewModel.state.collectAsState().value,
+        onApiSampleClicked = { onApiSampleClicked() },
+        onGoLoggingClicked = { onGoLoggingClicked() }
+    )
 }
 
 @Composable
 private fun ScreenContent(
-	state: HomeViewModel.State,
-	modifier: Modifier = Modifier,
-	onApiSampleClicked: () -> Unit = {},
-	onGoLoggingClicked: () -> Unit = {}
+    state: HomeViewModel.State,
+    modifier: Modifier = Modifier,
+    onApiSampleClicked: () -> Unit = {},
+    onGoLoggingClicked: () -> Unit = {}
 ) {
-	Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-		Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
-			Text(state.data)
-			Button(onClick = onApiSampleClicked) {
-				Text("To Api Sample")
-			}
-			Button(onClick = onGoLoggingClicked) {
-				Text(stringResource(id = R.string.go_to_logging))
-			}
-		}
-	}
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
+            Text(state.data)
+            Button(onClick = onApiSampleClicked) {
+                Text("To Api Sample")
+            }
+            Button(onClick = onGoLoggingClicked) {
+                Text(stringResource(id = R.string.go_to_logging))
+            }
+        }
+    }
 }
 
 @Preview
 @Composable
 private fun Preview() {
-	AppTheme {
-		ScreenContent(HomeViewModel.State())
-	}
+    AppTheme {
+        ScreenContent(HomeViewModel.State())
+    }
 }

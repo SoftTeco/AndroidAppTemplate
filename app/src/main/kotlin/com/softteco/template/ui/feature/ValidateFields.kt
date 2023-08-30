@@ -16,7 +16,8 @@ class ValidateFields {
 		val validateMinimum = validateMinimum(fieldValue)
 
 		return FieldValidationState(
-			hasMinimum = validateMinimum, hasCapitalizedLetter = validateCapitalizedLetter
+			hasMinimum = validateMinimum,
+			hasCapitalizedLetter = validateCapitalizedLetter
 		)
 	}
 

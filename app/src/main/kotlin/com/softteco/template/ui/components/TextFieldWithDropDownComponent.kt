@@ -21,50 +21,50 @@ import com.softteco.template.R
 
 @Composable
 fun TextFieldWithDropDownComponent(
-	modifier: Modifier = Modifier,
-	item: String,
-	strId: Int,
-	fieldErrorState: Boolean,
-	itemsList: List<String>,
-	onFieldValueChanged: ((String) -> Unit) = {}
+    item: String,
+    strId: Int,
+    fieldErrorState: Boolean,
+    itemsList: List<String>,
+    modifier: Modifier = Modifier,
+    onFieldValueChanged: ((String) -> Unit) = {}
 ) {
-	val userSelectedString: (String) -> Unit = {
-		onFieldValueChanged(it)
-	}
-	val isOpen = remember { mutableStateOf(false) }
-	val openCloseOfDropDownList: (Boolean) -> Unit = {
-		isOpen.value = it
-	}
-	Box(modifier = modifier) {
-		Column {
-			OutlinedTextField(
-				value = item,
-				onValueChange = {
-					onFieldValueChanged(it)
-				},
-				modifier = Modifier.fillMaxWidth(),
-				isError = fieldErrorState,
-				label = {
-					Text(text = stringResource(id = strId))
-				},
-			)
-			DropDownListComponent(
-				list = itemsList,
-				openCloseOfDropDownList,
-				modifier = Modifier.fillMaxSize(),
-				requestToOpen = isOpen.value,
-				userSelectedString
-			)
-		}
-		Spacer(
-			modifier = Modifier
-				.matchParentSize()
-				.background(Color.Transparent)
-				.padding(10.dp)
-				.clickable(onClick = { isOpen.value = true })
-		)
-	}
-	if (fieldErrorState) {
-		Text(text = stringResource(id = R.string.required), color = Color.Red)
-	}
+    val userSelectedString: (String) -> Unit = {
+        onFieldValueChanged(it)
+    }
+    val isOpen = remember { mutableStateOf(false) }
+    val openCloseOfDropDownList: (Boolean) -> Unit = {
+        isOpen.value = it
+    }
+    Box(modifier = modifier) {
+        Column {
+            OutlinedTextField(
+                value = item,
+                onValueChange = {
+                    onFieldValueChanged(it)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isError = fieldErrorState,
+                label = {
+                    Text(text = stringResource(id = strId))
+                },
+            )
+            DropDownListComponent(
+                list = itemsList,
+                openCloseOfDropDownList,
+                modifier = Modifier.fillMaxSize(),
+                requestToOpen = isOpen.value,
+                userSelectedString
+            )
+        }
+        Spacer(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color.Transparent)
+                .padding(10.dp)
+                .clickable(onClick = { isOpen.value = true })
+        )
+    }
+    if (fieldErrorState) {
+        Text(text = stringResource(id = R.string.required), color = Color.Red)
+    }
 }

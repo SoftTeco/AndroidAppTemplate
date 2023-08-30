@@ -34,7 +34,6 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.FieldDatePicker
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PasswordFieldComponentWithValidation
-
 import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.TextFieldWithDropDownComponent
 import com.softteco.template.ui.theme.Dimens
@@ -50,7 +49,6 @@ fun SignUpScreen(
 	viewModel: SignUpViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {}
 ) {
-
 	ScreenContent(
 		modifier = modifier,
 		viewModel = viewModel,
@@ -60,8 +58,8 @@ fun SignUpScreen(
 
 @Composable
 private fun ScreenContent(
-	modifier: Modifier = Modifier,
 	viewModel: SignUpViewModel,
+	modifier: Modifier = Modifier,
 	onBackClicked: () -> Unit = {}
 ) {
 	val scrollState = rememberScrollState()
@@ -86,44 +84,49 @@ private fun ScreenContent(
 	Box(modifier.fillMaxSize()) {
 		Column {
 			CustomTopAppBar(
-				modifier = Modifier.fillMaxWidth(),
 				stringResource(id = R.string.sign_up),
 				showBackIcon = true,
+				modifier = Modifier.fillMaxWidth(),
 				onBackClicked = onBackClicked
 			)
 			Column(
 				modifier = Modifier
-					.padding(Dimens.Padding20)
-					.verticalScroll(scrollState),
+                    .padding(Dimens.Padding20)
+                    .verticalScroll(scrollState),
 				verticalArrangement = Arrangement.Center,
 			) {
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(modifier = Modifier.fillMaxWidth(),
+				SimpleField(
 					strId = R.string.first_name,
 					firstName,
 					fieldErrorState = firstName.isEmpty(),
-					onFieldValueChanged = { newValue -> firstName = newValue })
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
-
-				SimpleField(modifier = Modifier.fillMaxWidth(),
-					strId = R.string.last_name,
-					lastName,
-					fieldErrorState = lastName.isEmpty(),
-					onFieldValueChanged = { newValue -> lastName = newValue })
+					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = { newValue -> firstName = newValue }
+				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
 				SimpleField(
+					strId = R.string.last_name,
+					lastName,
+					fieldErrorState = lastName.isEmpty(),
 					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = { newValue -> lastName = newValue }
+				)
+
+				Spacer(Modifier.size(Dimens.PaddingNormal))
+
+				SimpleField(
 					strId = R.string.email,
 					email,
 					fieldErrorState = email.isEmpty(),
+					modifier = Modifier.fillMaxWidth(),
 					onFieldValueChanged = { newValue ->
 						email = newValue
 						viewModel.changeEmail(newValue)
-					})
+					}
+				)
 
 				if (email.isNotEmpty() && !emailError.isEmailCorrect) {
 					Text(
@@ -142,16 +145,18 @@ private fun ScreenContent(
 					onFieldValueChanged = { newValue ->
 						password = newValue
 						viewModel.changePassword(newValue)
-					})
+					}
+				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
 				PasswordField(
-					modifier = Modifier.fillMaxWidth(),
 					strId = R.string.confirm_password,
 					confirmPassword,
 					nameErrorState = confirmPassword.isEmpty(),
-					onNameChanged = { newValue -> confirmPassword = newValue })
+					modifier = Modifier.fillMaxWidth(),
+					onNameChanged = { newValue -> confirmPassword = newValue }
+				)
 
 				if (confirmPassword.isNotEmpty() && password.isNotEmpty()) {
 					if (confirmPassword != password) {
@@ -164,33 +169,40 @@ private fun ScreenContent(
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				TextFieldWithDropDownComponent(modifier = Modifier.fillMaxWidth(),
+				TextFieldWithDropDownComponent(
 					item = country,
 					strId = R.string.country,
 					fieldErrorState = country.isEmpty(),
 					itemsList = countryList,
-					onFieldValueChanged = { newValue -> country = newValue })
+					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = { newValue -> country = newValue }
+				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				FieldDatePicker(modifier = Modifier.fillMaxWidth(),
+				FieldDatePicker(
 					birthDay,
 					birthDay.isEmpty(),
 					R.string.birth_day,
-					onFieldValueChanged = { newValue -> birthDay = newValue })
+					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = { newValue -> birthDay = newValue }
+				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
 				Box(
 					modifier = Modifier.padding(
-						Dimens.Padding40, Dimens.Padding0, Dimens.Padding40, Dimens.Padding0
+						Dimens.Padding40,
+						Dimens.Padding0,
+						Dimens.Padding40,
+						Dimens.Padding0
 					)
 				) {
 					val isFieldsValid: Boolean =
-						firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !emailError.isEmailCorrect
-							|| password.isEmpty() || confirmPassword.isEmpty() || birthDay.isEmpty()
-							|| country.isEmpty() || !passwordError.hasMinimum || !passwordError.hasCapitalizedLetter
-							|| password != confirmPassword
+						firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !emailError.isEmailCorrect ||
+							password.isEmpty() || confirmPassword.isEmpty() || birthDay.isEmpty() ||
+							country.isEmpty() || !passwordError.hasMinimum || !passwordError.hasCapitalizedLetter ||
+							password != confirmPassword
 					Button(
 						onClick = {
 							if (isFieldsValid) {
@@ -229,8 +241,8 @@ private fun ScreenContent(
 						},
 						shape = RoundedCornerShape(Dimens.Padding50),
 						modifier = Modifier
-							.fillMaxWidth()
-							.height(Dimens.Padding50)
+                            .fillMaxWidth()
+                            .height(Dimens.Padding50)
 					) {
 						Text(text = stringResource(id = R.string.sign_up))
 					}
@@ -245,7 +257,6 @@ object GetList {
 		return context.assets.open("listCountries.txt").bufferedReader().use {
 			it.readLines()
 		}
-
 	}
 
 	suspend fun setList(context: Context, countryList: MutableList<String>) = coroutineScope {
@@ -254,7 +265,9 @@ object GetList {
 	}
 
 	fun getList(
-		coroutineScope: CoroutineScope, context: Context, countryList: MutableList<String>
+		coroutineScope: CoroutineScope,
+		context: Context,
+		countryList: MutableList<String>
 	) {
 		coroutineScope.launch { setList(context, countryList) }
 	}

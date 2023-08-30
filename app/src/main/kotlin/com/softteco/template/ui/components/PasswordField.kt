@@ -21,10 +21,10 @@ import com.softteco.template.R
 
 @Composable
 fun PasswordField(
-	modifier: Modifier = Modifier,
 	strId: Int,
 	value: String,
 	nameErrorState: Boolean,
+	modifier: Modifier = Modifier,
 	onNameChanged: ((String) -> Unit) = {}
 ) {
 	var passwordVisibility by remember { mutableStateOf(true) }
@@ -53,7 +53,8 @@ fun PasswordField(
 					tint = Color.Black
 				)
 			}
-		}, visualTransformation = if (passwordVisibility) {
+		},
+		visualTransformation = if (passwordVisibility) {
 			PasswordVisualTransformation()
 		} else {
 			VisualTransformation.None

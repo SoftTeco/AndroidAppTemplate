@@ -6,9 +6,9 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface UserApi {
-	@POST("/auth/login")
-	suspend fun login(@Body userAuth: LoginAuthDto): Boolean
+    @POST("/auth/login")
+    suspend fun login(@Body userAuth: LoginAuthDto): Boolean
 
-	@POST("/auth/registration")
-	suspend fun registration(@Body user: CreateUserDto): Boolean
+    @POST("/auth/registration")
+    suspend fun registration(@Body user: CreateUserDto): Boolean
 }
