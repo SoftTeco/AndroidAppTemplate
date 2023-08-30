@@ -24,4 +24,5 @@
     <string name="last_name">Last name</string>
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_mismatching">Password mismatch</string>
+    <string name="go_to_login">Go to Log in screen</string>
 </resources>

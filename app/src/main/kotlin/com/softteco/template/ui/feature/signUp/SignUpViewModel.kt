@@ -36,7 +36,7 @@ class SignUpViewModel @Inject constructor(
 	var passwordValue by mutableStateOf("")
 	var emailValue by mutableStateOf("")
 
-	fun login(
+	fun register(
 		user: CreateUserDto
 	) = viewModelScope.launch {
 		loading.value = true

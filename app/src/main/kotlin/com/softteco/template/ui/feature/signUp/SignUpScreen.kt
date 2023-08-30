@@ -30,6 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
+import com.softteco.template.data.login.model.CreateUserDto
+import com.softteco.template.data.login.model.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.FieldDatePicker
 import com.softteco.template.ui.components.PasswordField
@@ -58,7 +60,6 @@ fun SignUpScreen(
 	)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScreenContent(
 	modifier: Modifier = Modifier,
@@ -187,11 +188,46 @@ private fun ScreenContent(
 						Dimens.Padding40, Dimens.Padding0, Dimens.Padding40, Dimens.Padding0
 					)
 				) {
+					val isFieldsValid: Boolean =
+						firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !emailError.isEmailCorrect
+							|| password.isEmpty() || confirmPassword.isEmpty() || birthDay.isEmpty()
+							|| country.isEmpty() || !passwordError.hasMinimum || !passwordError.hasCapitalizedLetter
+							|| password != confirmPassword
 					Button(
 						onClick = {
-							Toast.makeText(
-								context, birthDay, Toast.LENGTH_SHORT
-							).show()
+							if (isFieldsValid) {
+								Toast.makeText(
+									context,
+									context.getText(R.string.empty_fields_error),
+									Toast.LENGTH_SHORT
+								).show()
+							} else {
+								viewModel.register(
+									CreateUserDto(
+										firstName,
+										lastName,
+										email,
+										password,
+										confirmPassword,
+										country,
+										birthDay
+									)
+								)
+								if (viewModel.signUpState.value) {
+									Toast.makeText(
+										context,
+										context.getText(R.string.go_to_login),
+										Toast.LENGTH_SHORT
+									).show()
+									onBackClicked()
+								} else {
+									Toast.makeText(
+										context,
+										context.getText(R.string.problem_error),
+										Toast.LENGTH_SHORT
+									).show()
+								}
+							}
 						},
 						shape = RoundedCornerShape(Dimens.Padding50),
 						modifier = Modifier
