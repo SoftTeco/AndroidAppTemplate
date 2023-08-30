@@ -2,6 +2,8 @@ package com.softteco.template.data.di
 
 import com.softteco.template.data.base.error.ErrorHandler
 import com.softteco.template.data.base.error.ErrorHandlerImpl
+import com.softteco.template.data.login.CreateUserRepository
+import com.softteco.template.data.login.CreateUserRepositoryImpl
 import com.softteco.template.data.login.LoginRepository
 import com.softteco.template.data.login.LoginRepositoryImpl
 import com.softteco.template.data.profile.ProfileRepository
@@ -20,6 +22,9 @@ internal interface RepositoryModule {
 
     @Binds
     fun bindLoginRepository(impl: LoginRepositoryImpl): LoginRepository
+
+    @Binds
+    fun bindCreateUserRepository(impl: CreateUserRepositoryImpl): CreateUserRepository
 
     @Binds
     fun bindErrorHandler(impl: ErrorHandlerImpl): ErrorHandler

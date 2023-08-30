@@ -17,8 +17,8 @@
     <string name="country">Country</string>
     <string name="email_error">Not match</string>
     <string name="email_not_valid">Email is not valid</string>
-    <string name="registration_password_condition1"> at least 8 characters</string>
-    <string name="registration_password_condition2">must contain uppercase and lowercase letters, as well as numbers</string>
+    <string name="registration_password_condition1"> at least 6 characters</string>
+    <string name="registration_password_condition2">at least 1 uppercase letter</string>
     <string name="birth_day">Birth day</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>

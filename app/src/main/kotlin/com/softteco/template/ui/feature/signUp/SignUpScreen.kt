@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +32,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.FieldDatePicker
+import com.softteco.template.ui.components.PasswordField
+import com.softteco.template.ui.components.PasswordFieldComponentWithValidation
 
 import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.TextFieldWithDropDownComponent
-import com.softteco.template.ui.feature.login.LoginViewModel
 import com.softteco.template.ui.theme.Dimens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -45,13 +47,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
 	modifier: Modifier = Modifier,
-	viewModel: LoginViewModel = hiltViewModel(),
+	viewModel: SignUpViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {}
 ) {
 
 	ScreenContent(
 		modifier = modifier,
-		//	viewModel = viewModel,
+		viewModel = viewModel,
 		onBackClicked = onBackClicked
 	)
 }
@@ -60,7 +62,7 @@ fun SignUpScreen(
 @Composable
 private fun ScreenContent(
 	modifier: Modifier = Modifier,
-	//viewModel: SignUpViewModel,
+	viewModel: SignUpViewModel,
 	onBackClicked: () -> Unit = {}
 ) {
 	val scrollState = rememberScrollState()
@@ -78,6 +80,9 @@ private fun ScreenContent(
 	val countryList = mutableListOf<String>()
 	val coroutineScope = rememberCoroutineScope()
 	GetList.getList(coroutineScope, context, countryList)
+
+	val passwordError by viewModel.passwordValidationError.collectAsState()
+	val emailError by viewModel.emailValidationError.collectAsState()
 
 	Box(modifier.fillMaxSize()) {
 		Column {
@@ -111,27 +116,43 @@ private fun ScreenContent(
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(modifier = Modifier.fillMaxWidth(),
+				SimpleField(
+					modifier = Modifier.fillMaxWidth(),
 					strId = R.string.email,
 					email,
 					fieldErrorState = email.isEmpty(),
-					onFieldValueChanged = { newValue -> email = newValue })
+					onFieldValueChanged = { newValue ->
+						email = newValue
+						viewModel.changeEmail(newValue)
+					})
+
+				if (email.isNotEmpty() && !emailError.isEmailCorrect) {
+					Text(
+						text = stringResource(id = R.string.email_not_valid),
+						color = Color.Red
+					)
+				}
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(modifier = Modifier.fillMaxWidth(),
-					strId = R.string.password,
-					password,
+				PasswordFieldComponentWithValidation(
+					modifier = Modifier.fillMaxWidth(),
+					value = password,
 					fieldErrorState = password.isEmpty(),
-					onFieldValueChanged = { newValue -> password = newValue })
+					passwordError = passwordError,
+					onFieldValueChanged = { newValue ->
+						password = newValue
+						viewModel.changePassword(newValue)
+					})
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(modifier = Modifier.fillMaxWidth(),
+				PasswordField(
+					modifier = Modifier.fillMaxWidth(),
 					strId = R.string.confirm_password,
 					confirmPassword,
-					fieldErrorState = confirmPassword.isEmpty(),
-					onFieldValueChanged = { newValue -> confirmPassword = newValue })
+					nameErrorState = confirmPassword.isEmpty(),
+					onNameChanged = { newValue -> confirmPassword = newValue })
 
 				if (confirmPassword.isNotEmpty() && password.isNotEmpty()) {
 					if (confirmPassword != password) {

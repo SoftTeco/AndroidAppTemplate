@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.login
+package com.softteco.template.ui.feature.signUp
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.Constants
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.login.LoginRepository
-import com.softteco.template.data.login.model.LoginAuthDto
+import com.softteco.template.data.login.CreateUserRepository
+import com.softteco.template.data.login.model.CreateUserDto
 import com.softteco.template.ui.feature.FieldValidationState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,25 +24,26 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-	private val loginRepository: LoginRepository,
+class SignUpViewModel @Inject constructor(
+	private val createUserRepository: CreateUserRepository,
 ) : ViewModel() {
 
 	private val validateFields: ValidateFields = ValidateFields()
 
 	private val loading = MutableStateFlow(false)
-	val loginState = MutableStateFlow(false)
+	val signUpState = MutableStateFlow(false)
 
-	var value by mutableStateOf("")
+	var passwordValue by mutableStateOf("")
+	var emailValue by mutableStateOf("")
 
 	fun login(
-		userAuth: LoginAuthDto
+		user: CreateUserDto
 	) = viewModelScope.launch {
 		loading.value = true
-		loginRepository.login(userAuth).run {
+		createUserRepository.registration(user).run {
 			when (this) {
-				is Result.Success -> loginState.value = true
-				is Result.Error -> loginState.value = false
+				is Result.Success -> signUpState.value = true
+				is Result.Error -> signUpState.value = false
 			}
 		}
 		loading.value = false
@@ -50,11 +51,11 @@ class LoginViewModel @Inject constructor(
 
 	val state = combine(
 		loading,
-		loginState
-	) { loading, loginState ->
+		signUpState
+	) { loading, signUpState ->
 		State(
 			loading = loading,
-			loginState = loginState
+			signUpState = signUpState
 		)
 	}.stateIn(
 		viewModelScope,
@@ -65,12 +66,22 @@ class LoginViewModel @Inject constructor(
 	@Immutable
 	data class State(
 		val loading: Boolean = false,
-		val loginState: Boolean = false
+		val signUpState: Boolean = false
 	)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	var fieldValidationError =
-		snapshotFlow { value }
+	var passwordValidationError =
+		snapshotFlow { passwordValue}
+			.mapLatest { validateFields.validatePassword(it) }
+			.stateIn(
+				scope = viewModelScope,
+				started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
+				initialValue = FieldValidationState()
+			)
+
+	@OptIn(ExperimentalCoroutinesApi::class)
+	var emailValidationError =
+		snapshotFlow {emailValue}
 			.mapLatest { validateFields.validateEmail(it) }
 			.stateIn(
 				scope = viewModelScope,
@@ -78,7 +89,11 @@ class LoginViewModel @Inject constructor(
 				initialValue = FieldValidationState()
 			)
 
+	fun changePassword(value: String) {
+		passwordValue = value
+	}
+
 	fun changeEmail(value: String) {
-		this.value = value
+		emailValue = value
 	}
 }

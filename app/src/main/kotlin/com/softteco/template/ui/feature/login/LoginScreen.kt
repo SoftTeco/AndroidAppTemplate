@@ -95,7 +95,10 @@ private fun ScreenContent(
 					strId = R.string.email,
 					email,
 					fieldErrorState = email.isEmpty(),
-					onFieldValueChanged = { newValue -> email = newValue })
+					onFieldValueChanged = { newValue ->
+						email = newValue
+						viewModel.changeEmail(newValue)
+					})
 
 				if (email.isNotEmpty() && !emailError.isEmailCorrect) {
 					Text(
@@ -126,7 +129,6 @@ private fun ScreenContent(
 						Dimens.Padding0
 					)
 				) {
-					viewModel.value = email
 					Button(
 						onClick = {
 							if (!emailError.isEmailCorrect ||
