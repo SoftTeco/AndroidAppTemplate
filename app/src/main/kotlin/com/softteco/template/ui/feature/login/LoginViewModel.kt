@@ -32,8 +32,7 @@ class LoginViewModel @Inject constructor(
 
 	private val validateFields: ValidateFields = ValidateFields()
 
-	private val snackbarState = MutableStateFlow(SnackBarState())
-	private val loading = MutableStateFlow(true)
+	private val loading = MutableStateFlow(false)
 	val loginState = MutableStateFlow(false)
 
 	var value by mutableStateOf("")
@@ -41,42 +40,23 @@ class LoginViewModel @Inject constructor(
 	fun login(
 		userAuth: LoginAuthDto
 	) = viewModelScope.launch {
+		loading.value = true
 		loginRepository.login(userAuth).run {
-			when (val result = this) {
+			when (this) {
 				is Result.Success -> loginState.value = true
-				is Result.Error -> handleError(result.error)
+				is Result.Error -> loginState.value = false
 			}
 		}
 		loading.value = false
 	}
 
-	private fun handleError(error: ErrorEntity) {
-		if (error.isDisplayable) {
-			val textId = when (error) {
-				ErrorEntity.AccessDenied -> R.string.error_example
-				ErrorEntity.Network -> R.string.error_example
-				ErrorEntity.NotFound -> R.string.error_example
-				ErrorEntity.ServiceUnavailable -> R.string.error_example
-				ErrorEntity.Unknown -> R.string.error_example
-			}
-			snackbarState.value = SnackBarState(
-				textId = textId,
-				show = true,
-			)
-		}
-	}
-
-
 	val state = combine(
 		loading,
-		loginState,
-		snackbarState
-	) { loading, loginState, snackbar ->
+		loginState
+	) { loading, loginState ->
 		State(
 			loading = loading,
-			loginState = loginState,
-			snackbar = snackbar,
-			dismissSnackBar = { snackbarState.value = SnackBarState() }
+			loginState = loginState
 		)
 	}.stateIn(
 		viewModelScope,
@@ -87,9 +67,7 @@ class LoginViewModel @Inject constructor(
 	@Immutable
 	data class State(
 		val loading: Boolean = false,
-		val loginState: Boolean = false,
-		val snackbar: SnackBarState = SnackBarState(),
-		val dismissSnackBar: () -> Unit = {},
+		val loginState: Boolean = false
 	)
 
 	@OptIn(ExperimentalCoroutinesApi::class)

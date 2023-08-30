@@ -15,6 +15,7 @@ import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.login.LoginScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
 import com.softteco.template.ui.feature.settings.SettingsScreen
+import com.softteco.template.ui.feature.signUp.SignUpScreen
 import com.softteco.template.ui.feature.signature.SignatureScreen
 
 @Composable
@@ -58,6 +59,9 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
 		composable(Screen.Login.route) {
 			LoginScreen(onBackClicked = { navController.navigateUp() }, onLoginClicked = {},
 				onSignUpClicked = { navController.navigate(Screen.SignUp.route) })
+		}
+		composable(Screen.SignUp.route) {
+			SignUpScreen()
 		}
 	}
 }

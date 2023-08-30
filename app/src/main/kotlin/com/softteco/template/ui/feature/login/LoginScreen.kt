@@ -71,12 +71,6 @@ private fun ScreenContent(
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 
-	TextSnackbarContainer(
-		modifier = Modifier,
-		snackbarText = stringResource(state.snackbar.textId),
-		showSnackbar = state.snackbar.show,
-		onDismissSnackbar = state.dismissSnackBar,
-	) {
 		Box(modifier.fillMaxSize()) {
 			Column {
 				CustomTopAppBar(
@@ -175,4 +169,3 @@ private fun ScreenContent(
 			}
 		}
 	}
-}
