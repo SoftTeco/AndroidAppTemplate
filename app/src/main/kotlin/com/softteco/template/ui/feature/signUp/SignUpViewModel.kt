@@ -71,7 +71,7 @@ class SignUpViewModel @Inject constructor(
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	var passwordValidationError =
-		snapshotFlow { passwordValue}
+		snapshotFlow { passwordValue }
 			.mapLatest { validateFields.validatePassword(it) }
 			.stateIn(
 				scope = viewModelScope,
@@ -81,7 +81,7 @@ class SignUpViewModel @Inject constructor(
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	var emailValidationError =
-		snapshotFlow {emailValue}
+		snapshotFlow { emailValue }
 			.mapLatest { validateFields.validateEmail(it) }
 			.stateIn(
 				scope = viewModelScope,

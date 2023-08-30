@@ -17,8 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,7 +62,7 @@ fun PasswordFieldComponentWithValidation(
 					} else {
 						Icons.Default.Done
 					},
-					contentDescription = "visibiluty",
+					contentDescription = stringResource(id = R.string.visibility),
 					tint = Color.Black
 				)
 			}
@@ -74,7 +72,7 @@ fun PasswordFieldComponentWithValidation(
 	if (fieldErrorState) {
 		Text(text = stringResource(id = R.string.required), color = Color.Red)
 	}
-	Spacer(modifier = Modifier.height(8.dp))
+	Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
 
 	Column(verticalArrangement = Arrangement.spacedBy(Dimens.Padding5)) {
 		ConditionRow(
@@ -93,7 +91,7 @@ fun ConditionRow(
 	condition: String, check: Boolean
 ) {
 	val color by animateColorAsState(
-		targetValue = if (check) Color.Green else Color.Red, label = "text color"
+		targetValue = if (check) Color.Green else Color.Red
 	)
 
 	val icon = if (check) {
@@ -104,7 +102,9 @@ fun ConditionRow(
 
 	Row {
 		Icon(
-			imageVector = icon, tint = color, contentDescription = "status icon"
+			imageVector = icon,
+			tint = color,
+			contentDescription = stringResource(id = R.string.visibility)
 		)
 		Spacer(modifier = Modifier.width(Dimens.Padding10))
 		Text(

@@ -49,7 +49,7 @@ fun PasswordField(
 					} else {
 						Icons.Default.Done
 					},
-					contentDescription = "visibility",
+					contentDescription = stringResource(id = R.string.visibility),
 					tint = Color.Black
 				)
 			}

@@ -24,10 +24,10 @@ class ValidateFields {
 		value.matches(Regex(Constants.EMAIL_PATTERN))
 }
 
-   private fun validateCapitalizedLetter(password: String): Boolean =
+private fun validateCapitalizedLetter(password: String): Boolean =
 	password.matches(Regex(Constants.PASSWORD_PATTERN_CAPITALIZED_LETTER))
 
-   private fun validateMinimum(password: String): Boolean =
+private fun validateMinimum(password: String): Boolean =
 	password.matches(Regex(Constants.PASSWORD_PATTERN_MIN))
 
 data class FieldValidationState(

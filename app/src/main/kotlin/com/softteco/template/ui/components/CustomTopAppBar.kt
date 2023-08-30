@@ -22,7 +22,6 @@ fun CustomTopAppBar(
 	showBackIcon: Boolean,
 	onBackClicked: () -> Unit = {},
 ) {
-
 	TopAppBar(
 		modifier = modifier,
 		title = {

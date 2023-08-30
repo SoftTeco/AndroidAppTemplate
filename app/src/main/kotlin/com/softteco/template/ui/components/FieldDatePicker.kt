@@ -5,7 +5,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +26,12 @@ fun FieldDatePicker(
 	MaterialDialog(
 		dialogState = dialogState,
 		buttons = {
-			positiveButton("Ok")
-			negativeButton("Cancel")
+			positiveButton(stringResource(id = R.string.ok))
+			negativeButton(stringResource(id = R.string.cancel))
 		}
 	) {
-
 		datepicker { date ->
-		onFieldValueChanged(date.toString())
+			onFieldValueChanged(date.toString())
 		}
 	}
 	val source = remember {

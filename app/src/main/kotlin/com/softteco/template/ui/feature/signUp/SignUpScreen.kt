@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.data.login.model.CreateUserDto
-import com.softteco.template.data.login.model.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.FieldDatePicker
 import com.softteco.template.ui.components.PasswordField

@@ -25,4 +25,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_mismatching">Password mismatch</string>
     <string name="go_to_login">Go to Log in screen</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="visibility">visibility</string>
 </resources>

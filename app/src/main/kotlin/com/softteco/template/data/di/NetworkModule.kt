@@ -4,15 +4,12 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.softteco.template.BuildConfig
 import com.softteco.template.data.TemplateApi
 import com.softteco.template.data.UserApi
-import com.softteco.template.data.login.LoginRepository
-import com.softteco.template.data.login.LoginRepositoryImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
