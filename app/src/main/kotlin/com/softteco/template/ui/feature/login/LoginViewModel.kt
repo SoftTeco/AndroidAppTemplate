@@ -8,12 +8,8 @@ import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.login.LoginRepository
 import com.softteco.template.data.login.model.LoginAuthDto
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.SnackBarState
-import com.softteco.template.ui.feature.profile.ProfileViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,8 +28,6 @@ import com.softteco.template.R
 import com.softteco.template.data.login.model.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.TextSnackbarContainer
-import com.softteco.template.ui.feature.profile.ProfileViewModel
-import com.softteco.template.ui.theme.Dimens
 
 
 @Composable
