@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.data.login.model.LoginAuthDto
@@ -32,6 +31,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.theme.Dimens
 
 
 @Composable
@@ -48,6 +48,7 @@ fun LoginScreen(
 		modifier = modifier
 	)
 }
+
 @Composable
 private fun ScreenContent(
 	viewModel: LoginViewModel,
@@ -56,6 +57,7 @@ private fun ScreenContent(
 	onLoginClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
+	val fieldError by viewModel.fieldValidationError.collectAsState()
 	val context = LocalContext.current
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
@@ -75,14 +77,14 @@ private fun ScreenContent(
 					onBackClicked = onBackClicked
 				)
 				Column(
-					modifier = Modifier.padding(20.dp),
+					modifier = Modifier.padding(Dimens.Padding20),
 					verticalArrangement = Arrangement.Center,
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
 					if (state.loading) {
 						Text(stringResource(id = R.string.loading))
 					}
-					Spacer(modifier = Modifier.height(20.dp))
+					Spacer(modifier = Modifier.height(Dimens.Padding20))
 
 					SimpleField(
 						modifier = Modifier.fillMaxWidth(),
@@ -92,33 +94,51 @@ private fun ScreenContent(
 						onNameChanged = { newValue -> email = newValue })
 					Spacer(
 						modifier = Modifier
-							.height(20.dp)
-							.size(16.dp)
+							.height(Dimens.Padding20)
+							.size(Dimens.PaddingNormal)
 					)
 					PasswordField(
 						modifier = Modifier.fillMaxWidth(),
 						strId = R.string.password,
 						password,
 						nameErrorState = password.isEmpty(),
-						onNameChanged = { newValue -> password= newValue })
+						onNameChanged = { newValue -> password = newValue })
 
-					Spacer(modifier = Modifier.height(20.dp))
-					Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+					Spacer(modifier = Modifier.height(Dimens.Padding20))
+					Box(
+						modifier = Modifier.padding(
+							Dimens.Padding40,
+							Dimens.Padding0,
+							Dimens.Padding40,
+							Dimens.Padding0
+						)
+					) {
 						Button(
 							onClick = {
-								viewModel.login(LoginAuthDto(email, password))
-								if (viewModel.loginState.value) {
-									onLoginClicked() //transfer to user's screen
-								} else {
+								if (email.isEmpty() || password.isEmpty()) {
 									Toast.makeText(
-										context, "Yoy have a problem", Toast.LENGTH_SHORT
+										context,
+										context.getText(R.string.empty_fields_error),
+										Toast.LENGTH_SHORT
 									).show()
+								} else {
+									viewModel.login(LoginAuthDto(email, password))
+									if (viewModel.loginState.value) {
+										onLoginClicked() //transfer to user's screen
+									} else {
+										Toast.makeText(
+											context,
+											context.getText(R.string.problem_error),
+											Toast.LENGTH_SHORT
+										).show()
+									}
 								}
+
 							},
-							shape = RoundedCornerShape(50.dp),
+							shape = RoundedCornerShape(Dimens.Padding50),
 							modifier = Modifier
 								.fillMaxWidth()
-								.height(50.dp)
+								.height(Dimens.Padding50)
 						) {
 							Text(text = stringResource(id = R.string.login))
 						}

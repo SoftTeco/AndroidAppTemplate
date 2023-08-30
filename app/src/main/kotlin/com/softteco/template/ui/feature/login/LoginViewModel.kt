@@ -37,7 +37,6 @@ class LoginViewModel @Inject constructor(
 	val loginState = MutableStateFlow(false)
 
 	var value by mutableStateOf("")
-		private set
 
 	fun login(
 		userAuth: LoginAuthDto
