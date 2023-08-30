@@ -13,21 +13,21 @@ fun SimpleField(
 	modifier: Modifier = Modifier,
 	strId: Int,
 	value: String,
-	nameErrorState: Boolean,
-	onNameChanged: ((String) -> Unit) = {}
+	fieldErrorState: Boolean,
+	onFieldValueChanged: ((String) -> Unit) = {}
 ) {
 	OutlinedTextField(
 		value = value,
 		onValueChange = {
-			onNameChanged(it)
+			onFieldValueChanged(it)
 		},
 		modifier = modifier,
 		label = {
 			Text(text = stringResource(id = strId))
 		},
-		isError = nameErrorState
+		isError = fieldErrorState
 	)
-	if (nameErrorState) {
+	if (fieldErrorState) {
 		Text(text = stringResource(id = R.string.required), color = Color.Red)
 	}
 }

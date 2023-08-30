@@ -37,7 +37,6 @@ import com.softteco.template.data.login.model.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.SimpleField
-import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.Dimens
 
 
@@ -46,7 +45,7 @@ fun LoginScreen(
 	modifier: Modifier = Modifier,
 	viewModel: LoginViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {},
-	onLoginClicked: () -> Unit = {} ,
+	onLoginClicked: () -> Unit = {},
 	onSignUpClicked: () -> Unit = {}
 ) {
 	ScreenContent(
@@ -71,101 +70,111 @@ private fun ScreenContent(
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 
-		Box(modifier.fillMaxSize()) {
-			Column {
-				CustomTopAppBar(
+	val emailError by viewModel.fieldValidationError.collectAsState()
+
+	Box(modifier.fillMaxSize()) {
+		Column {
+			CustomTopAppBar(
+				modifier = Modifier.fillMaxWidth(),
+				stringResource(id = R.string.login),
+				showBackIcon = true,
+				onBackClicked = onBackClicked
+			)
+			Column(
+				modifier = Modifier.padding(Dimens.Padding20),
+				verticalArrangement = Arrangement.Center,
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				if (state.loading) {
+					Text(stringResource(id = R.string.loading))
+				}
+				Spacer(modifier = Modifier.height(Dimens.Padding20))
+
+				SimpleField(
 					modifier = Modifier.fillMaxWidth(),
-					stringResource(id = R.string.login),
-					showBackIcon = true,
-					onBackClicked = onBackClicked
-				)
-				Column(
-					modifier = Modifier.padding(Dimens.Padding20),
-					verticalArrangement = Arrangement.Center,
-					horizontalAlignment = Alignment.CenterHorizontally
-				) {
-					if (state.loading) {
-						Text(stringResource(id = R.string.loading))
-					}
-					Spacer(modifier = Modifier.height(Dimens.Padding20))
+					strId = R.string.email,
+					email,
+					fieldErrorState = email.isEmpty(),
+					onFieldValueChanged = { newValue -> email = newValue })
 
-					SimpleField(
-						modifier = Modifier.fillMaxWidth(),
-						strId = R.string.email,
-						email,
-						nameErrorState = email.isEmpty(),
-						onNameChanged = { newValue -> email = newValue })
-					Spacer(
-						modifier = Modifier
-							.height(Dimens.Padding20)
-							.size(Dimens.PaddingNormal)
-					)
-					PasswordField(
-						modifier = Modifier.fillMaxWidth(),
-						strId = R.string.password,
-						password,
-						nameErrorState = password.isEmpty(),
-						onNameChanged = { newValue -> password = newValue })
-
-					Spacer(modifier = Modifier.height(Dimens.Padding20))
-					Box(
-						modifier = Modifier.padding(
-							Dimens.Padding40,
-							Dimens.Padding0,
-							Dimens.Padding40,
-							Dimens.Padding0
-						)
-					) {
-						viewModel.value = email
-						val emailError by viewModel.fieldValidationError.collectAsState()
-						Button(
-							onClick = {
-								if (!emailError.isEmailCorrect ||
-									email.isEmpty() || password.isEmpty()
-								) {
-									Toast.makeText(
-										context,
-										context.getText(R.string.empty_fields_error),
-										Toast.LENGTH_SHORT
-									).show()
-								} else {
-									viewModel.login(LoginAuthDto(email, password))
-									if (viewModel.loginState.value) {
-										onLoginClicked() //transfer to user's screen
-									} else {
-										Toast.makeText(
-											context,
-											context.getText(R.string.problem_error),
-											Toast.LENGTH_SHORT
-										).show()
-									}
-								}
-
-							},
-							shape = RoundedCornerShape(Dimens.Padding50),
-							modifier = Modifier
-								.fillMaxWidth()
-								.height(Dimens.Padding50)
-						) {
-							Text(text = stringResource(id = R.string.login))
-						}
-					}
-					Spacer(modifier = Modifier.weight(1f))
-					ClickableText(
-						text = AnnotatedString(stringResource(id = R.string.sign_up)),
-						modifier = Modifier
-							.padding(Dimens.Padding20),
-						onClick = {
-							onSignUpClicked()
-						},
-						style = TextStyle(
-							fontSize = 20.sp,
-							fontFamily = FontFamily.Default,
-							textDecoration = TextDecoration.Underline,
-							color = Color.Blue
-						)
+				if (email.isNotEmpty() && !emailError.isEmailCorrect) {
+					Text(
+						text = stringResource(id = R.string.email_not_valid),
+						color = Color.Red
 					)
 				}
+
+				Spacer(
+					modifier = Modifier
+						.height(Dimens.Padding20)
+						.size(Dimens.PaddingNormal)
+				)
+
+				PasswordField(
+					modifier = Modifier.fillMaxWidth(),
+					strId = R.string.password,
+					password,
+					nameErrorState = password.isEmpty(),
+					onNameChanged = { newValue -> password = newValue })
+
+				Spacer(modifier = Modifier.height(Dimens.Padding20))
+				Box(
+					modifier = Modifier.padding(
+						Dimens.Padding40,
+						Dimens.Padding0,
+						Dimens.Padding40,
+						Dimens.Padding0
+					)
+				) {
+					viewModel.value = email
+					Button(
+						onClick = {
+							if (!emailError.isEmailCorrect ||
+								email.isEmpty() || password.isEmpty()
+							) {
+								Toast.makeText(
+									context,
+									context.getText(R.string.empty_fields_error),
+									Toast.LENGTH_SHORT
+								).show()
+							} else {
+								viewModel.login(LoginAuthDto(email, password))
+								if (viewModel.loginState.value) {
+									onLoginClicked() //transfer to user's screen
+								} else {
+									Toast.makeText(
+										context,
+										context.getText(R.string.problem_error),
+										Toast.LENGTH_SHORT
+									).show()
+								}
+							}
+
+						},
+						shape = RoundedCornerShape(Dimens.Padding50),
+						modifier = Modifier
+							.fillMaxWidth()
+							.height(Dimens.Padding50)
+					) {
+						Text(text = stringResource(id = R.string.login))
+					}
+				}
+				Spacer(modifier = Modifier.weight(1f))
+				ClickableText(
+					text = AnnotatedString(stringResource(id = R.string.sign_up)),
+					modifier = Modifier
+						.padding(Dimens.Padding20),
+					onClick = {
+						onSignUpClicked()
+					},
+					style = TextStyle(
+						fontSize = 20.sp,
+						fontFamily = FontFamily.Default,
+						textDecoration = TextDecoration.Underline,
+						color = Color.Blue
+					)
+				)
 			}
 		}
 	}
+}
