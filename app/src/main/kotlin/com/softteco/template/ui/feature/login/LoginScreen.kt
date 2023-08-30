@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +23,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.data.login.model.LoginAuthDto
@@ -39,12 +46,14 @@ fun LoginScreen(
 	modifier: Modifier = Modifier,
 	viewModel: LoginViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {},
-	onLoginClicked: () -> Unit = {}
+	onLoginClicked: () -> Unit = {} ,
+	onSignUpClicked: () -> Unit = {}
 ) {
 	ScreenContent(
 		viewModel = viewModel,
 		onBackClicked = onBackClicked,
 		onLoginClicked = onLoginClicked,
+		onSignUpClicked = onSignUpClicked,
 		modifier = modifier
 	)
 }
@@ -54,7 +63,8 @@ private fun ScreenContent(
 	viewModel: LoginViewModel,
 	modifier: Modifier = Modifier,
 	onBackClicked: () -> Unit = {},
-	onLoginClicked: () -> Unit = {}
+	onLoginClicked: () -> Unit = {},
+	onSignUpClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
 	val context = LocalContext.current
@@ -146,6 +156,21 @@ private fun ScreenContent(
 							Text(text = stringResource(id = R.string.login))
 						}
 					}
+					Spacer(modifier = Modifier.weight(1f))
+					ClickableText(
+						text = AnnotatedString(stringResource(id = R.string.sign_up)),
+						modifier = Modifier
+							.padding(Dimens.Padding20),
+						onClick = {
+							onSignUpClicked()
+						},
+						style = TextStyle(
+							fontSize = 20.sp,
+							fontFamily = FontFamily.Default,
+							textDecoration = TextDecoration.Underline,
+							color = Color.Blue
+						)
+					)
 				}
 			}
 		}
