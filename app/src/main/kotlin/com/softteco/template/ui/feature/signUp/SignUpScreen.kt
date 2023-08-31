@@ -57,9 +57,9 @@ fun SignUpScreen(
 @Composable
 private fun ScreenContent(
     modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
-    val viewModel: SignUpViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
 

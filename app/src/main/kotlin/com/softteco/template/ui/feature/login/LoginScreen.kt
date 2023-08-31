@@ -56,11 +56,11 @@ fun LoginScreen(
 @Composable
 private fun ScreenContent(
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {}
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
