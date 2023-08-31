@@ -1,20 +1,24 @@
 package com.softteco.template.ui.feature.login
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,157 +26,187 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.data.login.model.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.PasswordField
-import com.softteco.template.ui.components.SimpleField
+import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.PasswordFieldState
+import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit = {},
-    onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+	modifier: Modifier = Modifier,
+	viewModel: LoginViewModel = hiltViewModel(),
+	onBackClicked: () -> Unit = {},
+	onLoginClicked: () -> Unit = {},
+	onSignUpClicked: () -> Unit = {}
 ) {
-    ScreenContent(
-        onBackClicked = onBackClicked,
-        onLoginClicked = onLoginClicked,
-        onSignUpClicked = onSignUpClicked,
-        modifier = modifier
-    )
+	val state by viewModel.state.collectAsState()
+
+	ScreenContent(
+		modifier = modifier,
+		state = state,
+		onBackClicked = onBackClicked,
+		onLoginClicked = onLoginClicked,
+		onSignUpClicked = onSignUpClicked
+	)
 }
 
 @Composable
 private fun ScreenContent(
-    modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {},
-    onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+	state: LoginViewModel.State,
+	modifier: Modifier = Modifier,
+	onBackClicked: () -> Unit = {},
+	onLoginClicked: () -> Unit = {},
+	onSignUpClicked: () -> Unit = {}
 ) {
-    val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
+	TextSnackbarContainer(
+		modifier = modifier,
+		snackbarText = stringResource(state.snackBar.textId),
+		showSnackbar = state.snackBar.show,
+		onDismissSnackbar = state.dismissSnackBar,
+	) {
+		Column(
+			modifier = Modifier.fillMaxSize(),
+			verticalArrangement = Arrangement.spacedBy(Dimens.PaddingBig),
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			CustomTopAppBar(
+				stringResource(id = R.string.login),
+				showBackIcon = true,
+				modifier = Modifier.fillMaxWidth(),
+				onBackClicked = onBackClicked
+			)
+			Column(
+				modifier = Modifier.padding(Dimens.PaddingLarge),
+				verticalArrangement = Arrangement.Center,
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				if (state.loading) {
+					Text(stringResource(id = R.string.loading))
+				}
+				EmailField(state = state, Modifier.fillMaxWidth())
+				PasswordField(state = state, Modifier.fillMaxWidth())
+				Box(
+					modifier = Modifier.padding(
+						Dimens.PaddingLarge, Dimens.PaddingBig, Dimens.PaddingLarge
+					)
+				) {
+					Button(
+						onClick = {
+							state.onLoginClicked()
+							if (state.loginState) {
+								onLoginClicked() // transfer to user's screen
+							}
+						},
+						shape = MaterialTheme.shapes.large,
+						modifier = Modifier
+							.fillMaxWidth()
+							.height(Dimens.PaddingBig)
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+					) {
+						Text(text = stringResource(id = R.string.login))
+					}
+				}
+				ClickableText(
+					text = AnnotatedString(stringResource(id = R.string.sign_up)),
+					modifier = Modifier.padding(Dimens.PaddingNormal),
+					onClick = {
+						onSignUpClicked()
+					},
+					style = MaterialTheme.typography.bodyLarge
+				)
+			}
+		}
+	}
+}
 
-    Box(modifier.fillMaxSize()) {
-        Column {
-            CustomTopAppBar(
-                stringResource(id = R.string.login),
-                showBackIcon = true,
-                modifier = Modifier.fillMaxWidth(),
-                onBackClicked = onBackClicked
-            )
-            Column(
-                modifier = Modifier.padding(Dimens.Padding20),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (state.loading) {
-                    Text(stringResource(id = R.string.loading))
-                }
-                Spacer(modifier = Modifier.height(Dimens.Padding20))
+@Composable
+private fun EmailField(
+	state: LoginViewModel.State,
+	modifier: Modifier = Modifier,
+) {
+	var isError by remember { mutableStateOf(false) }
+	OutlinedTextField(
+		value = state.emailValue,
+		onValueChange = {
+			state.onEmailChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = R.string.email))
+		},
+		isError = state.fieldStateEmail is EmailFieldState.Empty || isError
+	)
+	if (state.fieldStateEmail is EmailFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+	LaunchedEffect(state.emailValue) {
+		delay(1000)
+		isError = state.fieldStateEmail is EmailFieldState.Error
+	}
+	if (isError) {
+		Text(
+			text = stringResource(R.string.email_not_valid),
+			color = MaterialTheme.colorScheme.error
+		)
+	}
+}
 
-                SimpleField(
-                    strId = R.string.email,
-                    email,
-                    fieldErrorState = email.isEmpty(),
-                    modifier = Modifier.fillMaxWidth(),
-                    onFieldValueChanged = { newValue ->
-                        email = newValue
-                        viewModel.changeEmail(newValue)
-                    }
-                )
+@Composable
+private fun PasswordField(
+	state: LoginViewModel.State,
+	modifier: Modifier = Modifier,
+) {
+	var passwordVisibility by remember { mutableStateOf(true) }
+	OutlinedTextField(
+		value = state.passwordValue,
+		onValueChange = {
+			state.onPasswordChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = R.string.password))
+		},
+		isError = state.fieldStatePassword is PasswordFieldState.Empty,
+		trailingIcon = {
+			IconButton(onClick = {
+				passwordVisibility = !passwordVisibility
+			}) {
+				Icon(
+					imageVector = if (passwordVisibility) {
+						Icons.Default.Create
+					} else {
+						Icons.Default.Done
+					},
+					contentDescription = stringResource(id = R.string.visibility),
+					tint = MaterialTheme.colorScheme.primary
+				)
+			}
+		},
+		visualTransformation = if (passwordVisibility) {
+			PasswordVisualTransformation()
+		} else {
+			VisualTransformation.None
+		}
+	)
+	if (state.fieldStatePassword is PasswordFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+}
 
-                if (email.isNotEmpty() && !state.emailError) {
-                    Text(
-                        text = stringResource(id = R.string.email_not_valid),
-                        color = Color.Red
-                    )
-                }
-
-                Spacer(
-                    modifier = Modifier
-                        .height(Dimens.Padding20)
-                        .size(Dimens.PaddingNormal)
-                )
-
-                PasswordField(
-                    strId = R.string.password,
-                    password,
-                    nameErrorState = password.isEmpty(),
-                    modifier = Modifier.fillMaxWidth(),
-                    onNameChanged = { newValue -> password = newValue }
-                )
-
-                Spacer(modifier = Modifier.height(Dimens.Padding20))
-                Box(
-                    modifier = Modifier.padding(
-                        Dimens.Padding40,
-                        Dimens.Padding0,
-                        Dimens.Padding40,
-                        Dimens.Padding0
-                    )
-                ) {
-                    Button(
-                        onClick = {
-                            if (!state.emailError ||
-                                email.isEmpty() || password.isEmpty()
-                            ) {
-                                Toast.makeText(
-                                    context,
-                                    context.getText(R.string.empty_fields_error),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                viewModel.login(LoginAuthDto(email, password))
-                                if (viewModel.loginState.value) {
-                                    onLoginClicked() // transfer to user's screen
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        context.getText(R.string.problem_error),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        },
-                        shape = RoundedCornerShape(Dimens.Padding50),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(Dimens.Padding50)
-                    ) {
-                        Text(text = stringResource(id = R.string.login))
-                    }
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                ClickableText(
-                    text = AnnotatedString(stringResource(id = R.string.sign_up)),
-                    modifier = Modifier
-                        .padding(Dimens.Padding20),
-                    onClick = {
-                        onSignUpClicked()
-                    },
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontFamily = FontFamily.Default,
-                        textDecoration = TextDecoration.Underline,
-                        color = Color.Blue
-                    )
-                )
-            }
-        }
-    }
+@Preview
+@Composable
+private fun Preview() {
+	AppTheme {
+		ScreenContent(state = LoginViewModel.State())
+	}
 }

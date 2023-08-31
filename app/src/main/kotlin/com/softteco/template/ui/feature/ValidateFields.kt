@@ -1,40 +1,43 @@
 package com.softteco.template.ui.feature
 
+import androidx.annotation.StringRes
 import com.softteco.template.Constants
 
-class ValidateFields {
-    fun validateEmail(fieldValue: String): FieldValidationState {
-        val isEmailCorrect = isEmailCorrect(fieldValue)
+object ValidateFields {
 
-        return FieldValidationState(
-            isEmailCorrect = isEmailCorrect
-        )
-    }
+	fun String.isEmailCorrect(): Boolean {
+		return this.matches(Regex(Constants.EMAIL_PATTERN))
+	}
 
-    fun validatePassword(fieldValue: String): FieldValidationState {
-        val validateCapitalizedLetter = validateCapitalizedLetter(fieldValue)
-        val validateMinimum = validateMinimum(fieldValue)
+	fun String.isFieldEmpty(): Boolean {
+		return this.isEmpty()
+	}
 
-        return FieldValidationState(
-            hasMinimum = validateMinimum,
-            hasCapitalizedLetter = validateCapitalizedLetter
-        )
-    }
+	fun String.isHasMinimum(): Boolean {
+		return this.matches(Regex(Constants.PASSWORD_PATTERN_MIN))
+	}
 
-    private fun isEmailCorrect(value: String): Boolean =
-        value.matches(Regex(Constants.EMAIL_PATTERN))
+	fun String.isHasCapitalizedLetter(): Boolean {
+		return this.matches(Regex(Constants.PASSWORD_PATTERN_CAPITALIZED_LETTER))
+	}
 }
 
-private fun validateCapitalizedLetter(password: String): Boolean =
-    password.matches(Regex(Constants.PASSWORD_PATTERN_CAPITALIZED_LETTER))
+sealed class EmailFieldState {
+	object Success : EmailFieldState()
+	object Empty : EmailFieldState()
+	class Waiting(@StringRes val labelRes: Int?) : EmailFieldState()
+	class Error(@StringRes val labelRes: Int?) : EmailFieldState()
+}
 
-private fun validateMinimum(password: String): Boolean =
-    password.matches(Regex(Constants.PASSWORD_PATTERN_MIN))
+sealed class SimpleFieldState {
+	object Success : SimpleFieldState()
+	object Empty : SimpleFieldState()
+	class Waiting(@StringRes val labelRes: Int?) : SimpleFieldState()
+}
 
-data class FieldValidationState(
-    var isEmailCorrect: Boolean = false,
-    val hasMinimum: Boolean = false,
-    val hasCapitalizedLetter: Boolean = false,
-    var isPasswordCorrect: Boolean = hasMinimum && hasCapitalizedLetter
-
-)
+sealed class PasswordFieldState {
+	object Success : PasswordFieldState()
+	object Empty : PasswordFieldState()
+	class Waiting(@StringRes val labelRes: Int) : PasswordFieldState()
+	class Error(@StringRes val labelRes: Int) : PasswordFieldState()
+}
