@@ -63,10 +63,9 @@ private fun ScreenContent(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    val emailError by viewModel.fieldValidationError.collectAsState()
 
     Box(modifier.fillMaxSize()) {
         Column {
@@ -97,7 +96,7 @@ private fun ScreenContent(
                     }
                 )
 
-                if (email.isNotEmpty() && !emailError.isEmailCorrect) {
+                if (email.isNotEmpty() && !state.emailError) {
                     Text(
                         text = stringResource(id = R.string.email_not_valid),
                         color = Color.Red
@@ -129,7 +128,7 @@ private fun ScreenContent(
                 ) {
                     Button(
                         onClick = {
-                            if (!emailError.isEmailCorrect ||
+                            if (!state.emailError ||
                                 email.isEmpty() || password.isEmpty()
                             ) {
                                 Toast.makeText(

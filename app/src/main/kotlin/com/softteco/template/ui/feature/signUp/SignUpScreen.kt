@@ -71,14 +71,12 @@ private fun ScreenContent(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var birthDay by remember { mutableStateOf("") }
+    val passwordError by viewModel.passwordError.collectAsState()
 
     var country by remember { mutableStateOf("") }
     val countryList = mutableListOf<String>()
     val coroutineScope = rememberCoroutineScope()
     GetListFromRecource.getList(coroutineScope, context, countryList)
-
-    val passwordError by viewModel.passwordValidationError.collectAsState()
-    val emailError by viewModel.emailValidationError.collectAsState()
 
     Box(modifier.fillMaxSize()) {
         Column {
@@ -131,7 +129,7 @@ private fun ScreenContent(
                     }
                 )
 
-                if (email.isNotEmpty() && !emailError.isEmailCorrect) {
+                if (email.isNotEmpty() && !state.emailError) {
                     Text(
                         text = stringResource(id = R.string.email_not_valid),
                         color = Color.Red
@@ -202,9 +200,9 @@ private fun ScreenContent(
                     )
                 ) {
                     val isFieldsValid: Boolean =
-                        firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !emailError.isEmailCorrect ||
+                        firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !state.emailError ||
                             password.isEmpty() || confirmPassword.isEmpty() || birthDay.isEmpty() ||
-                            country.isEmpty() || !passwordError.hasMinimum || !passwordError.hasCapitalizedLetter ||
+                            country.isEmpty() || !state.passwordError ||
                             password != confirmPassword
                     Button(
                         onClick = {

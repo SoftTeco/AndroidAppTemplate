@@ -49,13 +49,35 @@ class SignUpViewModel @Inject constructor(
         loading.value = false
     }
 
+    var passwordError =
+        snapshotFlow { passwordValue }
+            .mapLatest { validateFields.validatePassword(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
+                initialValue = FieldValidationState()
+            )
+
+    var emailError =
+        snapshotFlow { emailValue }
+            .mapLatest { validateFields.validateEmail(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
+                initialValue = FieldValidationState()
+            )
+
     val state = combine(
         loading,
-        signUpState
-    ) { loading, signUpState ->
+        signUpState,
+        emailError,
+        passwordError
+    ) { loading, signUpState, emailError, passwordError ->
         State(
             loading = loading,
-            signUpState = signUpState
+            signUpState = signUpState,
+            emailError = emailError.isEmailCorrect,
+            passwordError = passwordError.isPasswordCorrect
         )
     }.stateIn(
         viewModelScope,
@@ -66,28 +88,10 @@ class SignUpViewModel @Inject constructor(
     @Immutable
     data class State(
         val loading: Boolean = false,
-        val signUpState: Boolean = false
+        val signUpState: Boolean = false,
+        val emailError: Boolean = false,
+        val passwordError: Boolean = false
     )
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    var passwordValidationError =
-        snapshotFlow { passwordValue }
-            .mapLatest { validateFields.validatePassword(it) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
-                initialValue = FieldValidationState()
-            )
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    var emailValidationError =
-        snapshotFlow { emailValue }
-            .mapLatest { validateFields.validateEmail(it) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
-                initialValue = FieldValidationState()
-            )
 
     fun changePassword(value: String) {
         passwordValue = value

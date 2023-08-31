@@ -35,5 +35,6 @@ data class FieldValidationState(
     var isEmailCorrect: Boolean = false,
     val hasMinimum: Boolean = false,
     val hasCapitalizedLetter: Boolean = false,
+    var isPasswordCorrect: Boolean = hasMinimum && hasCapitalizedLetter
 
 )

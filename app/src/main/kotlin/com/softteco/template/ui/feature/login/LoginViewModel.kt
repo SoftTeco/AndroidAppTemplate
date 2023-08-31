@@ -48,13 +48,26 @@ class LoginViewModel @Inject constructor(
         loading.value = false
     }
 
+
+     @OptIn(ExperimentalCoroutinesApi::class)
+     private var emailError =
+            snapshotFlow { value }
+                .mapLatest { validateFields.validateEmail(it) }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
+                    initialValue = FieldValidationState()
+                )
+
     val state = combine(
         loading,
-        loginState
-    ) { loading, loginState ->
+        loginState,
+        emailError
+    ) { loading, loginState, emailError ->
         State(
             loading = loading,
-            loginState = loginState
+            loginState = loginState,
+            emailError = emailError.isEmailCorrect
         )
     }.stateIn(
         viewModelScope,
@@ -65,18 +78,9 @@ class LoginViewModel @Inject constructor(
     @Immutable
     data class State(
         val loading: Boolean = false,
-        val loginState: Boolean = false
+        val loginState: Boolean = false,
+        val emailError: Boolean = false
     )
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    var fieldValidationError =
-        snapshotFlow { value }
-            .mapLatest { validateFields.validateEmail(it) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
-                initialValue = FieldValidationState()
-            )
 
     fun changeEmail(value: String) {
         this.value = value
