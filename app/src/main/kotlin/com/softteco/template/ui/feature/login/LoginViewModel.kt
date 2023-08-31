@@ -33,8 +33,8 @@ class LoginViewModel @Inject constructor(
     private val loading = MutableStateFlow(false)
     val loginState = MutableStateFlow(false)
 
-    var value by mutableStateOf("")
-
+    var emailValue by mutableStateOf("")
+    var passwordValue by mutableStateOf("")
     fun login(
         userAuth: LoginAuthDto
     ) = viewModelScope.launch {
@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
 
      @OptIn(ExperimentalCoroutinesApi::class)
      private var emailError =
-            snapshotFlow { value }
+            snapshotFlow { emailValue }
                 .mapLatest { validateFields.validateEmail(it) }
                 .stateIn(
                     scope = viewModelScope,
@@ -83,6 +83,6 @@ class LoginViewModel @Inject constructor(
     )
 
     fun changeEmail(value: String) {
-        this.value = value
+        this.emailValue = value
     }
 }

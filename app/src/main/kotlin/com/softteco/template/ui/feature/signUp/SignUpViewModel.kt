@@ -3,6 +3,7 @@ package com.softteco.template.ui.feature.signUp
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -35,6 +36,10 @@ class SignUpViewModel @Inject constructor(
 
     var passwordValue by mutableStateOf("")
     var emailValue by mutableStateOf("")
+    var firstNameValue by mutableStateOf("")
+    var lastNameValue by mutableStateOf("")
+    var confirmPasswordValue by mutableStateOf("")
+    var birthDayValue by mutableStateOf("")
 
     fun register(
         user: CreateUserDto
