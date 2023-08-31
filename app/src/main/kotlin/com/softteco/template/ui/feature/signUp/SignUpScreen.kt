@@ -63,6 +63,7 @@ private fun ScreenContent(
     onBackClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    val state by viewModel.state.collectAsState()
 
     val context = LocalContext.current
 
@@ -76,7 +77,7 @@ private fun ScreenContent(
     var country by remember { mutableStateOf("") }
     val countryList = mutableListOf<String>()
     val coroutineScope = rememberCoroutineScope()
-    GetList.getList(coroutineScope, context, countryList)
+    GetListFromRecource.getList(coroutineScope, context, countryList)
 
     val passwordError by viewModel.passwordValidationError.collectAsState()
     val emailError by viewModel.emailValidationError.collectAsState()
@@ -95,6 +96,10 @@ private fun ScreenContent(
                     .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.Center,
             ) {
+                if (state.loading) {
+                    Text(stringResource(id = R.string.loading))
+                }
+
                 Spacer(Modifier.size(Dimens.PaddingNormal))
 
                 SimpleField(
@@ -252,7 +257,7 @@ private fun ScreenContent(
     }
 }
 
-object GetList {
+object GetListFromRecource {
     fun getCountriesList(context: Context): List<String> {
         return context.assets.open("listCountries.txt").bufferedReader().use {
             it.readLines()
