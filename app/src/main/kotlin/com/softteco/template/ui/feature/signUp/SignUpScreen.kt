@@ -45,230 +45,230 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpScreen(
-	modifier: Modifier = Modifier,
-	viewModel: SignUpViewModel = hiltViewModel(),
-	onBackClicked: () -> Unit = {}
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = hiltViewModel(),
+    onBackClicked: () -> Unit = {}
 ) {
-	ScreenContent(
-		modifier = modifier,
-		viewModel = viewModel,
-		onBackClicked = onBackClicked
-	)
+    ScreenContent(
+        modifier = modifier,
+        viewModel = viewModel,
+        onBackClicked = onBackClicked
+    )
 }
 
 @Composable
 private fun ScreenContent(
-	viewModel: SignUpViewModel,
-	modifier: Modifier = Modifier,
-	onBackClicked: () -> Unit = {}
+    viewModel: SignUpViewModel,
+    modifier: Modifier = Modifier,
+    onBackClicked: () -> Unit = {}
 ) {
-	val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
-	val context = LocalContext.current
+    val context = LocalContext.current
 
-	var firstName by remember { mutableStateOf("") }
-	var lastName by remember { mutableStateOf("") }
-	var email by remember { mutableStateOf("") }
-	var password by remember { mutableStateOf("") }
-	var confirmPassword by remember { mutableStateOf("") }
-	var birthDay by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var birthDay by remember { mutableStateOf("") }
 
-	var country by remember { mutableStateOf("") }
-	val countryList = mutableListOf<String>()
-	val coroutineScope = rememberCoroutineScope()
-	GetList.getList(coroutineScope, context, countryList)
+    var country by remember { mutableStateOf("") }
+    val countryList = mutableListOf<String>()
+    val coroutineScope = rememberCoroutineScope()
+    GetList.getList(coroutineScope, context, countryList)
 
-	val passwordError by viewModel.passwordValidationError.collectAsState()
-	val emailError by viewModel.emailValidationError.collectAsState()
+    val passwordError by viewModel.passwordValidationError.collectAsState()
+    val emailError by viewModel.emailValidationError.collectAsState()
 
-	Box(modifier.fillMaxSize()) {
-		Column {
-			CustomTopAppBar(
-				stringResource(id = R.string.sign_up),
-				showBackIcon = true,
-				modifier = Modifier.fillMaxWidth(),
-				onBackClicked = onBackClicked
-			)
-			Column(
-				modifier = Modifier
+    Box(modifier.fillMaxSize()) {
+        Column {
+            CustomTopAppBar(
+                stringResource(id = R.string.sign_up),
+                showBackIcon = true,
+                modifier = Modifier.fillMaxWidth(),
+                onBackClicked = onBackClicked
+            )
+            Column(
+                modifier = Modifier
                     .padding(Dimens.Padding20)
                     .verticalScroll(scrollState),
-				verticalArrangement = Arrangement.Center,
-			) {
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(
-					strId = R.string.first_name,
-					firstName,
-					fieldErrorState = firstName.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> firstName = newValue }
-				)
+                SimpleField(
+                    strId = R.string.first_name,
+                    firstName,
+                    fieldErrorState = firstName.isEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                    onFieldValueChanged = { newValue -> firstName = newValue }
+                )
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(
-					strId = R.string.last_name,
-					lastName,
-					fieldErrorState = lastName.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> lastName = newValue }
-				)
+                SimpleField(
+                    strId = R.string.last_name,
+                    lastName,
+                    fieldErrorState = lastName.isEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                    onFieldValueChanged = { newValue -> lastName = newValue }
+                )
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(
-					strId = R.string.email,
-					email,
-					fieldErrorState = email.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue ->
-						email = newValue
-						viewModel.changeEmail(newValue)
-					}
-				)
+                SimpleField(
+                    strId = R.string.email,
+                    email,
+                    fieldErrorState = email.isEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                    onFieldValueChanged = { newValue ->
+                        email = newValue
+                        viewModel.changeEmail(newValue)
+                    }
+                )
 
-				if (email.isNotEmpty() && !emailError.isEmailCorrect) {
-					Text(
-						text = stringResource(id = R.string.email_not_valid),
-						color = Color.Red
-					)
-				}
+                if (email.isNotEmpty() && !emailError.isEmailCorrect) {
+                    Text(
+                        text = stringResource(id = R.string.email_not_valid),
+                        color = Color.Red
+                    )
+                }
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				PasswordFieldComponentWithValidation(
-					modifier = Modifier.fillMaxWidth(),
-					value = password,
-					fieldErrorState = password.isEmpty(),
-					passwordError = passwordError,
-					onFieldValueChanged = { newValue ->
-						password = newValue
-						viewModel.changePassword(newValue)
-					}
-				)
+                PasswordFieldComponentWithValidation(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = password,
+                    fieldErrorState = password.isEmpty(),
+                    passwordError = passwordError,
+                    onFieldValueChanged = { newValue ->
+                        password = newValue
+                        viewModel.changePassword(newValue)
+                    }
+                )
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				PasswordField(
-					strId = R.string.confirm_password,
-					confirmPassword,
-					nameErrorState = confirmPassword.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onNameChanged = { newValue -> confirmPassword = newValue }
-				)
+                PasswordField(
+                    strId = R.string.confirm_password,
+                    confirmPassword,
+                    nameErrorState = confirmPassword.isEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                    onNameChanged = { newValue -> confirmPassword = newValue }
+                )
 
-				if (confirmPassword.isNotEmpty() && password.isNotEmpty()) {
-					if (confirmPassword != password) {
-						Text(
-							text = stringResource(id = R.string.passwords_mismatching),
-							color = Color.Red
-						)
-					}
-				}
+                if (confirmPassword.isNotEmpty() && password.isNotEmpty()) {
+                    if (confirmPassword != password) {
+                        Text(
+                            text = stringResource(id = R.string.passwords_mismatching),
+                            color = Color.Red
+                        )
+                    }
+                }
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				TextFieldWithDropDownComponent(
-					item = country,
-					strId = R.string.country,
-					fieldErrorState = country.isEmpty(),
-					itemsList = countryList,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> country = newValue }
-				)
+                TextFieldWithDropDownComponent(
+                    item = country,
+                    strId = R.string.country,
+                    fieldErrorState = country.isEmpty(),
+                    itemsList = countryList,
+                    modifier = Modifier.fillMaxWidth(),
+                    onFieldValueChanged = { newValue -> country = newValue }
+                )
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				FieldDatePicker(
-					birthDay,
-					birthDay.isEmpty(),
-					R.string.birth_day,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> birthDay = newValue }
-				)
+                FieldDatePicker(
+                    birthDay,
+                    birthDay.isEmpty(),
+                    R.string.birth_day,
+                    modifier = Modifier.fillMaxWidth(),
+                    onFieldValueChanged = { newValue -> birthDay = newValue }
+                )
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+                Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				Box(
-					modifier = Modifier.padding(
-						Dimens.Padding40,
-						Dimens.Padding0,
-						Dimens.Padding40,
-						Dimens.Padding0
-					)
-				) {
-					val isFieldsValid: Boolean =
-						firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !emailError.isEmailCorrect ||
-							password.isEmpty() || confirmPassword.isEmpty() || birthDay.isEmpty() ||
-							country.isEmpty() || !passwordError.hasMinimum || !passwordError.hasCapitalizedLetter ||
-							password != confirmPassword
-					Button(
-						onClick = {
-							if (isFieldsValid) {
-								Toast.makeText(
-									context,
-									context.getText(R.string.empty_fields_error),
-									Toast.LENGTH_SHORT
-								).show()
-							} else {
-								viewModel.register(
-									CreateUserDto(
-										firstName,
-										lastName,
-										email,
-										password,
-										confirmPassword,
-										country,
-										birthDay
-									)
-								)
-								if (viewModel.signUpState.value) {
-									Toast.makeText(
-										context,
-										context.getText(R.string.go_to_login),
-										Toast.LENGTH_SHORT
-									).show()
-									onBackClicked()
-								} else {
-									Toast.makeText(
-										context,
-										context.getText(R.string.problem_error),
-										Toast.LENGTH_SHORT
-									).show()
-								}
-							}
-						},
-						shape = RoundedCornerShape(Dimens.Padding50),
-						modifier = Modifier
+                Box(
+                    modifier = Modifier.padding(
+                        Dimens.Padding40,
+                        Dimens.Padding0,
+                        Dimens.Padding40,
+                        Dimens.Padding0
+                    )
+                ) {
+                    val isFieldsValid: Boolean =
+                        firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || !emailError.isEmailCorrect ||
+                            password.isEmpty() || confirmPassword.isEmpty() || birthDay.isEmpty() ||
+                            country.isEmpty() || !passwordError.hasMinimum || !passwordError.hasCapitalizedLetter ||
+                            password != confirmPassword
+                    Button(
+                        onClick = {
+                            if (isFieldsValid) {
+                                Toast.makeText(
+                                    context,
+                                    context.getText(R.string.empty_fields_error),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                viewModel.register(
+                                    CreateUserDto(
+                                        firstName,
+                                        lastName,
+                                        email,
+                                        password,
+                                        confirmPassword,
+                                        country,
+                                        birthDay
+                                    )
+                                )
+                                if (viewModel.signUpState.value) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getText(R.string.go_to_login),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    onBackClicked()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        context.getText(R.string.problem_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        },
+                        shape = RoundedCornerShape(Dimens.Padding50),
+                        modifier = Modifier
                             .fillMaxWidth()
                             .height(Dimens.Padding50)
-					) {
-						Text(text = stringResource(id = R.string.sign_up))
-					}
-				}
-			}
-		}
-	}
+                    ) {
+                        Text(text = stringResource(id = R.string.sign_up))
+                    }
+                }
+            }
+        }
+    }
 }
 
 object GetList {
-	fun getCountriesList(context: Context): List<String> {
-		return context.assets.open("listCountries.txt").bufferedReader().use {
-			it.readLines()
-		}
-	}
+    fun getCountriesList(context: Context): List<String> {
+        return context.assets.open("listCountries.txt").bufferedReader().use {
+            it.readLines()
+        }
+    }
 
-	suspend fun setList(context: Context, countryList: MutableList<String>) = coroutineScope {
-		val message: Deferred<List<String>> = async { getCountriesList(context) }
-		countryList.addAll(message.await())
-	}
+    suspend fun setList(context: Context, countryList: MutableList<String>) = coroutineScope {
+        val message: Deferred<List<String>> = async { getCountriesList(context) }
+        countryList.addAll(message.await())
+    }
 
-	fun getList(
-		coroutineScope: CoroutineScope,
-		context: Context,
-		countryList: MutableList<String>
-	) {
-		coroutineScope.launch { setList(context, countryList) }
-	}
+    fun getList(
+        coroutineScope: CoroutineScope,
+        context: Context,
+        countryList: MutableList<String>
+    ) {
+        coroutineScope.launch { setList(context, countryList) }
+    }
 }

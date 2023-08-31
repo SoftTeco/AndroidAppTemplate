@@ -21,46 +21,46 @@ import com.softteco.template.R
 
 @Composable
 fun PasswordField(
-	strId: Int,
-	value: String,
-	nameErrorState: Boolean,
-	modifier: Modifier = Modifier,
-	onNameChanged: ((String) -> Unit) = {}
+    strId: Int,
+    value: String,
+    nameErrorState: Boolean,
+    modifier: Modifier = Modifier,
+    onNameChanged: ((String) -> Unit) = {}
 ) {
-	var passwordVisibility by remember { mutableStateOf(true) }
+    var passwordVisibility by remember { mutableStateOf(true) }
 
-	OutlinedTextField(
-		value = value,
-		onValueChange = {
-			onNameChanged(it)
-		},
-		modifier = modifier,
-		label = {
-			Text(text = stringResource(id = strId))
-		},
-		isError = nameErrorState,
-		trailingIcon = {
-			IconButton(onClick = {
-				passwordVisibility = !passwordVisibility
-			}) {
-				Icon(
-					imageVector = if (passwordVisibility) {
-						Icons.Default.Create
-					} else {
-						Icons.Default.Done
-					},
-					contentDescription = stringResource(id = R.string.visibility),
-					tint = Color.Black
-				)
-			}
-		},
-		visualTransformation = if (passwordVisibility) {
-			PasswordVisualTransformation()
-		} else {
-			VisualTransformation.None
-		}
-	)
-	if (nameErrorState) {
-		Text(text = stringResource(id = R.string.required), color = Color.Red)
-	}
+    OutlinedTextField(
+        value = value,
+        onValueChange = {
+            onNameChanged(it)
+        },
+        modifier = modifier,
+        label = {
+            Text(text = stringResource(id = strId))
+        },
+        isError = nameErrorState,
+        trailingIcon = {
+            IconButton(onClick = {
+                passwordVisibility = !passwordVisibility
+            }) {
+                Icon(
+                    imageVector = if (passwordVisibility) {
+                        Icons.Default.Create
+                    } else {
+                        Icons.Default.Done
+                    },
+                    contentDescription = stringResource(id = R.string.visibility),
+                    tint = Color.Black
+                )
+            }
+        },
+        visualTransformation = if (passwordVisibility) {
+            PasswordVisualTransformation()
+        } else {
+            VisualTransformation.None
+        }
+    )
+    if (nameErrorState) {
+        Text(text = stringResource(id = R.string.required), color = Color.Red)
+    }
 }

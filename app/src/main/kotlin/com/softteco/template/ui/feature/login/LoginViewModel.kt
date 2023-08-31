@@ -25,60 +25,60 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-	private val loginRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
 ) : ViewModel() {
 
-	private val validateFields: ValidateFields = ValidateFields()
+    private val validateFields: ValidateFields = ValidateFields()
 
-	private val loading = MutableStateFlow(false)
-	val loginState = MutableStateFlow(false)
+    private val loading = MutableStateFlow(false)
+    val loginState = MutableStateFlow(false)
 
-	var value by mutableStateOf("")
+    var value by mutableStateOf("")
 
-	fun login(
-		userAuth: LoginAuthDto
-	) = viewModelScope.launch {
-		loading.value = true
-		loginRepository.login(userAuth).run {
-			when (this) {
-				is Result.Success -> loginState.value = true
-				is Result.Error -> loginState.value = false
-			}
-		}
-		loading.value = false
-	}
+    fun login(
+        userAuth: LoginAuthDto
+    ) = viewModelScope.launch {
+        loading.value = true
+        loginRepository.login(userAuth).run {
+            when (this) {
+                is Result.Success -> loginState.value = true
+                is Result.Error -> loginState.value = false
+            }
+        }
+        loading.value = false
+    }
 
-	val state = combine(
-		loading,
-		loginState
-	) { loading, loginState ->
-		State(
-			loading = loading,
-			loginState = loginState
-		)
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.Lazily,
-		State()
-	)
+    val state = combine(
+        loading,
+        loginState
+    ) { loading, loginState ->
+        State(
+            loading = loading,
+            loginState = loginState
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        State()
+    )
 
-	@Immutable
-	data class State(
-		val loading: Boolean = false,
-		val loginState: Boolean = false
-	)
+    @Immutable
+    data class State(
+        val loading: Boolean = false,
+        val loginState: Boolean = false
+    )
 
-	@OptIn(ExperimentalCoroutinesApi::class)
-	var fieldValidationError =
-		snapshotFlow { value }
-			.mapLatest { validateFields.validateEmail(it) }
-			.stateIn(
-				scope = viewModelScope,
-				started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
-				initialValue = FieldValidationState()
-			)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    var fieldValidationError =
+        snapshotFlow { value }
+            .mapLatest { validateFields.validateEmail(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
+                initialValue = FieldValidationState()
+            )
 
-	fun changeEmail(value: String) {
-		this.value = value
-	}
+    fun changeEmail(value: String) {
+        this.value = value
+    }
 }
