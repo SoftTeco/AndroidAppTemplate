@@ -46,22 +46,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignUpViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {}
 ) {
     ScreenContent(
         modifier = modifier,
-        viewModel = viewModel,
         onBackClicked = onBackClicked
     )
 }
 
 @Composable
 private fun ScreenContent(
-    viewModel: SignUpViewModel,
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {}
 ) {
+    val viewModel: SignUpViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
 

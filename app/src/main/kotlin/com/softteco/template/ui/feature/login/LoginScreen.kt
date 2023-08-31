@@ -41,13 +41,11 @@ import com.softteco.template.ui.theme.Dimens
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {}
 ) {
     ScreenContent(
-        viewModel = viewModel,
         onBackClicked = onBackClicked,
         onLoginClicked = onLoginClicked,
         onSignUpClicked = onSignUpClicked,
@@ -57,12 +55,12 @@ fun LoginScreen(
 
 @Composable
 private fun ScreenContent(
-    viewModel: LoginViewModel,
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {}
 ) {
+    val viewModel: LoginViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
