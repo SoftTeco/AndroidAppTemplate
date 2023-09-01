@@ -1,88 +1,90 @@
 package com.softteco.template.ui.feature.login
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.Constants
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
-import com.softteco.template.ui.feature.FieldValidationState
+import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: ProfileRepository,
+	private val repository: ProfileRepository,
 ) : ViewModel() {
 
-    private val validateFields: ValidateFields = ValidateFields()
 
-    private val loading = MutableStateFlow(false)
-    val loginState = MutableStateFlow(false)
+	private val loading = MutableStateFlow(false)
+	val loginState = MutableStateFlow(false)
 
-    var emailValue by mutableStateOf("")
-    var passwordValue by mutableStateOf("")
-    fun login(
-        userAuth: LoginAuthDto
-    ) = viewModelScope.launch {
-        loading.value = true
-        repository.login(userAuth).run {
-            when (this) {
-                is Result.Success -> loginState.value = true
-                is Result.Error -> loginState.value = false
-            }
-        }
-        loading.value = false
-    }
+	var emailState = MutableStateFlow<String>("")
+	var passwordState = MutableStateFlow<String>("")
+	var fieldValidationState = MutableStateFlow(ValidateFields())
+	var snackBarState = MutableStateFlow(SnackBarState())
+	fun login(
+		userAuth: LoginAuthDto
+	) = viewModelScope.launch {
+		loading.value = true
+		repository.login(userAuth).run {
+			when (this) {
+				is Result.Success -> loginState.value = true
+				is Result.Error -> loginState.value = false
+			}
+		}
+		loading.value = false
+	}
+
+	val state = combine(
+		loading,
+		loginState,
+		emailState,
+		passwordState,
+		snackBarState
+	) { loading, loginState, emailValue, passwordValue, snackBar ->
+		State(
+			loading = loading,
+			loginState = loginState,
+			email = emailValue,
+			password = passwordValue,
+			isEmailFieldEmpty = fieldValidationState.value.validateFieldEmpty(emailValue).isEmpty,
+			isEmailFieldValid = fieldValidationState.value.validateEmail(emailValue).isEmailCorrect,
+			isPasswordFieldEmpty = fieldValidationState.value.validateFieldEmpty(passwordValue).isEmpty,
+			snackBar = snackBar,
+			dismissSnackBar = { snackBarState.value = SnackBarState() },
+			onEmailChanged = { emailState.value = it },
+			onPasswordChanged = { passwordState.value = it },
+			onLoginClicked = {
+				viewModelScope.launch {
+					repository.login(LoginAuthDto(emailValue, passwordValue))
+				}
+			}
+		)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Lazily,
+		State()
+	)
 
 
-     @OptIn(ExperimentalCoroutinesApi::class)
-     private var emailError =
-            snapshotFlow { emailValue }
-                .mapLatest { validateFields.validateEmail(it) }
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(Constants.STOP_TIMEOUT_MILLIS),
-                    initialValue = FieldValidationState()
-                )
-
-    val state = combine(
-        loading,
-        loginState,
-        emailError
-    ) { loading, loginState, emailError ->
-        State(
-            loading = loading,
-            loginState = loginState,
-            emailError = emailError.isEmailCorrect
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        State()
-    )
-
-    @Immutable
-    data class State(
-        val loading: Boolean = false,
-        val loginState: Boolean = false,
-        val emailError: Boolean = false
-    )
-
-    fun changeEmail(value: String) {
-        this.emailValue = value
-    }
+	data class State(
+		val loading: Boolean = false,
+		val loginState: Boolean = false,
+		val email: String = "",
+		val password: String = "",
+		val isEmailFieldEmpty: Boolean = false,
+		val isEmailFieldValid: Boolean = false,
+		val isPasswordFieldEmpty: Boolean = false,
+		val snackBar: SnackBarState = SnackBarState(),
+		val onEmailChanged: (String) -> Unit = {},
+		val onPasswordChanged: (String) -> Unit = {},
+		val onLoginClicked: () -> Unit = {},
+		val dismissSnackBar: () -> Unit = {}
+	)
 }

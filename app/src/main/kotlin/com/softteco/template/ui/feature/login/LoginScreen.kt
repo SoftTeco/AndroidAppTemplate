@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.SimpleField
@@ -38,11 +37,15 @@ import com.softteco.template.ui.theme.Dimens
 @Composable
 fun LoginScreen(
 	modifier: Modifier = Modifier,
+	viewModel: LoginViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {},
 	onLoginClicked: () -> Unit = {},
 	onSignUpClicked: () -> Unit = {}
 ) {
+	val state by viewModel.state.collectAsState()
+	val validationFields by viewModel.fieldValidationState.collectAsState()
 	ScreenContent(
+		state = state,
 		onBackClicked = onBackClicked,
 		onLoginClicked = onLoginClicked,
 		onSignUpClicked = onSignUpClicked,
@@ -53,12 +56,13 @@ fun LoginScreen(
 @Composable
 private fun ScreenContent(
 	modifier: Modifier = Modifier,
-	viewModel: LoginViewModel = hiltViewModel(),
+	state: LoginViewModel.State,
 	onBackClicked: () -> Unit = {},
 	onLoginClicked: () -> Unit = {},
 	onSignUpClicked: () -> Unit = {}
 ) {
-	val state by viewModel.state.collectAsState()
+
+
 	val context = LocalContext.current
 
 	Box(modifier.fillMaxSize()) {
@@ -81,63 +85,50 @@ private fun ScreenContent(
 
 				SimpleField(
 					strId = R.string.email,
-					viewModel.emailValue,
-					fieldErrorState = viewModel.emailValue.isEmpty(),
+					state.email,
+					fieldErrorState = state.isEmailFieldEmpty,
 					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue ->
-						viewModel.emailValue = newValue
-						viewModel.changeEmail(newValue)
-					}
+					onFieldValueChanged = state.onEmailChanged,
 				)
 
-				if (viewModel.emailValue.isNotEmpty() && !state.emailError) {
+
+				if (!state.isEmailFieldEmpty && !state.isEmailFieldValid) {
 					Text(
-						text = stringResource(id = R.string.email_not_valid),
-						color = Color.Red
+						text = stringResource(id = R.string.email_not_valid), color = Color.Red
 					)
 				}
 
 				Spacer(
 					modifier = Modifier
-                        .height(Dimens.Padding20)
-                        .size(Dimens.PaddingNormal)
+						.height(Dimens.Padding20)
+						.size(Dimens.PaddingNormal)
 				)
 
 				PasswordField(
 					strId = R.string.password,
-					viewModel.passwordValue,
-					nameErrorState = viewModel.passwordValue.isEmpty(),
+					state.password,
+					nameErrorState = state.isPasswordFieldEmpty,
 					modifier = Modifier.fillMaxWidth(),
-					onNameChanged = { newValue -> viewModel.passwordValue = newValue }
+					onNameChanged = state.onPasswordChanged
 				)
 
 				Spacer(modifier = Modifier.height(Dimens.Padding20))
 				Box(
 					modifier = Modifier.padding(
-						Dimens.Padding40,
-						Dimens.Padding0,
-						Dimens.Padding40,
-						Dimens.Padding0
+						Dimens.Padding40, Dimens.Padding0, Dimens.Padding40, Dimens.Padding0
 					)
 				) {
 					Button(
 						onClick = {
-							if (!state.emailError ||
-								viewModel.emailValue.isEmpty() || viewModel.passwordValue.isEmpty()
-							) {
+							if (state.isEmailFieldValid && !state.isEmailFieldEmpty && !state.isPasswordFieldEmpty) {
 								Toast.makeText(
 									context,
 									context.getText(R.string.empty_fields_error),
 									Toast.LENGTH_SHORT
 								).show()
 							} else {
-								viewModel.login(
-									LoginAuthDto(
-										viewModel.emailValue,
-										viewModel.passwordValue
-									)
-								)
-								if (viewModel.loginState.value) {
+								state.onLoginClicked
+								if (state.loginState) {
 									onLoginClicked() // transfer to user's screen
 								} else {
 									Toast.makeText(
@@ -150,8 +141,8 @@ private fun ScreenContent(
 						},
 						shape = RoundedCornerShape(Dimens.Padding50),
 						modifier = Modifier
-                            .fillMaxWidth()
-                            .height(Dimens.Padding50)
+							.fillMaxWidth()
+							.height(Dimens.Padding50)
 					) {
 						Text(text = stringResource(id = R.string.login))
 					}
@@ -159,8 +150,7 @@ private fun ScreenContent(
 				Spacer(modifier = Modifier.weight(1f))
 				ClickableText(
 					text = AnnotatedString(stringResource(id = R.string.sign_up)),
-					modifier = Modifier
-						.padding(Dimens.Padding20),
+					modifier = Modifier.padding(Dimens.Padding20),
 					onClick = {
 						onSignUpClicked()
 					},
