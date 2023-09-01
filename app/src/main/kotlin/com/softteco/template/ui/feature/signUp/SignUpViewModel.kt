@@ -3,19 +3,17 @@ package com.softteco.template.ui.feature.signUp
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.Constants
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.login.CreateUserRepository
-import com.softteco.template.data.login.model.CreateUserDto
+import com.softteco.template.data.profile.ProfileRepository
+import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.ui.feature.FieldValidationState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -26,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val createUserRepository: CreateUserRepository,
+    private val repository: ProfileRepository,
 ) : ViewModel() {
 
     private val validateFields: ValidateFields = ValidateFields()
@@ -45,7 +43,7 @@ class SignUpViewModel @Inject constructor(
         user: CreateUserDto
     ) = viewModelScope.launch {
         loading.value = true
-        createUserRepository.registration(user).run {
+        repository.registration(user).run {
             when (this) {
                 is Result.Success -> signUpState.value = true
                 is Result.Error -> signUpState.value = false

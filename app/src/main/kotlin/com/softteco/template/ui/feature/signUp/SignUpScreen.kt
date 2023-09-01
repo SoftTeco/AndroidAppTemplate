@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.data.login.model.CreateUserDto
+import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.FieldDatePicker
 import com.softteco.template.ui.components.PasswordField

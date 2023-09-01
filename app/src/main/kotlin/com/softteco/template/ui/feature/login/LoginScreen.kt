@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.data.login.model.LoginAuthDto
+import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.SimpleField

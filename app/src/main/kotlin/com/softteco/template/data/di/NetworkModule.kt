@@ -3,7 +3,6 @@ package com.softteco.template.data.di
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.softteco.template.BuildConfig
 import com.softteco.template.data.TemplateApi
-import com.softteco.template.data.UserApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -57,12 +56,5 @@ object NetworkModule {
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .client(okHttpClient)
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideLoginApi(okHttpClient: OkHttpClient): UserApi {
-        val retrofit = buildRetrofit(okHttpClient, "http://209.38.220.2:3148/swagger/api/") // TODO
-        return retrofit.create(UserApi::class.java)
     }
 }

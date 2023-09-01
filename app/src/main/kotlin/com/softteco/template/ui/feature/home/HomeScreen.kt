@@ -44,7 +44,7 @@ private fun ScreenContent(
                 Text("To Api Sample")
             }
             Button(onClick = onGoLoggingClicked) {
-                Text(stringResource(id = R.string.go_to_logging))
+                Text(stringResource(id = R.string.go_to_login))
             }
         }
     }

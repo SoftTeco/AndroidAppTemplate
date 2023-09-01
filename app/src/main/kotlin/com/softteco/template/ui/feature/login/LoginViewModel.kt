@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.Constants
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.login.LoginRepository
-import com.softteco.template.data.login.model.LoginAuthDto
+import com.softteco.template.data.profile.ProfileRepository
+import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.feature.FieldValidationState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository,
+    private val repository: ProfileRepository,
 ) : ViewModel() {
 
     private val validateFields: ValidateFields = ValidateFields()
@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
         userAuth: LoginAuthDto
     ) = viewModelScope.launch {
         loading.value = true
-        loginRepository.login(userAuth).run {
+        repository.login(userAuth).run {
             when (this) {
                 is Result.Success -> loginState.value = true
                 is Result.Error -> loginState.value = false

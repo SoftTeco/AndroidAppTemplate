@@ -1,4 +1,4 @@
-package com.softteco.template.data.login.model
+package com.softteco.template.data.profile.dto
 
 import com.squareup.moshi.Json
 
