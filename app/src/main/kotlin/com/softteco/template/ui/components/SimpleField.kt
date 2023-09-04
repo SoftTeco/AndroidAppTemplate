@@ -10,24 +10,24 @@ import com.softteco.template.R
 
 @Composable
 fun SimpleField(
-    strId: Int,
-    value: String,
-    fieldErrorState: Boolean,
-    modifier: Modifier = Modifier,
-    onFieldValueChanged: ((String) -> Unit) = {}
+	strId: Int,
+	value: String,
+	fieldErrorState: Boolean,
+	modifier: Modifier = Modifier,
+	onFieldValueChanged: ((String) -> Unit) = {}
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = {
-            onFieldValueChanged(it)
-        },
-        modifier = modifier,
-        label = {
-            Text(text = stringResource(id = strId))
-        },
-        isError = fieldErrorState
-    )
-    if (fieldErrorState) {
-        Text(text = stringResource(id = R.string.required), color = Color.Red)
-    }
+	OutlinedTextField(
+		value = value,
+		onValueChange = {
+			onFieldValueChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = strId))
+		},
+		isError = fieldErrorState
+	)
+	if (fieldErrorState) {
+		Text(text = stringResource(id = R.string.required), color = Color.Red)
+	}
 }

@@ -1,7 +1,10 @@
 package com.softteco.template.ui.feature.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softteco.template.R
+import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
@@ -22,24 +25,16 @@ class LoginViewModel @Inject constructor(
 
 
 	private val loading = MutableStateFlow(false)
-	val loginState = MutableStateFlow(false)
+	private val loginState = MutableStateFlow(false)
 
-	var emailState = MutableStateFlow<String>("")
-	var passwordState = MutableStateFlow<String>("")
-	var fieldValidationState = MutableStateFlow(ValidateFields())
-	var snackBarState = MutableStateFlow(SnackBarState())
-	fun login(
-		userAuth: LoginAuthDto
-	) = viewModelScope.launch {
-		loading.value = true
-		repository.login(userAuth).run {
-			when (this) {
-				is Result.Success -> loginState.value = true
-				is Result.Error -> loginState.value = false
-			}
-		}
-		loading.value = false
-	}
+	private var emailState = MutableStateFlow("")
+	private var passwordState = MutableStateFlow("")
+
+	private var isAllFieldsValid = MutableStateFlow(false)
+
+	private var fieldValidationState = MutableStateFlow(ValidateFields())
+
+	private var snackBarState = MutableStateFlow(SnackBarState())
 
 	val state = combine(
 		loading,
@@ -60,11 +55,15 @@ class LoginViewModel @Inject constructor(
 			dismissSnackBar = { snackBarState.value = SnackBarState() },
 			onEmailChanged = { emailState.value = it },
 			onPasswordChanged = { passwordState.value = it },
+			isAllFieldsValid = isAllFieldsValid.value,
 			onLoginClicked = {
-				viewModelScope.launch {
-					repository.login(LoginAuthDto(emailValue, passwordValue))
-				}
-			}
+				login(
+					userAuth = LoginAuthDto(
+						email = emailState.value,
+						password = passwordState.value
+					)
+				)
+			},
 		)
 	}.stateIn(
 		viewModelScope,
@@ -72,6 +71,31 @@ class LoginViewModel @Inject constructor(
 		State()
 	)
 
+	private fun handleError() {
+		snackBarState.value = SnackBarState(
+			if (isAllFieldsValid.value) {
+				R.string.problem_error
+			} else {
+				R.string.empty_fields_error
+			},
+			true,
+		)
+	}
+
+	fun login(
+		userAuth: LoginAuthDto
+	) = viewModelScope.launch {
+		loading.value = true
+		repository.login(userAuth).run {
+			when (this) {
+				is Result.Success -> loginState.value = true
+				is Result.Error -> {
+					handleError()
+				}
+			}
+		}
+		loading.value = false
+	}
 
 	data class State(
 		val loading: Boolean = false,
@@ -84,6 +108,7 @@ class LoginViewModel @Inject constructor(
 		val snackBar: SnackBarState = SnackBarState(),
 		val onEmailChanged: (String) -> Unit = {},
 		val onPasswordChanged: (String) -> Unit = {},
+		val isAllFieldsValid: Boolean = isEmailFieldValid && !isPasswordFieldEmpty && !isEmailFieldEmpty,
 		val onLoginClicked: () -> Unit = {},
 		val dismissSnackBar: () -> Unit = {}
 	)
