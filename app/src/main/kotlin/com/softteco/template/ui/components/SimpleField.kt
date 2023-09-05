@@ -15,7 +15,6 @@ fun SimpleField(
 	textIdWarning: Int,
 	colorWarning: Color,
 	showWarning: Boolean,
-	fieldErrorState: Boolean,
 	modifier: Modifier = Modifier,
 	onFieldValueChanged: ((String) -> Unit) = {}
 ) {
@@ -28,9 +27,9 @@ fun SimpleField(
 		label = {
 			Text(text = stringResource(id = strId))
 		},
-		isError = fieldErrorState
+		isError = showWarning
 	)
-	if (!showWarning) {
+	if (showWarning) {
 		Text(text = stringResource(textIdWarning), color = colorWarning)
 	}
 }

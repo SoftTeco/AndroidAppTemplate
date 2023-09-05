@@ -29,22 +29,20 @@ class LoginViewModel @Inject constructor(
 	private val loading = MutableStateFlow(false)
 	private val loginState = MutableStateFlow(false)
 
-	private var emailState = MutableStateFlow("")
-	private var passwordState = MutableStateFlow("")
+	private var emailStateValue = MutableStateFlow("")
+	private var passwordStateValue = MutableStateFlow("")
 
 	private var isAllFieldsValid = MutableStateFlow(false)
 
 	private var fieldValidationState = MutableStateFlow(ValidateFields())
 
 	private var snackBarState = MutableStateFlow(SnackBarState())
-	private var emailFieldState = MutableStateFlow(EmailFieldState())
-	private var passwordFieldState = MutableStateFlow(PasswordFieldState())
 
 	val state = combine(
 		loading,
 		loginState,
-		emailState,
-		passwordState,
+		emailStateValue,
+		passwordStateValue,
 		snackBarState
 	) { loading, loginState, emailValue, passwordValue, snackBar ->
 		State(
@@ -57,14 +55,26 @@ class LoginViewModel @Inject constructor(
 			isPasswordFieldEmpty = fieldValidationState.value.validateFieldEmpty(passwordValue).isEmpty,
 			snackBar = snackBar,
 			dismissSnackBar = { snackBarState.value = SnackBarState() },
-			onEmailChanged = { emailState.value = it },
-			onPasswordChanged = { passwordState.value = it },
+			onEmailChanged = { emailStateValue.value = it },
+			onPasswordChanged = { passwordStateValue.value = it },
 			isAllFieldsValid = isAllFieldsValid.value,
+			fieldStateEmail = EmailFieldState(
+				R.string.required, Color.Red,
+				fieldValidationState.value.validateFieldEmpty(emailStateValue.value).isEmpty,
+				!fieldValidationState.value.validateFieldEmpty(emailStateValue.value).isEmpty
+					&& !fieldValidationState.value.validateEmail(
+					emailStateValue.value
+				).isEmailCorrect, R.string.email_not_valid
+			),
+			fieldStatePassword = PasswordFieldState(
+				R.string.required, Color.Red,
+				fieldValidationState.value.validateFieldEmpty(passwordStateValue.value).isEmpty
+			),
 			onLoginClicked = {
 				login(
 					userAuth = LoginAuthDto(
-						email = emailState.value,
-						password = passwordState.value
+						email = emailStateValue.value,
+						password = passwordStateValue.value
 					)
 				)
 			},
@@ -75,37 +85,8 @@ class LoginViewModel @Inject constructor(
 		State()
 	)
 
-	val fieldStateEmail = combine(emailFieldState, emailState) { fieldState ->
-		FieldStateEmail(
-			fieldState = EmailFieldState(
-				R.string.required, Color.Red,
-				fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty,
-				!fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty
-					&& !fieldValidationState.value.validateEmail(
-					emailState.value
-				).isEmailCorrect, R.string.email_not_valid
-			)
-		)
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.Lazily,
-		FieldStateEmail()
-	)
-
-	val fieldStatePas = combine(passwordFieldState, passwordState) { fieldState ->
-		FieldStatePassword(
-			fieldState = PasswordFieldState(
-				R.string.required, Color.Red,
-				fieldValidationState.value.validateFieldEmpty(passwordState.value).isEmpty
-			)
-		)
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.Lazily,
-		FieldStatePassword()
-	)
-
 	private fun handleError() {
+		loginState.value = false
 		snackBarState.value = SnackBarState(
 			if (isAllFieldsValid.value) {
 				R.string.problem_error
@@ -144,19 +125,9 @@ class LoginViewModel @Inject constructor(
 		val onEmailChanged: (String) -> Unit = {},
 		val onPasswordChanged: (String) -> Unit = {},
 		val isAllFieldsValid: Boolean = isEmailFieldValid && !isPasswordFieldEmpty && !isEmailFieldEmpty,
+		val fieldStateEmail: EmailFieldState = EmailFieldState(),
+		val fieldStatePassword: PasswordFieldState = PasswordFieldState(),
 		val onLoginClicked: () -> Unit = {},
 		val dismissSnackBar: () -> Unit = {}
-	)
-
-	@Immutable
-	data class FieldStateEmail(
-		val fieldState: EmailFieldState = EmailFieldState(),
-		val email: String = "",
-	)
-
-	@Immutable
-	data class FieldStatePassword(
-		val fieldState: PasswordFieldState = PasswordFieldState(),
-		val password: String = "",
 	)
 }

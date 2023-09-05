@@ -27,15 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
-import com.softteco.template.ui.components.EmailFieldState
 import com.softteco.template.ui.components.PasswordField
-import com.softteco.template.ui.components.PasswordFieldState
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.components.TextSnackbarContainer
-import com.softteco.template.ui.feature.profile.ProfileViewModel
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
@@ -48,25 +44,19 @@ fun LoginScreen(
 	onSignUpClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
-	val stateEmail by viewModel.fieldStateEmail.collectAsState()
-	val statePas by viewModel.fieldStatePas.collectAsState()
 
 	ScreenContent(
 		modifier = modifier,
 		state = state,
-		fieldStateEmail = stateEmail,
-		fieldStatePassword = statePas,
 		onBackClicked = onBackClicked,
 		onLoginClicked = onLoginClicked,
-		onSignUpClicked = onSignUpClicked,
+		onSignUpClicked = onSignUpClicked
 	)
 }
 
 @Composable
 private fun ScreenContent(
 	state: LoginViewModel.State,
-	fieldStateEmail: LoginViewModel.FieldStateEmail,
-	fieldStatePassword: LoginViewModel.FieldStatePassword,
 	modifier: Modifier = Modifier,
 	onBackClicked: () -> Unit = {},
 	onLoginClicked: () -> Unit = {},
@@ -78,7 +68,6 @@ private fun ScreenContent(
 		showSnackbar = state.snackBar.show,
 		onDismissSnackbar = state.dismissSnackBar,
 	) {
-
 		Column(
 			modifier = Modifier.fillMaxSize(),
 			verticalArrangement = Arrangement.spacedBy(Dimens.PaddingBig),
@@ -101,21 +90,20 @@ private fun ScreenContent(
 				EmailField(
 					strId = R.string.email,
 					state.email,
-					fieldStateEmail.fieldState.textId,
-					fieldStateEmail.fieldState.color,
-					fieldStateEmail.fieldState.show,
-					fieldStateEmail.fieldState.isEmailValid,
-					fieldStateEmail.fieldState.emailNotValidTextId,
+					state.fieldStateEmail.textId,
+					state.fieldStateEmail.color,
+					state.fieldStateEmail.show,
+					state.fieldStateEmail.isEmailValid,
+					state.fieldStateEmail.emailNotValidTextId,
 					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = state.onEmailChanged,
+					onFieldValueChanged = state.onEmailChanged
 				)
-
 				PasswordField(
 					strId = R.string.password,
 					state.password,
-					fieldStatePassword.fieldState.textId,
-					fieldStatePassword.fieldState.color,
-					fieldStatePassword.fieldState.show,
+					state.fieldStatePassword.textId,
+					state.fieldStatePassword.color,
+					state.fieldStatePassword.show,
 					modifier = Modifier.fillMaxWidth(),
 					onNameChanged = state.onPasswordChanged
 				)
@@ -174,14 +162,6 @@ private fun Preview() {
 					textId = 0,
 					show = false
 				),
-			),
-			LoginViewModel.FieldStateEmail(
-				EmailFieldState(),
-				"",
-			),
-			LoginViewModel.FieldStatePassword(
-				PasswordFieldState(),
-				""
 			)
 		)
 	}

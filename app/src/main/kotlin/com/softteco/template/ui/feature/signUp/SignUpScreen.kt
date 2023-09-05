@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +37,8 @@ import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PasswordFieldComponentWithValidation
 import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.TextFieldWithDropDownComponent
+import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.feature.login.LoginViewModel
 import com.softteco.template.ui.theme.Dimens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -46,9 +49,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
 	modifier: Modifier = Modifier,
+	viewModel: SignUpViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {}
 ) {
+	val state by viewModel.state.collectAsState()
+	val fieldState by viewModel.simpleFieldState.collectAsState()
 	ScreenContent(
+		state= state,
+	    fieldState= fieldState,
 		modifier = modifier,
 		onBackClicked = onBackClicked
 	)
@@ -56,24 +64,28 @@ fun SignUpScreen(
 
 @Composable
 private fun ScreenContent(
+	state: SignUpViewModel.State,
+	fieldState: SignUpViewModel.SimpleStateField,
 	modifier: Modifier = Modifier,
-	viewModel: SignUpViewModel = hiltViewModel(),
 	onBackClicked: () -> Unit = {}
 ) {
 	val scrollState = rememberScrollState()
-	val state by viewModel.state.collectAsState()
-
-	val context = LocalContext.current
-
-	val passwordError by viewModel.passwordError.collectAsState()
 
 	var country by remember { mutableStateOf("") }
-	val countryList = mutableListOf<String>()
-	val coroutineScope = rememberCoroutineScope()
-	GetListFromRecource.getList(coroutineScope, context, countryList)
+	val countryList = mutableListOf("Belarus", "Poland", "Italia", "Spain")
 
-	Box(modifier.fillMaxSize()) {
-		Column {
+	TextSnackbarContainer(
+		modifier = modifier,
+		snackbarText = stringResource(state.snackBar.textId),
+		showSnackbar = state.snackBar.show,
+		onDismissSnackbar = state.dismissSnackBar,
+	) {
+		Column(
+			modifier = Modifier.fillMaxSize(),
+			verticalArrangement = Arrangement.spacedBy(Dimens.PaddingBig),
+			horizontalAlignment = Alignment.CenterHorizontally
+		)
+		{
 			CustomTopAppBar(
 				stringResource(id = R.string.sign_up),
 				showBackIcon = true,
@@ -90,25 +102,25 @@ private fun ScreenContent(
 					Text(stringResource(id = R.string.loading))
 				}
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+				SimpleField(
+					strId = R.string.first_name,
+					state.firstNameValue,
+					fieldState.fieldState.textId,
+					fieldState.fieldState.color,
+					fieldState.fieldState.show,
+					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = state.firstNameChanged
+				)
 
-//				SimpleField(
-//					strId = R.string.first_name,
-//					viewModel.firstNameValue,
-//					fieldErrorState = viewModel.firstNameValue.isEmpty(),
-//					modifier = Modifier.fillMaxWidth(),
-//					onFieldValueChanged = { newValue -> viewModel.firstNameValue = newValue }
-//				)
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
-//
-//				SimpleField(
-//					strId = R.string.last_name,
-//					viewModel.lastNameValue,
-//					fieldErrorState = viewModel.lastNameValue.isEmpty(),
-//					modifier = Modifier.fillMaxWidth(),
-//					onFieldValueChanged = { newValue -> viewModel.lastNameValue = newValue }
-//				)
+				SimpleField(
+					strId = R.string.last_name,
+					state.lastNameValue,
+					fieldState.fieldState.textId,
+					fieldState.fieldState.color,
+					fieldState.fieldState.show,
+					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = state.lastNameChanged
+				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
@@ -123,25 +135,25 @@ private fun ScreenContent(
 //					}
 //				)
 
-				if (viewModel.emailValue.isNotEmpty() && !state.emailError) {
-					Text(
-						text = stringResource(id = R.string.email_not_valid),
-						color = Color.Red
-					)
-				}
+//				if (viewModel.emailValue.isNotEmpty() && !state.emailError) {
+//					Text(
+//						text = stringResource(id = R.string.email_not_valid),
+//						color = Color.Red
+//					)
+//				}
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				PasswordFieldComponentWithValidation(
-					modifier = Modifier.fillMaxWidth(),
-					value = viewModel.passwordValue,
-					fieldErrorState = viewModel.passwordValue.isEmpty(),
-					passwordError = passwordError,
-					onFieldValueChanged = { newValue ->
-						viewModel.passwordValue = newValue
-						viewModel.changePassword(newValue)
-					}
-				)
+//				PasswordFieldComponentWithValidation(
+//					modifier = Modifier.fillMaxWidth(),
+//					value = viewModel.passwordValue,
+//					fieldErrorState = viewModel.passwordValue.isEmpty(),
+//					passwordError = passwordError,
+//					onFieldValueChanged = { newValue ->
+//						viewModel.passwordValue = newValue
+//						viewModel.changePassword(newValue)
+//					}
+//				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
@@ -152,15 +164,15 @@ private fun ScreenContent(
 //					modifier = Modifier.fillMaxWidth(),
 //					onNameChanged = { newValue -> viewModel.confirmPasswordValue = newValue }
 //				)
-
-				if (viewModel.confirmPasswordValue.isNotEmpty() && viewModel.passwordValue.isNotEmpty()) {
-					if (viewModel.confirmPasswordValue != viewModel.passwordValue) {
-						Text(
-							text = stringResource(id = R.string.passwords_mismatching),
-							color = Color.Red
-						)
-					}
-				}
+//
+//				if (viewModel.confirmPasswordValue.isNotEmpty() && viewModel.passwordValue.isNotEmpty()) {
+//					if (viewModel.confirmPasswordValue != viewModel.passwordValue) {
+//						Text(
+//							text = stringResource(id = R.string.passwords_mismatching),
+//							color = Color.Red
+//						)
+//					}
+//				}
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
@@ -175,13 +187,13 @@ private fun ScreenContent(
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				FieldDatePicker(
-					viewModel.birthDayValue,
-					viewModel.birthDayValue.isEmpty(),
-					R.string.birth_day,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> viewModel.birthDayValue = newValue }
-				)
+//				FieldDatePicker(
+//					viewModel.birthDayValue,
+//					viewModel.birthDayValue.isEmpty(),
+//					R.string.birth_day,
+//					modifier = Modifier.fillMaxWidth(),
+//					onFieldValueChanged = { newValue -> viewModel.birthDayValue = newValue }
+//				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
@@ -193,48 +205,48 @@ private fun ScreenContent(
 						Dimens.Padding0
 					)
 				) {
-					val isFieldsValid: Boolean =
-						viewModel.firstNameValue.isEmpty() || viewModel.lastNameValue.isEmpty()
-							|| viewModel.emailValue.isEmpty() || !state.emailError ||
-							viewModel.passwordValue.isEmpty() || viewModel.confirmPasswordValue.isEmpty()
-							|| viewModel.birthDayValue.isEmpty() ||
-							country.isEmpty() || !state.passwordError ||
-							viewModel.passwordValue != viewModel.confirmPasswordValue
+//					val isFieldsValid: Boolean =
+//						viewModel.firstNameValue.isEmpty() || viewModel.lastNameValue.isEmpty()
+//							|| viewModel.emailValue.isEmpty() || !state.emailError ||
+//							viewModel.passwordValue.isEmpty() || viewModel.confirmPasswordValue.isEmpty()
+//							|| viewModel.birthDayValue.isEmpty() ||
+//							country.isEmpty() || !state.passwordError ||
+//							viewModel.passwordValue != viewModel.confirmPasswordValue
 					Button(
 						onClick = {
-							if (isFieldsValid) {
-								Toast.makeText(
-									context,
-									context.getText(R.string.empty_fields_error),
-									Toast.LENGTH_SHORT
-								).show()
-							} else {
-								viewModel.register(
-									CreateUserDto(
-										viewModel.firstNameValue,
-										viewModel.lastNameValue,
-										viewModel.emailValue,
-										viewModel.passwordValue,
-										viewModel.confirmPasswordValue,
-										country,
-										viewModel.birthDayValue
-									)
-								)
-								if (viewModel.signUpState.value) {
-									Toast.makeText(
-										context,
-										context.getText(R.string.go_to_login),
-										Toast.LENGTH_SHORT
-									).show()
-									onBackClicked()
-								} else {
-									Toast.makeText(
-										context,
-										context.getText(R.string.problem_error),
-										Toast.LENGTH_SHORT
-									).show()
-								}
-							}
+//							if (isFieldsValid) {
+//								Toast.makeText(
+//									context,
+//									context.getText(R.string.empty_fields_error),
+//									Toast.LENGTH_SHORT
+//								).show()
+//							} else {
+//								viewModel.register(
+//									CreateUserDto(
+//										viewModel.firstNameValue,
+//										viewModel.lastNameValue,
+//										viewModel.emailValue,
+//										viewModel.passwordValue,
+//										viewModel.confirmPasswordValue,
+//										country,
+//										viewModel.birthDayValue
+//									)
+//								)
+//								if (viewModel.signUpState.value) {
+//									Toast.makeText(
+//										context,
+//										context.getText(R.string.go_to_login),
+//										Toast.LENGTH_SHORT
+//									).show()
+//									onBackClicked()
+//								} else {
+//									Toast.makeText(
+//										context,
+//										context.getText(R.string.problem_error),
+//										Toast.LENGTH_SHORT
+//									).show()
+//								}
+//							}
 						},
 						shape = RoundedCornerShape(Dimens.Padding50),
 						modifier = Modifier
@@ -246,26 +258,5 @@ private fun ScreenContent(
 				}
 			}
 		}
-	}
-}
-
-object GetListFromRecource {
-	fun getCountriesList(context: Context): List<String> {
-		return context.assets.open("listCountries.txt").bufferedReader().use {
-			it.readLines()
-		}
-	}
-
-	suspend fun setList(context: Context, countryList: MutableList<String>) = coroutineScope {
-		val message: Deferred<List<String>> = async { getCountriesList(context) }
-		countryList.addAll(message.await())
-	}
-
-	fun getList(
-		coroutineScope: CoroutineScope,
-		context: Context,
-		countryList: MutableList<String>
-	) {
-		coroutineScope.launch { setList(context, countryList) }
 	}
 }
