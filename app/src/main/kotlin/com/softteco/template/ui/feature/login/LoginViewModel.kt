@@ -10,6 +10,7 @@ import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
+import com.softteco.template.ui.components.EmailFieldState
 import com.softteco.template.ui.components.SimpleFieldState
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
@@ -38,7 +39,7 @@ class LoginViewModel @Inject constructor(
 	private var fieldValidationState = MutableStateFlow(ValidateFields())
 
 	private var snackBarState = MutableStateFlow(SnackBarState())
-	private var simpleFieldState = MutableStateFlow(SimpleFieldState())
+	private var emailFieldState = MutableStateFlow(EmailFieldState())
 
 	val state = combine(
 		loading,
@@ -75,11 +76,11 @@ class LoginViewModel @Inject constructor(
 		State()
 	)
 
-	val fieldState = combine(simpleFieldState, emailState) { fieldState ->
+	val fieldState = combine(emailFieldState, emailState) { fieldState ->
 		FieldState(
-			fieldState = SimpleFieldState(
+			fieldState = EmailFieldState(
 				R.string.required, Color.Red,
-				!fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty,
+				fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty,
 			)
 		)
 	}.stateIn(
@@ -133,7 +134,7 @@ class LoginViewModel @Inject constructor(
 
 	@Immutable
 	data class FieldState(
-		val fieldState: SimpleFieldState = SimpleFieldState(),
+		val fieldState: EmailFieldState = EmailFieldState(),
 		val email: String = "",
 	)
 }

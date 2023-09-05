@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
+import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.TextSnackbarContainer
@@ -89,7 +90,7 @@ private fun ScreenContent(
 				if (state.loading) {
 					Text(stringResource(id = R.string.loading))
 				}
-				SimpleField(
+				EmailField(
 					strId = R.string.email,
 					state.email,
 					fieldState.fieldState.textId,
@@ -100,11 +101,11 @@ private fun ScreenContent(
 					onFieldValueChanged = state.onEmailChanged,
 				)
 
-				if (!state.isEmailFieldEmpty && !state.isEmailFieldValid) {
-					Text(
-						text = stringResource(id = R.string.email_not_valid), color = Color.Red
-					)
-				}
+//				if (!state.isEmailFieldEmpty && !state.isEmailFieldValid) {
+//					Text(
+//						text = stringResource(id = R.string.email_not_valid), color = Color.Red
+//					)
+//				}
 				PasswordField(
 					strId = R.string.password,
 					state.password,
