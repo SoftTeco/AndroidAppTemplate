@@ -41,13 +41,14 @@ fun LoginScreen(
 	onSignUpClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
-
-	val fieldState by viewModel.fieldState.collectAsState()
+	val stateEmail by viewModel.fieldStateEmail.collectAsState()
+	val statePas by viewModel.fieldStatePas.collectAsState()
 
 	ScreenContent(
 		modifier = modifier,
 		state = state,
-		fieldState = fieldState,
+		fieldStateEmail = stateEmail,
+		fieldStatePassword = statePas,
 		onBackClicked = onBackClicked,
 		onLoginClicked = onLoginClicked,
 		onSignUpClicked = onSignUpClicked,
@@ -58,7 +59,8 @@ fun LoginScreen(
 private fun ScreenContent(
 	modifier: Modifier = Modifier,
 	state: LoginViewModel.State,
-	fieldState: LoginViewModel.FieldState,
+	fieldStateEmail: LoginViewModel.FieldStateEmail,
+	fieldStatePassword: LoginViewModel.FieldStatePassword,
 	onBackClicked: () -> Unit = {},
 	onLoginClicked: () -> Unit = {},
 	onSignUpClicked: () -> Unit = {}
@@ -92,11 +94,11 @@ private fun ScreenContent(
 				EmailField(
 					strId = R.string.email,
 					state.email,
-					fieldState.fieldState.textId,
-					fieldState.fieldState.color,
-					fieldState.fieldState.show,
-					fieldState.fieldState.isEmailValid,
-					fieldState.fieldState.emailNotValidTextId,
+					fieldStateEmail.fieldState.textId,
+					fieldStateEmail.fieldState.color,
+					fieldStateEmail.fieldState.show,
+					fieldStateEmail.fieldState.isEmailValid,
+					fieldStateEmail.fieldState.emailNotValidTextId,
 					modifier = Modifier.fillMaxWidth(),
 					onFieldValueChanged = state.onEmailChanged,
 				)
@@ -104,7 +106,9 @@ private fun ScreenContent(
 				PasswordField(
 					strId = R.string.password,
 					state.password,
-					nameErrorState = state.isPasswordFieldEmpty,
+					fieldStatePassword.fieldState.textId,
+					fieldStatePassword.fieldState.color,
+					fieldStatePassword.fieldState.show,
 					modifier = Modifier.fillMaxWidth(),
 					onNameChanged = state.onPasswordChanged
 				)

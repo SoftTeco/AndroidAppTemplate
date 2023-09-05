@@ -145,13 +145,13 @@ private fun ScreenContent(
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				PasswordField(
-					strId = R.string.confirm_password,
-					viewModel.confirmPasswordValue,
-					nameErrorState = viewModel.confirmPasswordValue.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onNameChanged = { newValue -> viewModel.confirmPasswordValue = newValue }
-				)
+//				PasswordField(
+//					strId = R.string.confirm_password,
+//					viewModel.confirmPasswordValue,
+//					nameErrorState = viewModel.confirmPasswordValue.isEmpty(),
+//					modifier = Modifier.fillMaxWidth(),
+//					onNameChanged = { newValue -> viewModel.confirmPasswordValue = newValue }
+//				)
 
 				if (viewModel.confirmPasswordValue.isNotEmpty() && viewModel.passwordValue.isNotEmpty()) {
 					if (viewModel.confirmPasswordValue != viewModel.passwordValue) {

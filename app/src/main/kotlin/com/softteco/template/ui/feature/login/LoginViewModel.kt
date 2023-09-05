@@ -1,4 +1,5 @@
 package com.softteco.template.ui.feature.login
+
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.components.EmailFieldState
+import com.softteco.template.ui.components.PasswordFieldState
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +38,7 @@ class LoginViewModel @Inject constructor(
 
 	private var snackBarState = MutableStateFlow(SnackBarState())
 	private var emailFieldState = MutableStateFlow(EmailFieldState())
+	private var passwordFieldState = MutableStateFlow(PasswordFieldState())
 
 	val state = combine(
 		loading,
@@ -72,8 +75,8 @@ class LoginViewModel @Inject constructor(
 		State()
 	)
 
-	val fieldState = combine(emailFieldState, emailState) { fieldState ->
-		FieldState(
+	val fieldStateEmail = combine(emailFieldState, emailState) { fieldState ->
+		FieldStateEmail(
 			fieldState = EmailFieldState(
 				R.string.required, Color.Red,
 				fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty,
@@ -86,7 +89,20 @@ class LoginViewModel @Inject constructor(
 	}.stateIn(
 		viewModelScope,
 		SharingStarted.Lazily,
-		FieldState()
+		FieldStateEmail()
+	)
+
+	val fieldStatePas = combine(passwordFieldState, passwordState) { fieldState ->
+		FieldStatePassword(
+			fieldState = PasswordFieldState(
+				R.string.required, Color.Red,
+				fieldValidationState.value.validateFieldEmpty(passwordState.value).isEmpty
+			)
+		)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Lazily,
+		FieldStatePassword()
 	)
 
 	private fun handleError() {
@@ -133,8 +149,14 @@ class LoginViewModel @Inject constructor(
 	)
 
 	@Immutable
-	data class FieldState(
+	data class FieldStateEmail(
 		val fieldState: EmailFieldState = EmailFieldState(),
 		val email: String = "",
+	)
+
+	@Immutable
+	data class FieldStatePassword(
+		val fieldState: PasswordFieldState = PasswordFieldState(),
+		val password: String = "",
 	)
 }
