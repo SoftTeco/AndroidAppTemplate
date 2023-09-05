@@ -22,14 +22,21 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
+import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
+import com.softteco.template.ui.components.EmailFieldState
 import com.softteco.template.ui.components.PasswordField
+import com.softteco.template.ui.components.PasswordFieldState
+import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.feature.profile.ProfileViewModel
+import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
 @Composable
@@ -57,10 +64,10 @@ fun LoginScreen(
 
 @Composable
 private fun ScreenContent(
-	modifier: Modifier = Modifier,
 	state: LoginViewModel.State,
 	fieldStateEmail: LoginViewModel.FieldStateEmail,
 	fieldStatePassword: LoginViewModel.FieldStatePassword,
+	modifier: Modifier = Modifier,
 	onBackClicked: () -> Unit = {},
 	onLoginClicked: () -> Unit = {},
 	onSignUpClicked: () -> Unit = {}
@@ -147,5 +154,35 @@ private fun ScreenContent(
 				)
 			}
 		}
+	}
+}
+
+@Preview
+@Composable
+private fun Preview() {
+	AppTheme {
+		ScreenContent(
+			LoginViewModel.State(
+				true,
+				true,
+				" ",
+				" ",
+				true,
+				true,
+				true,
+				SnackBarState(
+					textId = 0,
+					show = false
+				),
+			),
+			LoginViewModel.FieldStateEmail(
+				EmailFieldState(),
+				"",
+			),
+			LoginViewModel.FieldStatePassword(
+				PasswordFieldState(),
+				""
+			)
+		)
 	}
 }
