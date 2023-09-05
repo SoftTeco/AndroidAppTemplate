@@ -92,36 +92,36 @@ private fun ScreenContent(
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(
-					strId = R.string.first_name,
-					viewModel.firstNameValue,
-					fieldErrorState = viewModel.firstNameValue.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> viewModel.firstNameValue = newValue }
-				)
+//				SimpleField(
+//					strId = R.string.first_name,
+//					viewModel.firstNameValue,
+//					fieldErrorState = viewModel.firstNameValue.isEmpty(),
+//					modifier = Modifier.fillMaxWidth(),
+//					onFieldValueChanged = { newValue -> viewModel.firstNameValue = newValue }
+//				)
+
+				Spacer(Modifier.size(Dimens.PaddingNormal))
+//
+//				SimpleField(
+//					strId = R.string.last_name,
+//					viewModel.lastNameValue,
+//					fieldErrorState = viewModel.lastNameValue.isEmpty(),
+//					modifier = Modifier.fillMaxWidth(),
+//					onFieldValueChanged = { newValue -> viewModel.lastNameValue = newValue }
+//				)
 
 				Spacer(Modifier.size(Dimens.PaddingNormal))
 
-				SimpleField(
-					strId = R.string.last_name,
-					viewModel.lastNameValue,
-					fieldErrorState = viewModel.lastNameValue.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> viewModel.lastNameValue = newValue }
-				)
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
-
-				SimpleField(
-					strId = R.string.email,
-					viewModel.emailValue,
-					fieldErrorState = viewModel.emailValue.isEmpty(),
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue ->
-						viewModel.emailValue = newValue
-						viewModel.changeEmail(newValue)
-					}
-				)
+//				SimpleField(
+//					strId = R.string.email,
+//					viewModel.emailValue,
+//					fieldErrorState = viewModel.emailValue.isEmpty(),
+//					modifier = Modifier.fillMaxWidth(),
+//					onFieldValueChanged = { newValue ->
+//						viewModel.emailValue = newValue
+//						viewModel.changeEmail(newValue)
+//					}
+//				)
 
 				if (viewModel.emailValue.isNotEmpty() && !state.emailError) {
 					Text(

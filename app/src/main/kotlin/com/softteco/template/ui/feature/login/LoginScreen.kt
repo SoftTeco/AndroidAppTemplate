@@ -41,12 +41,16 @@ fun LoginScreen(
 	onSignUpClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
+
+	val fieldState by viewModel.fieldState.collectAsState()
+
 	ScreenContent(
+		modifier = modifier,
 		state = state,
+		fieldState = fieldState,
 		onBackClicked = onBackClicked,
 		onLoginClicked = onLoginClicked,
 		onSignUpClicked = onSignUpClicked,
-		modifier = modifier
 	)
 }
 
@@ -54,12 +58,13 @@ fun LoginScreen(
 private fun ScreenContent(
 	modifier: Modifier = Modifier,
 	state: LoginViewModel.State,
+	fieldState: LoginViewModel.FieldState,
 	onBackClicked: () -> Unit = {},
 	onLoginClicked: () -> Unit = {},
 	onSignUpClicked: () -> Unit = {}
 ) {
 	TextSnackbarContainer(
-		modifier = Modifier,
+		modifier = modifier,
 		snackbarText = stringResource(state.snackBar.textId),
 		showSnackbar = state.snackBar.show,
 		onDismissSnackbar = state.dismissSnackBar,
@@ -87,7 +92,10 @@ private fun ScreenContent(
 				SimpleField(
 					strId = R.string.email,
 					state.email,
-					fieldErrorState = state.isEmailFieldEmpty,
+					fieldState.fieldState.textId,
+					fieldState.fieldState.color,
+					fieldState.fieldState.show,
+						fieldErrorState = state . isEmailFieldEmpty,
 					modifier = Modifier.fillMaxWidth(),
 					onFieldValueChanged = state.onEmailChanged,
 				)

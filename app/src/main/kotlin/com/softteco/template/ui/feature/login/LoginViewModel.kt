@@ -1,6 +1,8 @@
 package com.softteco.template.ui.feature.login
 
 import android.util.Log
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
@@ -8,6 +10,7 @@ import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
+import com.softteco.template.ui.components.SimpleFieldState
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +38,7 @@ class LoginViewModel @Inject constructor(
 	private var fieldValidationState = MutableStateFlow(ValidateFields())
 
 	private var snackBarState = MutableStateFlow(SnackBarState())
+	private var simpleFieldState = MutableStateFlow(SimpleFieldState())
 
 	val state = combine(
 		loading,
@@ -71,6 +75,19 @@ class LoginViewModel @Inject constructor(
 		State()
 	)
 
+	val fieldState = combine(simpleFieldState, emailState) { fieldState ->
+		FieldState(
+			fieldState = SimpleFieldState(
+				R.string.required, Color.Red,
+				!fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty,
+			)
+		)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Lazily,
+		FieldState()
+	)
+
 	private fun handleError() {
 		snackBarState.value = SnackBarState(
 			if (isAllFieldsValid.value) {
@@ -97,6 +114,7 @@ class LoginViewModel @Inject constructor(
 		loading.value = false
 	}
 
+	@Immutable
 	data class State(
 		val loading: Boolean = false,
 		val loginState: Boolean = false,
@@ -111,5 +129,11 @@ class LoginViewModel @Inject constructor(
 		val isAllFieldsValid: Boolean = isEmailFieldValid && !isPasswordFieldEmpty && !isEmailFieldEmpty,
 		val onLoginClicked: () -> Unit = {},
 		val dismissSnackBar: () -> Unit = {}
+	)
+
+	@Immutable
+	data class FieldState(
+		val fieldState: SimpleFieldState = SimpleFieldState(),
+		val email: String = "",
 	)
 }

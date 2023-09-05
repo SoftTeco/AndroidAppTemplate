@@ -12,6 +12,9 @@ import com.softteco.template.R
 fun SimpleField(
 	strId: Int,
 	value: String,
+	textIdWarning: Int,
+	colorWarning: Color,
+	showWarning: Boolean,
 	fieldErrorState: Boolean,
 	modifier: Modifier = Modifier,
 	onFieldValueChanged: ((String) -> Unit) = {}
@@ -27,7 +30,13 @@ fun SimpleField(
 		},
 		isError = fieldErrorState
 	)
-	if (fieldErrorState) {
-		Text(text = stringResource(id = R.string.required), color = Color.Red)
+	if (!showWarning) {
+		Text(text = stringResource(textIdWarning), color = colorWarning)
 	}
 }
+
+data class SimpleFieldState(
+	val textId: Int = R.string.required,
+	val color: Color = Color.Red,
+	val show: Boolean = false,
+)
