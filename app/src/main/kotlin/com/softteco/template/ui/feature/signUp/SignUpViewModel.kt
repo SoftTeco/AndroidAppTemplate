@@ -8,6 +8,7 @@ import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.ui.components.EmailFieldState
 import com.softteco.template.ui.components.SimpleFieldState
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
@@ -31,10 +32,9 @@ class SignUpViewModel @Inject constructor(
 
 	private val signUpState = MutableStateFlow(false)
 
-	private var fieldState = MutableStateFlow(SimpleFieldState())
-
 	private var firstNameStateValue = MutableStateFlow("")
 	private var lastNameStateValue = MutableStateFlow("")
+	private var emailStateValue = MutableStateFlow("")
 
 	fun register(
 		user: CreateUserDto
@@ -55,9 +55,10 @@ class SignUpViewModel @Inject constructor(
 		snackBarState,
 		signUpState,
 		firstNameStateValue,
-		lastNameStateValue
+		lastNameStateValue,
+		emailStateValue  //TODO: how to add more than 5 flows?
 
-	) { loading, snackBar, signUpState, firstName, lastName ->
+	) { loading, snackBar, signUpState, firstName, lastName, email ->
 		State(
 			loading = loading,
 			snackBar = snackBar,
@@ -67,8 +68,17 @@ class SignUpViewModel @Inject constructor(
 			firstNameChanged = { firstNameStateValue.value = it },
 			lastNameValue = lastName,
 			isLastNameFieldEmpty = fieldValidationState.value.validateFieldEmpty(lastName).isEmpty,
+			firstNameFieldState = SimpleFieldState(
+				R.string.required, Color.Red,
+				fieldValidationState.value.validateFieldEmpty(firstNameStateValue.value).isEmpty
+			),
+			lastNameFieldState = SimpleFieldState(
+				R.string.required, Color.Red,
+				fieldValidationState.value.validateFieldEmpty(lastNameStateValue.value).isEmpty
+			),
 			lastNameChanged = { lastNameStateValue.value = it },
-			dismissSnackBar = { snackBarState.value = SnackBarState() }
+			dismissSnackBar = { snackBarState.value = SnackBarState() },
+			emailValue =
 		)
 	}.stateIn(
 		viewModelScope,
@@ -76,18 +86,6 @@ class SignUpViewModel @Inject constructor(
 		State()
 	)
 
-	val simpleFieldState = combine(fieldState, firstNameStateValue) { fieldState ->
-		SimpleStateField(
-			fieldState = SimpleFieldState(
-				R.string.required, Color.Red,
-				fieldValidationState.value.validateFieldEmpty(firstNameStateValue.value).isEmpty
-			)
-		)
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.Lazily,
-		SimpleStateField()
-	)
 
 	private fun handleError() {
 		signUpState.value = false
@@ -111,14 +109,15 @@ class SignUpViewModel @Inject constructor(
 		val isFirstNameFieldEmpty: Boolean = false,
 		val firstNameChanged: (String) -> Unit = {},
 		val lastNameValue: String = "",
+		val firstNameFieldState: SimpleFieldState = SimpleFieldState(),
+		val lastNameFieldState: SimpleFieldState = SimpleFieldState(),
 		val isLastNameFieldEmpty: Boolean = false,
 		val lastNameChanged: (String) -> Unit = {},
-		val dismissSnackBar: () -> Unit = {}
-	)
-
-	@Immutable
-	data class SimpleStateField(
-		val fieldState: SimpleFieldState = SimpleFieldState(),
-		val value: String = "",
+		val dismissSnackBar: () -> Unit = {},
+		val emailValue: String = "",
+		val isEmailFieldEmpty: Boolean = false,
+		val isEmailFieldValid: Boolean = false,
+		val onEmailChanged: (String) -> Unit = {},
+		val fieldStateEmail: EmailFieldState = EmailFieldState(),
 	)
 }

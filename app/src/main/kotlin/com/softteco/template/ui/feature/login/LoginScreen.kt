@@ -89,7 +89,7 @@ private fun ScreenContent(
 				}
 				EmailField(
 					strId = R.string.email,
-					state.email,
+					state.emailValue,
 					state.fieldStateEmail.textId,
 					state.fieldStateEmail.color,
 					state.fieldStateEmail.show,
@@ -100,7 +100,7 @@ private fun ScreenContent(
 				)
 				PasswordField(
 					strId = R.string.password,
-					state.password,
+					state.passwordValue,
 					state.fieldStatePassword.textId,
 					state.fieldStatePassword.color,
 					state.fieldStatePassword.show,

@@ -1,7 +1,5 @@
 package com.softteco.template.ui.feature.signUp
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,30 +19,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.FieldDatePicker
-import com.softteco.template.ui.components.PasswordField
-import com.softteco.template.ui.components.PasswordFieldComponentWithValidation
+import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.SimpleField
+import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.components.TextFieldWithDropDownComponent
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.feature.login.LoginViewModel
+import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpScreen(
@@ -53,10 +43,8 @@ fun SignUpScreen(
 	onBackClicked: () -> Unit = {}
 ) {
 	val state by viewModel.state.collectAsState()
-	val fieldState by viewModel.simpleFieldState.collectAsState()
 	ScreenContent(
-		state= state,
-	    fieldState= fieldState,
+		state = state,
 		modifier = modifier,
 		onBackClicked = onBackClicked
 	)
@@ -65,7 +53,6 @@ fun SignUpScreen(
 @Composable
 private fun ScreenContent(
 	state: SignUpViewModel.State,
-	fieldState: SignUpViewModel.SimpleStateField,
 	modifier: Modifier = Modifier,
 	onBackClicked: () -> Unit = {}
 ) {
@@ -94,8 +81,8 @@ private fun ScreenContent(
 			)
 			Column(
 				modifier = Modifier
-                    .padding(Dimens.Padding20)
-                    .verticalScroll(scrollState),
+					.padding(Dimens.Padding20)
+					.verticalScroll(scrollState),
 				verticalArrangement = Arrangement.Center,
 			) {
 				if (state.loading) {
@@ -105,9 +92,9 @@ private fun ScreenContent(
 				SimpleField(
 					strId = R.string.first_name,
 					state.firstNameValue,
-					fieldState.fieldState.textId,
-					fieldState.fieldState.color,
-					fieldState.fieldState.show,
+					state.firstNameFieldState.textId,
+					state.firstNameFieldState.color,
+					state.firstNameFieldState.show,
 					modifier = Modifier.fillMaxWidth(),
 					onFieldValueChanged = state.firstNameChanged
 				)
@@ -115,34 +102,25 @@ private fun ScreenContent(
 				SimpleField(
 					strId = R.string.last_name,
 					state.lastNameValue,
-					fieldState.fieldState.textId,
-					fieldState.fieldState.color,
-					fieldState.fieldState.show,
+					state.lastNameFieldState.textId,
+					state.lastNameFieldState.color,
+					state.lastNameFieldState.show,
 					modifier = Modifier.fillMaxWidth(),
 					onFieldValueChanged = state.lastNameChanged
 				)
 
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+				EmailField(
+					strId = R.string.email,
+					state.emailValue,
+					state.fieldStateEmail.textId,
+					state.fieldStateEmail.color,
+					state.fieldStateEmail.show,
+					state.fieldStateEmail.isEmailValid,
+					state.fieldStateEmail.emailNotValidTextId,
+					modifier = Modifier.fillMaxWidth(),
+					onFieldValueChanged = state.onEmailChanged
+				)
 
-//				SimpleField(
-//					strId = R.string.email,
-//					viewModel.emailValue,
-//					fieldErrorState = viewModel.emailValue.isEmpty(),
-//					modifier = Modifier.fillMaxWidth(),
-//					onFieldValueChanged = { newValue ->
-//						viewModel.emailValue = newValue
-//						viewModel.changeEmail(newValue)
-//					}
-//				)
-
-//				if (viewModel.emailValue.isNotEmpty() && !state.emailError) {
-//					Text(
-//						text = stringResource(id = R.string.email_not_valid),
-//						color = Color.Red
-//					)
-//				}
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
 
 //				PasswordFieldComponentWithValidation(
 //					modifier = Modifier.fillMaxWidth(),
@@ -250,13 +228,24 @@ private fun ScreenContent(
 						},
 						shape = RoundedCornerShape(Dimens.Padding50),
 						modifier = Modifier
-                            .fillMaxWidth()
-                            .height(Dimens.Padding50)
+							.fillMaxWidth()
+							.height(Dimens.Padding50)
 					) {
 						Text(text = stringResource(id = R.string.sign_up))
 					}
 				}
 			}
 		}
+	}
+}
+
+@Preview
+@Composable
+private fun Preview() {
+	AppTheme {
+		ScreenContent(
+			SignUpViewModel.State(
+			)
+		)
 	}
 }

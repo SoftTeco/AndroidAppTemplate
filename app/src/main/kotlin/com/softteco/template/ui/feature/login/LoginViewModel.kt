@@ -48,8 +48,8 @@ class LoginViewModel @Inject constructor(
 		State(
 			loading = loading,
 			loginState = loginState,
-			email = emailValue,
-			password = passwordValue,
+			emailValue = emailValue,
+			passwordValue = passwordValue,
 			isEmailFieldEmpty = fieldValidationState.value.validateFieldEmpty(emailValue).isEmpty,
 			isEmailFieldValid = fieldValidationState.value.validateEmail(emailValue).isEmailCorrect,
 			isPasswordFieldEmpty = fieldValidationState.value.validateFieldEmpty(passwordValue).isEmpty,
@@ -116,8 +116,8 @@ class LoginViewModel @Inject constructor(
 	data class State(
 		val loading: Boolean = false,
 		val loginState: Boolean = false,
-		val email: String = "",
-		val password: String = "",
+		val emailValue: String = "",
+		val passwordValue: String = "",
 		val isEmailFieldEmpty: Boolean = false,
 		val isEmailFieldValid: Boolean = false,
 		val isPasswordFieldEmpty: Boolean = false,
