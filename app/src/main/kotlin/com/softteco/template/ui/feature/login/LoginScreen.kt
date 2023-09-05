@@ -29,7 +29,6 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
-import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.Dimens
 
@@ -96,16 +95,12 @@ private fun ScreenContent(
 					fieldState.fieldState.textId,
 					fieldState.fieldState.color,
 					fieldState.fieldState.show,
-						fieldErrorState = state . isEmailFieldEmpty,
+					fieldState.fieldState.isEmailValid,
+					fieldState.fieldState.emailNotValidTextId,
 					modifier = Modifier.fillMaxWidth(),
 					onFieldValueChanged = state.onEmailChanged,
 				)
 
-//				if (!state.isEmailFieldEmpty && !state.isEmailFieldValid) {
-//					Text(
-//						text = stringResource(id = R.string.email_not_valid), color = Color.Red
-//					)
-//				}
 				PasswordField(
 					strId = R.string.password,
 					state.password,

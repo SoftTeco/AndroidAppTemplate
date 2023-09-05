@@ -1,17 +1,13 @@
 package com.softteco.template.ui.feature.login
-
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
-import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.components.EmailFieldState
-import com.softteco.template.ui.components.SimpleFieldState
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -81,6 +77,10 @@ class LoginViewModel @Inject constructor(
 			fieldState = EmailFieldState(
 				R.string.required, Color.Red,
 				fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty,
+				!fieldValidationState.value.validateFieldEmpty(emailState.value).isEmpty
+					&& !fieldValidationState.value.validateEmail(
+					emailState.value
+				).isEmailCorrect, R.string.email_not_valid
 			)
 		)
 	}.stateIn(
@@ -96,7 +96,7 @@ class LoginViewModel @Inject constructor(
 			} else {
 				R.string.empty_fields_error
 			},
-			true,
+			true
 		)
 	}
 

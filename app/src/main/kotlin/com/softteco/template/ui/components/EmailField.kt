@@ -15,7 +15,9 @@ fun EmailField(
 	textIdWarning: Int,
 	colorWarning: Color,
 	showWarning: Boolean,
-	fieldErrorState: Boolean,
+	isEmailValid: Boolean,
+	emailTextWarning: Int,
+
 	modifier: Modifier = Modifier,
 	onFieldValueChanged: ((String) -> Unit) = {}
 ) {
@@ -28,10 +30,13 @@ fun EmailField(
 		label = {
 			Text(text = stringResource(id = strId))
 		},
-		isError = fieldErrorState
+		isError = showWarning || isEmailValid
 	)
 	if (showWarning) {
 		Text(text = stringResource(textIdWarning), color = colorWarning)
+	}
+	if (isEmailValid) {
+		Text(text = stringResource(emailTextWarning), color = Color.Red)
 	}
 }
 
@@ -39,4 +44,6 @@ data class EmailFieldState(
 	val textId: Int = R.string.required,
 	val color: Color = Color.Red,
 	val show: Boolean = false,
+	val isEmailValid: Boolean = false,
+	val emailNotValidTextId: Int = R.string.email_not_valid
 )
