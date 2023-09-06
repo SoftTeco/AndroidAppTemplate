@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.EmailField
+
 import com.softteco.template.ui.components.SimpleField
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.components.TextFieldWithDropDownComponent

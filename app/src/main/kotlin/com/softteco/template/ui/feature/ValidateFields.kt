@@ -2,7 +2,16 @@ package com.softteco.template.ui.feature
 
 import com.softteco.template.Constants
 
-class ValidateFields {
+object ValidateFields {
+
+	fun String.isEmailCorrect(): Boolean {
+		return this.matches(Regex(Constants.EMAIL_PATTERN))
+	}
+
+	fun String.isFieldEmpty(): Boolean {
+		return this.isEmpty()
+	}
+
 	fun validateEmail(fieldValue: String): FieldValidationState {
 		val isEmailCorrect = isEmailCorrect(fieldValue)
 
@@ -61,4 +70,4 @@ data class FieldValidationState(
 	var isPasswordCorrect: Boolean = hasMinimum && hasCapitalizedLetter,
 	var isEmpty: Boolean = false,
 
-)
+	)

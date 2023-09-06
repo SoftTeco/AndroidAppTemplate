@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softteco.template.Constants
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
@@ -11,6 +12,8 @@ import com.softteco.template.data.profile.dto.LoginAuthDto
 
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.ValidateFields
+import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
+import com.softteco.template.ui.feature.ValidateFields.isFieldEmpty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,12 +49,12 @@ class LoginViewModel @Inject constructor(
 			onEmailChanged = { emailStateValue.value = it },
 			onPasswordChanged = { passwordStateValue.value = it },
 			fieldStateEmail = when {
-				ValidateFields().validateEmail(emailValue).isEmailCorrect -> EmailFieldState.Success
-				ValidateFields().validateFieldEmpty(emailValue).isEmpty -> EmailFieldState.Empty
+		emailValue.isEmailCorrect() -> EmailFieldState.Success
+			emailValue.isFieldEmpty() -> EmailFieldState.Empty
 				else -> EmailFieldState.Error(R.string.email_not_valid)
 			},
 			fieldStatePassword = when {
-				ValidateFields().validateFieldEmpty(passwordValue).isEmpty -> PasswordFieldState.Empty
+			passwordValue.isFieldEmpty()-> PasswordFieldState.Empty
 				else -> PasswordFieldState.Success
 			},
 			onLoginClicked = ::onLogin,
@@ -95,7 +98,6 @@ class LoginViewModel @Inject constructor(
 		}
 		loading.value = false
 	}
-
 	@Immutable
 	data class State(
 		val loading: Boolean = false,
