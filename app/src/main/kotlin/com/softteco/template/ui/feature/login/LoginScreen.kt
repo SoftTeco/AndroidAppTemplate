@@ -10,10 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,12 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.EmailField
-import com.softteco.template.ui.components.PasswordField
-import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
@@ -53,7 +57,6 @@ fun LoginScreen(
 		onSignUpClicked = onSignUpClicked
 	)
 }
-
 @Composable
 private fun ScreenContent(
 	state: LoginViewModel.State,
@@ -87,26 +90,8 @@ private fun ScreenContent(
 				if (state.loading) {
 					Text(stringResource(id = R.string.loading))
 				}
-				EmailField(
-					strId = R.string.email,
-					state.emailValue,
-					state.fieldStateEmail.textId,
-					state.fieldStateEmail.color,
-					state.fieldStateEmail.show,
-					state.fieldStateEmail.isEmailValid,
-					state.fieldStateEmail.emailNotValidTextId,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = state.onEmailChanged
-				)
-				PasswordField(
-					strId = R.string.password,
-					state.passwordValue,
-					state.fieldStatePassword.textId,
-					state.fieldStatePassword.color,
-					state.fieldStatePassword.show,
-					modifier = Modifier.fillMaxWidth(),
-					onNameChanged = state.onPasswordChanged
-				)
+				EmailField(state = state)
+				PasswordField(state = state)
 				Box(
 					modifier = Modifier.padding(
 						Dimens.PaddingLarge, 0.dp, Dimens.PaddingLarge, 0.dp
@@ -145,24 +130,64 @@ private fun ScreenContent(
 	}
 }
 
+@Composable
+private fun EmailField(
+	state: LoginViewModel.State,
+	modifier: Modifier = Modifier,
+) {
+	var isError by remember { mutableStateOf(false) }
+	OutlinedTextField(
+		value = state.emailValue,
+		onValueChange = {
+			state.onEmailChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = R.string.email))
+		},
+		isError = state.fieldStateEmail is EmailFieldState.Empty || isError
+
+	)
+	if (state.fieldStateEmail is EmailFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+	LaunchedEffect(state.emailValue) {
+		delay(1000)
+		isError = state.fieldStateEmail is EmailFieldState.Error
+	}
+	if (isError) {
+		Text(
+			text = stringResource(R.string.email_not_valid),
+			color = MaterialTheme.colorScheme.error
+		)
+	}
+}
+
+@Composable
+private fun PasswordField(
+	state: LoginViewModel.State,
+	modifier: Modifier = Modifier,
+) {
+	OutlinedTextField(
+		value = state.passwordValue,
+		onValueChange = {
+			state.onPasswordChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = R.string.password))
+		},
+		isError = state.fieldStatePassword is PasswordFieldState.Empty
+	)
+	if (state.fieldStatePassword is PasswordFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+}
+
 @Preview
 @Composable
-private fun Preview() {
+private fun Preview(){
 	AppTheme {
-		ScreenContent(
-			LoginViewModel.State(
-				true,
-				true,
-				" ",
-				" ",
-				true,
-				true,
-				true,
-				SnackBarState(
-					textId = 0,
-					show = false
-				),
-			)
-		)
+		ScreenContent(state = LoginViewModel.State())
 	}
 }

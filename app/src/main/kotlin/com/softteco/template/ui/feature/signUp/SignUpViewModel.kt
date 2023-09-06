@@ -56,9 +56,9 @@ class SignUpViewModel @Inject constructor(
 		signUpState,
 		firstNameStateValue,
 		lastNameStateValue,
-		emailStateValue  //TODO: how to add more than 5 flows?
 
-	) { loading, snackBar, signUpState, firstName, lastName, email ->
+
+	) { loading, snackBar, signUpState, firstName, lastName ->
 		State(
 			loading = loading,
 			snackBar = snackBar,
@@ -77,8 +77,7 @@ class SignUpViewModel @Inject constructor(
 				fieldValidationState.value.validateFieldEmpty(lastNameStateValue.value).isEmpty
 			),
 			lastNameChanged = { lastNameStateValue.value = it },
-			dismissSnackBar = { snackBarState.value = SnackBarState() },
-			emailValue =
+			dismissSnackBar = { snackBarState.value = SnackBarState() }
 		)
 	}.stateIn(
 		viewModelScope,
@@ -118,6 +117,6 @@ class SignUpViewModel @Inject constructor(
 		val isEmailFieldEmpty: Boolean = false,
 		val isEmailFieldValid: Boolean = false,
 		val onEmailChanged: (String) -> Unit = {},
-		val fieldStateEmail: EmailFieldState = EmailFieldState(),
+
 	)
 }

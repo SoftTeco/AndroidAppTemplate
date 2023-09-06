@@ -1,5 +1,6 @@
 package com.softteco.template.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Done
@@ -66,9 +67,3 @@ fun PasswordField(
 		Text(text = stringResource(id = textIdWarning), color = colorWarning)
 	}
 }
-
-data class PasswordFieldState(
-	val textId: Int = R.string.required,
-	val color: Color = Color.Red,
-	val show: Boolean = false,
-)

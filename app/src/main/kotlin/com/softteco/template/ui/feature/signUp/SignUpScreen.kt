@@ -109,17 +109,17 @@ private fun ScreenContent(
 					onFieldValueChanged = state.lastNameChanged
 				)
 
-				EmailField(
-					strId = R.string.email,
-					state.emailValue,
-					state.fieldStateEmail.textId,
-					state.fieldStateEmail.color,
-					state.fieldStateEmail.show,
-					state.fieldStateEmail.isEmailValid,
-					state.fieldStateEmail.emailNotValidTextId,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = state.onEmailChanged
-				)
+//				EmailField(
+//					strId = R.string.email,
+//					state.emailValue,
+//					state.fieldStateEmail.textId,
+//					state.fieldStateEmail.color,
+//					state.fieldStateEmail.show,
+//					state.fieldStateEmail.isEmailValid,
+//					state.fieldStateEmail.emailNotValidTextId,
+//					modifier = Modifier.fillMaxWidth(),
+//					onFieldValueChanged = state.onEmailChanged
+//				)
 
 
 //				PasswordFieldComponentWithValidation(
