@@ -9,7 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -27,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +64,7 @@ fun LoginScreen(
 		onSignUpClicked = onSignUpClicked
 	)
 }
+
 @Composable
 private fun ScreenContent(
 	state: LoginViewModel.State,
@@ -168,6 +176,7 @@ private fun PasswordField(
 	state: LoginViewModel.State,
 	modifier: Modifier = Modifier,
 ) {
+	var passwordVisibility by remember { mutableStateOf(true) }
 	OutlinedTextField(
 		value = state.passwordValue,
 		onValueChange = {
@@ -177,7 +186,27 @@ private fun PasswordField(
 		label = {
 			Text(text = stringResource(id = R.string.password))
 		},
-		isError = state.fieldStatePassword is PasswordFieldState.Empty
+		isError = state.fieldStatePassword is PasswordFieldState.Empty,
+		trailingIcon = {
+			IconButton(onClick = {
+				passwordVisibility = !passwordVisibility
+			}) {
+				Icon(
+					imageVector = if (passwordVisibility) {
+						Icons.Default.Create
+					} else {
+						Icons.Default.Done
+					},
+					contentDescription = stringResource(id = R.string.visibility),
+					tint = Color.Black
+				)
+			}
+		},
+		visualTransformation = if (passwordVisibility) {
+			PasswordVisualTransformation()
+		} else {
+			VisualTransformation.None
+		}
 	)
 	if (state.fieldStatePassword is PasswordFieldState.Empty) {
 		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
@@ -186,7 +215,7 @@ private fun PasswordField(
 
 @Preview
 @Composable
-private fun Preview(){
+private fun Preview() {
 	AppTheme {
 		ScreenContent(state = LoginViewModel.State())
 	}
