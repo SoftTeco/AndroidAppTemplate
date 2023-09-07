@@ -30,14 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
@@ -104,7 +99,7 @@ private fun ScreenContent(
 				PasswordField(state = state, Modifier.fillMaxWidth())
 				Box(
 					modifier = Modifier.padding(
-						Dimens.PaddingLarge, Dimens.PaddingBig, Dimens.PaddingLarge, 0.dp
+						Dimens.PaddingLarge, Dimens.PaddingBig, Dimens.PaddingLarge
 					)
 				) {
 					Button(
@@ -129,12 +124,7 @@ private fun ScreenContent(
 					onClick = {
 						onSignUpClicked()
 					},
-					style = TextStyle(
-						fontSize = 20.sp,
-						fontFamily = FontFamily.Default,
-						textDecoration = TextDecoration.Underline,
-						color = Color.Blue
-					)
+					style = MaterialTheme.typography.bodyLarge
 				)
 			}
 		}
@@ -157,7 +147,6 @@ private fun EmailField(
 			Text(text = stringResource(id = R.string.email))
 		},
 		isError = state.fieldStateEmail is EmailFieldState.Empty || isError
-
 	)
 	if (state.fieldStateEmail is EmailFieldState.Empty) {
 		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
@@ -201,7 +190,7 @@ private fun PasswordField(
 						Icons.Default.Done
 					},
 					contentDescription = stringResource(id = R.string.visibility),
-					tint = Color.Black
+					tint = MaterialTheme.colorScheme.primary
 				)
 			}
 		},

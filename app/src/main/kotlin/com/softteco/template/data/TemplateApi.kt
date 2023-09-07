@@ -17,7 +17,7 @@ interface TemplateApi {
     suspend fun getUser(@Path("id") id: String): Profile
 
     @POST("/api/auth/login")
-    suspend fun login(@Body userAuth: LoginAuthDto): Boolean
+    suspend fun login(@Body userAuth: LoginAuthDto): String
 
     @POST("/api/auth/registration")
     suspend fun registration(@Body user: CreateUserDto): Boolean

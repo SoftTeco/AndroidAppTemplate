@@ -14,6 +14,8 @@ import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.SimpleFieldState
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
 import com.softteco.template.ui.feature.ValidateFields.isFieldEmpty
+import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
+import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -75,6 +77,8 @@ class SignUpViewModel @Inject constructor(
 					password.isFieldEmpty() -> PasswordFieldState.Empty
 					else -> PasswordFieldState.Success
 				},
+				isPasswordHasMinimum = password.isHasMinimum(),
+				isPasswordHasUpperCase = password.isHasCapitalizedLetter(),
 				snackBar = snackBar,
 				dismissSnackBar = { snackBarFlow.value = SnackBarState() },
 				onUserNameChanged = { userNameFlow.value = it },
@@ -99,7 +103,6 @@ class SignUpViewModel @Inject constructor(
 		SharingStarted.Lazily,
 		State()
 	)
-
 	private fun handleError() {
 		val isAllFieldsValid = state.value.run {
 			fieldStateEmail is EmailFieldState.Success &&
@@ -146,6 +149,8 @@ class SignUpViewModel @Inject constructor(
 		val fieldStateUserName: SimpleFieldState = SimpleFieldState.Waiting(R.string.required),
 		val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting(R.string.required),
 		val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting(R.string.required),
+		val isPasswordHasMinimum: Boolean = false,
+		val isPasswordHasUpperCase: Boolean = false,
 		val snackBar: SnackBarState = SnackBarState(),
 		val onUserNameChanged: (String) -> Unit = {},
 		val onEmailChanged: (String) -> Unit = {},

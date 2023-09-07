@@ -1,11 +1,10 @@
 package com.softteco.template.ui.feature.login
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.Constants
 import com.softteco.template.R
+import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
@@ -13,7 +12,6 @@ import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.ValidateFields
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
 import com.softteco.template.ui.feature.ValidateFields.isFieldEmpty
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,12 +49,12 @@ class LoginViewModel @Inject constructor(
 			onEmailChanged = { emailStateValue.value = it },
 			onPasswordChanged = { passwordStateValue.value = it },
 			fieldStateEmail = when {
-		emailValue.isEmailCorrect() -> EmailFieldState.Success
-			emailValue.isFieldEmpty() -> EmailFieldState.Empty
+				emailValue.isEmailCorrect() -> EmailFieldState.Success
+				emailValue.isFieldEmpty() -> EmailFieldState.Empty
 				else -> EmailFieldState.Error(R.string.email_not_valid)
 			},
 			fieldStatePassword = when {
-			passwordValue.isFieldEmpty()-> PasswordFieldState.Empty
+				passwordValue.isFieldEmpty() -> PasswordFieldState.Empty
 				else -> PasswordFieldState.Success
 			},
 			onLoginClicked = ::onLogin,
@@ -67,39 +65,51 @@ class LoginViewModel @Inject constructor(
 		State()
 	)
 
-	private fun handleError() {
+	private fun handleError(error: ErrorEntity) {
+		val textId = when (error) {
+			ErrorEntity.AccessDenied -> R.string.error_example
+			ErrorEntity.Network -> R.string.error_example
+			ErrorEntity.NotFound -> R.string.error_example
+			ErrorEntity.ServiceUnavailable -> R.string.error_example
+			ErrorEntity.Unknown -> R.string.error_example
+		}
+		snackBarState.value = SnackBarState(
+			textId = textId,
+			show = true,
+		)
+	}
+
+	private fun onLogin() {
+		loading.value = true
 		val isAllFieldsValid = state.value.run {
 			fieldStateEmail is EmailFieldState.Success &&
 				fieldStatePassword is PasswordFieldState.Success
 
 		}
-		loginState.value = false
-		snackBarState.value = SnackBarState(
-			if (isAllFieldsValid) {
-				R.string.problem_error
-			} else {
-				R.string.empty_fields_error
-			},
-			true
-		)
-	}
-
-	private fun onLogin() = viewModelScope.launch {
-		loading.value = true
-		val userAuthDto = LoginAuthDto(
-			email = emailStateValue.value,
-			password = passwordStateValue.value
-		)
-		repository.login(userAuthDto).run {
-			when (this) {
-				is Result.Success -> loginState.value = true // FIXME
-				is Result.Error -> {
-					handleError()
+		if (isAllFieldsValid) {
+			viewModelScope.launch {
+				val userAuthDto = LoginAuthDto(
+					email = emailStateValue.value,
+					password = passwordStateValue.value
+				)
+				repository.login(userAuthDto).run {
+					when (val result = this) {
+						is Result.Success -> loginState.value = true // FIXME
+						is Result.Error -> {
+							handleError(result.error)
+						}
+					}
 				}
 			}
+		} else {
+			snackBarState.value = SnackBarState(
+				R.string.empty_fields_error,
+				true
+			)
 		}
 		loading.value = false
 	}
+
 	@Immutable
 	data class State(
 		val loading: Boolean = false,

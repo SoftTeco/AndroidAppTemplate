@@ -33,7 +33,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
 		}
 	}
 
-	override suspend fun login(userAuth: LoginAuthDto): Result<Boolean> {
+	override suspend fun login(userAuth: LoginAuthDto): Result<String> {
 		return try {
 			Result.Success(templateApi.login(userAuth))
 		} catch (e: Exception) {

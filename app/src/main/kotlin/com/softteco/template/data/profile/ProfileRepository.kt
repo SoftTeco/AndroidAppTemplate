@@ -11,7 +11,7 @@ interface ProfileRepository {
 
     suspend fun getUser(id: String): Result<Profile>
 
-    suspend fun login(userAuth: LoginAuthDto): Result<Boolean>
+    suspend fun login(userAuth: LoginAuthDto): Result<String>
 
     suspend fun registration(user: CreateUserDto): Result<Boolean>
 }

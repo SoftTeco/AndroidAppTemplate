@@ -1,21 +1,26 @@
 package com.softteco.template.ui.feature.signUp
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 
 
@@ -222,7 +227,7 @@ private fun PasswordField(
 						Icons.Default.Done
 					},
 					contentDescription = stringResource(id = R.string.visibility),
-					tint = MaterialTheme.colorScheme.background
+					tint = Color.Black
 				)
 			}
 		},
@@ -234,6 +239,48 @@ private fun PasswordField(
 	)
 	if (state.fieldStatePassword is PasswordFieldState.Empty) {
 		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+	Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
+
+	Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+		ConditionRow(
+			condition = stringResource(R.string.registration_password_condition1),
+			check = state.isPasswordHasMinimum
+		)
+		ConditionRow(
+			condition = stringResource(R.string.registration_password_condition2),
+			check = state.isPasswordHasUpperCase
+		)
+	}
+}
+
+@Composable
+fun ConditionRow(
+	condition: String,
+	check: Boolean,
+	modifier: Modifier = Modifier
+) {
+	val color by animateColorAsState(
+		targetValue = if (check) Color.Green else Color.Red
+	)
+
+	val icon = if (check) {
+		Icons.Rounded.Check
+	} else {
+		Icons.Rounded.Close
+	}
+
+	Row(modifier = modifier) {
+		Icon(
+			imageVector = icon,
+			tint = color,
+			contentDescription = stringResource(id = R.string.visibility)
+		)
+		Spacer(modifier = Modifier.width(10.dp))
+		Text(
+			text = condition,
+			color = color
+		)
 	}
 }
 
