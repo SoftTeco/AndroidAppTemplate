@@ -20,5 +20,5 @@ interface TemplateApi {
     suspend fun login(@Body userAuth: LoginAuthDto): String
 
     @POST("/api/auth/registration")
-    suspend fun registration(@Body user: CreateUserDto): Boolean
+    suspend fun registration(@Body user: CreateUserDto): String
 }

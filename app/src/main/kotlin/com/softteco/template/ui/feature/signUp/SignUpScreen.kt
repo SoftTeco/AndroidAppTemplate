@@ -1,8 +1,6 @@
 package com.softteco.template.ui.feature.signUp
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
@@ -23,11 +20,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 
-
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -113,28 +104,28 @@ private fun ScreenContent(
 					Text(stringResource(id = R.string.loading))
 				}
 				SimpleField(
-				state = state,
+					state = state,
 					modifier = modifier.fillMaxWidth(),
 				)
-
-
 				EmailField(state = state, modifier = modifier.fillMaxWidth())
 				PasswordField(state = state, modifier = modifier.fillMaxWidth())
-
-
 				Box(
 					modifier = Modifier.padding(
-						40.dp, 0.dp, 40.dp, 0.dp
+						Dimens.PaddingMiddle, 0.dp, Dimens.PaddingMiddle, 0.dp
 					)
 				) {
 
 					Button(
 						onClick = {
+							state.onRegisterClicked()
+							if (state.registrationState) {
+							 // transfer to user's screen
+							}
 						},
-						shape = RoundedCornerShape(50.dp),
+						shape = MaterialTheme.shapes.large,
 						modifier = Modifier
 							.fillMaxWidth()
-							.height(50.dp)
+							.height(Dimens.PaddingBig)
 					) {
 						Text(text = stringResource(id = R.string.sign_up))
 					}
@@ -227,7 +218,7 @@ private fun PasswordField(
 						Icons.Default.Done
 					},
 					contentDescription = stringResource(id = R.string.visibility),
-					tint = Color.Black
+					tint = MaterialTheme.colorScheme.primary
 				)
 			}
 		},
@@ -242,7 +233,7 @@ private fun PasswordField(
 	}
 	Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
 
-	Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+	Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
 		ConditionRow(
 			condition = stringResource(R.string.registration_password_condition1),
 			check = state.isPasswordHasMinimum
@@ -261,7 +252,7 @@ fun ConditionRow(
 	modifier: Modifier = Modifier
 ) {
 	val color by animateColorAsState(
-		targetValue = if (check) Color.Green else Color.Red
+		targetValue = if (check) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error
 	)
 
 	val icon = if (check) {
@@ -276,7 +267,7 @@ fun ConditionRow(
 			tint = color,
 			contentDescription = stringResource(id = R.string.visibility)
 		)
-		Spacer(modifier = Modifier.width(10.dp))
+		Spacer(modifier = Modifier.width(Dimens.PaddingSmall))
 		Text(
 			text = condition,
 			color = color

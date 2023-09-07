@@ -41,7 +41,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
 		}
 	}
 
-	override suspend fun registration(user: CreateUserDto): Result<Boolean> {
+	override suspend fun registration(user: CreateUserDto): Result<String> {
 		return try {
 			Result.Success(templateApi.registration(user))
 		} catch (e: Exception) {

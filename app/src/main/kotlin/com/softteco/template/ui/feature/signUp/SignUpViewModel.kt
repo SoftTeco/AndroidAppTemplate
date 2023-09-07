@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
@@ -103,41 +104,54 @@ class SignUpViewModel @Inject constructor(
 		SharingStarted.Lazily,
 		State()
 	)
-	private fun handleError() {
+
+	private fun handleError(error: ErrorEntity) {
+		val textId = when (error) {
+			ErrorEntity.AccessDenied -> R.string.error_example
+			ErrorEntity.Network -> R.string.error_example
+			ErrorEntity.NotFound -> R.string.error_example
+			ErrorEntity.ServiceUnavailable -> R.string.error_example
+			ErrorEntity.Unknown -> R.string.error_example
+		}
+		snackBarState.value = SnackBarState(
+			textId = textId,
+			show = true,
+		)
+	}
+
+	private fun onRegister() {
+		loading.value = true
 		val isAllFieldsValid = state.value.run {
 			fieldStateEmail is EmailFieldState.Success &&
 				fieldStatePassword is PasswordFieldState.Success
 
 		}
-		registrationState.value = false
-		snackBarState.value = SnackBarState(
-			if (isAllFieldsValid) {
-				R.string.problem_error
-			} else {
-				R.string.empty_fields_error
-			},
-			true
-		)
-	}
-
-	private fun onRegister() = viewModelScope.launch {
-		loading.value = true
-		val createUserDto = CreateUserDto(
-			firstName = userNameStateValue.value,
-			email = emailStateValue.value,
-			password = passwordStateValue.value,
-			confirmPassword = passwordStateValue.value,
-		)
-		repository.registration(createUserDto).run {
-			when (this) {
-				is Result.Success -> registrationState.value = true // FIXME
-				is Result.Error -> {
-					handleError()
+		if (isAllFieldsValid) {
+			viewModelScope.launch {
+				val createUserDto = CreateUserDto(
+					firstName = userNameStateValue.value,
+					email = emailStateValue.value,
+					password = passwordStateValue.value,
+					confirmPassword = passwordStateValue.value,
+				)
+				repository.registration(createUserDto).run {
+					when (val result = this) {
+						is Result.Success -> registrationState.value = true // FIXME
+						is Result.Error -> {
+							handleError(result.error)
+						}
+					}
 				}
 			}
+		} else {
+			snackBarState.value = SnackBarState(
+				R.string.empty_fields_error,
+				true
+			)
 		}
 		loading.value = false
 	}
+
 
 	@Immutable
 	data class State(
