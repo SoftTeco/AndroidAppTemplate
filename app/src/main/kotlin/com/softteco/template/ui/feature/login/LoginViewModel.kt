@@ -11,6 +11,8 @@ import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
 
 import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ValidateFields
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
 import com.softteco.template.ui.feature.ValidateFields.isFieldEmpty
@@ -112,18 +114,4 @@ class LoginViewModel @Inject constructor(
 		val onLoginClicked: () -> Unit = {},
 		val dismissSnackBar: () -> Unit = {}
 	)
-}
-
-sealed class EmailFieldState {
-	object Success : EmailFieldState()
-	object Empty : EmailFieldState()
-	class Waiting(@StringRes val labelRes: Int?) : EmailFieldState()
-	class Error(@StringRes val labelRes: Int?) : EmailFieldState()
-}
-
-sealed class PasswordFieldState {
-	object Success : PasswordFieldState()
-	object Empty : PasswordFieldState()
-	class Waiting(@StringRes val labelRes: Int) : PasswordFieldState()
-	class Error(@StringRes val labelRes: Int) : PasswordFieldState()
 }

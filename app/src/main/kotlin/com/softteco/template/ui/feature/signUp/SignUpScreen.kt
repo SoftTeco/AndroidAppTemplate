@@ -1,5 +1,7 @@
 package com.softteco.template.ui.feature.signUp
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,13 +10,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+
+
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+
+
 import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,19 +40,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 
-import com.softteco.template.ui.components.SimpleField
-import com.softteco.template.ui.components.SnackBarState
-import com.softteco.template.ui.components.TextFieldWithDropDownComponent
 import com.softteco.template.ui.components.TextSnackbarContainer
-import com.softteco.template.ui.feature.login.LoginViewModel
+import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.PasswordFieldState
+import com.softteco.template.ui.feature.SimpleFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
 
 @Composable
 fun SignUpScreen(
@@ -58,9 +80,6 @@ private fun ScreenContent(
 ) {
 	val scrollState = rememberScrollState()
 
-	var country by remember { mutableStateOf("") }
-	val countryList = mutableListOf("Belarus", "Poland", "Italia", "Spain")
-
 	TextSnackbarContainer(
 		modifier = modifier,
 		snackbarText = stringResource(state.snackBar.textId),
@@ -81,155 +100,50 @@ private fun ScreenContent(
 			)
 			Column(
 				modifier = Modifier
-					.padding(Dimens.Padding20)
+					.padding(Dimens.PaddingLarge)
 					.verticalScroll(scrollState),
 				verticalArrangement = Arrangement.Center,
 			) {
 				if (state.loading) {
 					Text(stringResource(id = R.string.loading))
 				}
-
 				SimpleField(
-					strId = R.string.first_name,
+					state.fieldStateFirstName,
+					R.string.first_name,
 					state.firstNameValue,
-					state.firstNameFieldState.textId,
-					state.firstNameFieldState.color,
-					state.firstNameFieldState.show,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = state.firstNameChanged
+					state.onFirstNameChanged,
+					modifier = modifier.fillMaxWidth(),
 				)
-
 				SimpleField(
-					strId = R.string.last_name,
-					state.lastNameValue,
-					state.lastNameFieldState.textId,
-					state.lastNameFieldState.color,
-					state.lastNameFieldState.show,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = state.lastNameChanged
+					state.fieldStateSecondName,
+					R.string.last_name,
+					state.secondNameValue,
+					state.onSecondNameChanged,
+					modifier = modifier.fillMaxWidth(),
 				)
 
-//				EmailField(
-//					strId = R.string.email,
-//					state.emailValue,
-//					state.fieldStateEmail.textId,
-//					state.fieldStateEmail.color,
-//					state.fieldStateEmail.show,
-//					state.fieldStateEmail.isEmailValid,
-//					state.fieldStateEmail.emailNotValidTextId,
-//					modifier = Modifier.fillMaxWidth(),
-//					onFieldValueChanged = state.onEmailChanged
-//				)
-
-
-//				PasswordFieldComponentWithValidation(
-//					modifier = Modifier.fillMaxWidth(),
-//					value = viewModel.passwordValue,
-//					fieldErrorState = viewModel.passwordValue.isEmpty(),
-//					passwordError = passwordError,
-//					onFieldValueChanged = { newValue ->
-//						viewModel.passwordValue = newValue
-//						viewModel.changePassword(newValue)
-//					}
-//				)
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
-
-//				PasswordField(
-//					strId = R.string.confirm_password,
-//					viewModel.confirmPasswordValue,
-//					nameErrorState = viewModel.confirmPasswordValue.isEmpty(),
-//					modifier = Modifier.fillMaxWidth(),
-//					onNameChanged = { newValue -> viewModel.confirmPasswordValue = newValue }
-//				)
-//
-//				if (viewModel.confirmPasswordValue.isNotEmpty() && viewModel.passwordValue.isNotEmpty()) {
-//					if (viewModel.confirmPasswordValue != viewModel.passwordValue) {
-//						Text(
-//							text = stringResource(id = R.string.passwords_mismatching),
-//							color = Color.Red
-//						)
-//					}
-//				}
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
+				EmailField(state = state, modifier = modifier.fillMaxWidth())
+				PasswordField(state = state, modifier = modifier.fillMaxWidth())
+				PasswordField(state = state, modifier = modifier.fillMaxWidth())
 
 				TextFieldWithDropDownComponent(
-					item = country,
-					strId = R.string.country,
-					fieldErrorState = country.isEmpty(),
-					itemsList = countryList,
-					modifier = Modifier.fillMaxWidth(),
-					onFieldValueChanged = { newValue -> country = newValue }
+				state = state,
+					modifier = modifier.fillMaxWidth(),
 				)
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
-
-//				FieldDatePicker(
-//					viewModel.birthDayValue,
-//					viewModel.birthDayValue.isEmpty(),
-//					R.string.birth_day,
-//					modifier = Modifier.fillMaxWidth(),
-//					onFieldValueChanged = { newValue -> viewModel.birthDayValue = newValue }
-//				)
-
-				Spacer(Modifier.size(Dimens.PaddingNormal))
 
 				Box(
 					modifier = Modifier.padding(
-						Dimens.Padding40,
-						Dimens.Padding0,
-						Dimens.Padding40,
-						Dimens.Padding0
+						40.dp, 0.dp, 40.dp, 0.dp
 					)
 				) {
-//					val isFieldsValid: Boolean =
-//						viewModel.firstNameValue.isEmpty() || viewModel.lastNameValue.isEmpty()
-//							|| viewModel.emailValue.isEmpty() || !state.emailError ||
-//							viewModel.passwordValue.isEmpty() || viewModel.confirmPasswordValue.isEmpty()
-//							|| viewModel.birthDayValue.isEmpty() ||
-//							country.isEmpty() || !state.passwordError ||
-//							viewModel.passwordValue != viewModel.confirmPasswordValue
+
 					Button(
 						onClick = {
-//							if (isFieldsValid) {
-//								Toast.makeText(
-//									context,
-//									context.getText(R.string.empty_fields_error),
-//									Toast.LENGTH_SHORT
-//								).show()
-//							} else {
-//								viewModel.register(
-//									CreateUserDto(
-//										viewModel.firstNameValue,
-//										viewModel.lastNameValue,
-//										viewModel.emailValue,
-//										viewModel.passwordValue,
-//										viewModel.confirmPasswordValue,
-//										country,
-//										viewModel.birthDayValue
-//									)
-//								)
-//								if (viewModel.signUpState.value) {
-//									Toast.makeText(
-//										context,
-//										context.getText(R.string.go_to_login),
-//										Toast.LENGTH_SHORT
-//									).show()
-//									onBackClicked()
-//								} else {
-//									Toast.makeText(
-//										context,
-//										context.getText(R.string.problem_error),
-//										Toast.LENGTH_SHORT
-//									).show()
-//								}
-//							}
 						},
-						shape = RoundedCornerShape(Dimens.Padding50),
+						shape = RoundedCornerShape(50.dp),
 						modifier = Modifier
 							.fillMaxWidth()
-							.height(Dimens.Padding50)
+							.height(50.dp)
 					) {
 						Text(text = stringResource(id = R.string.sign_up))
 					}
@@ -238,6 +152,185 @@ private fun ScreenContent(
 		}
 	}
 }
+
+@Composable
+private fun DatePickerField(state: SignUpViewModel.State,
+                            modifier: Modifier = Modifier){
+	OutlinedTextField(
+		value = state.birthDayValue,
+		onValueChange = {
+			state.onBirthChanged(it)
+		},
+
+		readOnly = true,
+		modifier = modifier.clickable {  },
+		label = {
+			Text(text = stringResource(id = R.string.birth_day))
+		},
+		isError = state.fieldStateBirthDay is SimpleFieldState.Empty,
+
+	)
+	if (state.fieldStateBirthDay is SimpleFieldState.Empty) {
+		Text(text = stringResource(id = R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+
+}
+
+@Composable
+private fun SimpleField(
+	fieldState: SimpleFieldState,
+	labelStr: Int,
+	fieldValue: String,
+	onFieldChanged: (String) -> Unit = {},
+	modifier: Modifier = Modifier,
+) {
+
+	OutlinedTextField(
+		value = fieldValue,
+		onValueChange = {
+			onFieldChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = labelStr))
+		},
+		isError = fieldState is SimpleFieldState.Empty
+
+	)
+	if (fieldState is SimpleFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+}
+
+@Composable
+private fun EmailField(
+	state: SignUpViewModel.State,
+	modifier: Modifier = Modifier,
+) {
+	var isError by remember { mutableStateOf(false) }
+	OutlinedTextField(
+		value = state.emailValue,
+		onValueChange = {
+			state.onEmailChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = R.string.email))
+		},
+		isError = state.fieldStateEmail is EmailFieldState.Empty || isError
+
+	)
+	if (state.fieldStateEmail is EmailFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+	LaunchedEffect(state.emailValue) {
+		delay(1000)
+		isError = state.fieldStateEmail is EmailFieldState.Error
+	}
+	if (isError) {
+		Text(
+			text = stringResource(R.string.email_not_valid),
+			color = MaterialTheme.colorScheme.error
+		)
+	}
+}
+
+@Composable
+private fun PasswordField(
+	state: SignUpViewModel.State,
+	modifier: Modifier = Modifier,
+) {
+	var passwordVisibility by remember { mutableStateOf(true) }
+	OutlinedTextField(
+		value = state.passwordValue,
+		onValueChange = {
+			state.onPasswordChanged(it)
+		},
+		modifier = modifier,
+		label = {
+			Text(text = stringResource(id = R.string.password))
+		},
+		isError = state.fieldStatePassword is PasswordFieldState.Empty,
+		trailingIcon = {
+			IconButton(onClick = {
+				passwordVisibility = !passwordVisibility
+			}) {
+				Icon(
+					imageVector = if (passwordVisibility) {
+						Icons.Default.Create
+					} else {
+						Icons.Default.Done
+					},
+					contentDescription = stringResource(id = R.string.visibility),
+					tint = MaterialTheme.colorScheme.background
+				)
+			}
+		},
+		visualTransformation = if (passwordVisibility) {
+			PasswordVisualTransformation()
+		} else {
+			VisualTransformation.None
+		}
+	)
+	if (state.fieldStatePassword is PasswordFieldState.Empty) {
+		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
+	}
+}
+
+@Composable
+fun TextFieldWithDropDownComponent(
+	state: SignUpViewModel.State,
+	modifier: Modifier = Modifier
+) {
+	val country by remember { mutableStateOf("") }
+	val countryList = mutableListOf("Belarus", "Poland", "Italia", "Spain")
+
+	val userSelectedString: (String) -> Unit = {
+		state.onCountryChanged(it)
+	}
+	val isOpen = remember { mutableStateOf(false) }
+	val openCloseOfDropDownList: (Boolean) -> Unit = {
+		isOpen.value = it
+	}
+	Box(modifier = modifier) {
+		Column {
+			OutlinedTextField(
+				value = country,
+				onValueChange = {
+					state.onCountryChanged(it)
+				},
+				modifier = Modifier.fillMaxWidth(),
+				isError = state.fieldStateCountry is SimpleFieldState.Empty,
+				label = {
+					Text(text = stringResource(id = R.string.country))
+				},
+			)
+			DropdownMenu(
+				modifier = modifier,
+				expanded = isOpen.value,
+				onDismissRequest = { openCloseOfDropDownList(false) }
+			) {
+				countryList.forEach {
+					DropdownMenuItem(text = { Text(text = it) }, onClick = {
+						openCloseOfDropDownList(false)
+						userSelectedString(it)
+					})
+				}
+			}
+		}
+		Spacer(
+			modifier = Modifier
+				.matchParentSize()
+				.background(Color.Transparent)
+				.padding(10.dp)
+				.clickable(onClick = { isOpen.value = true })
+		)
+	}
+	if (state.fieldStateCountry is SimpleFieldState.Empty) {
+		Text(text = stringResource(id = R.string.required), color = Color.Red)
+	}
+}
+
 
 @Preview
 @Composable

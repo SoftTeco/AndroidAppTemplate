@@ -42,6 +42,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import kotlinx.coroutines.delay
@@ -98,11 +100,11 @@ private fun ScreenContent(
 				if (state.loading) {
 					Text(stringResource(id = R.string.loading))
 				}
-				EmailField(state = state)
-				PasswordField(state = state)
+				EmailField(state = state, Modifier.fillMaxWidth())
+				PasswordField(state = state, Modifier.fillMaxWidth())
 				Box(
 					modifier = Modifier.padding(
-						Dimens.PaddingLarge, 0.dp, Dimens.PaddingLarge, 0.dp
+						Dimens.PaddingLarge, Dimens.PaddingBig, Dimens.PaddingLarge, 0.dp
 					)
 				) {
 					Button(
@@ -116,6 +118,7 @@ private fun ScreenContent(
 						modifier = Modifier
 							.fillMaxWidth()
 							.height(Dimens.PaddingBig)
+
 					) {
 						Text(text = stringResource(id = R.string.login))
 					}

@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.softteco.template.R
 import com.softteco.template.ui.feature.FieldValidationState
 import com.softteco.template.ui.theme.Dimens
@@ -74,7 +75,7 @@ fun PasswordFieldComponentWithValidation(
         }
         Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
 
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.Padding5)) {
+        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
             ConditionRow(
                 condition = context.getString(R.string.registration_password_condition1),
                 check = passwordError.hasMinimum
@@ -109,7 +110,7 @@ fun ConditionRow(
             tint = color,
             contentDescription = stringResource(id = R.string.visibility)
         )
-        Spacer(modifier = Modifier.width(Dimens.Padding10))
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = condition,
             color = color
