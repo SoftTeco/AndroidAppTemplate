@@ -28,69 +28,43 @@ class SignUpViewModel @Inject constructor(
 	private val repository: ProfileRepository,
 ) : ViewModel() {
 	private val loading = MutableStateFlow(false)
-	private val loginState = MutableStateFlow(false)
-	private var firstNameStateValue = MutableStateFlow("")
-	private var lastNameStateValue = MutableStateFlow("")
+	private val registrationState = MutableStateFlow(false)
+	private var userNameStateValue = MutableStateFlow("")
 	private var emailStateValue = MutableStateFlow("")
 	private var passwordStateValue = MutableStateFlow("")
-	private var confirmPasswordStateValue = MutableStateFlow("")
-	private var countryStateValue = MutableStateFlow("")
-	private var birthdayPasswordStateValue = MutableStateFlow("")
 	private var snackBarState = MutableStateFlow(SnackBarState())
 
 	fun combineState(
 		loadingFlow: MutableStateFlow<Boolean>,
-		loginStateFlow: MutableStateFlow<Boolean>,
-		firstNameFlow: MutableStateFlow<String>,
-		lastNameFlow: MutableStateFlow<String>,
+		registrationStateFlow: MutableStateFlow<Boolean>,
+		userNameFlow: MutableStateFlow<String>,
 		emailFlow: MutableStateFlow<String>,
 		passwordFlow: MutableStateFlow<String>,
-		confirmPasswordFlow: MutableStateFlow<String>,
-		countryFlow: MutableStateFlow<String>,
-		birthdayFlow: MutableStateFlow<String>,
 		snackBarFlow: MutableStateFlow<SnackBarState>
 	): Flow<State> {
 		return combine(
 			loadingFlow,
-			loginStateFlow,
-			firstNameFlow,
-			lastNameFlow,
+			registrationStateFlow,
+			userNameFlow,
 			emailFlow,
 			passwordFlow,
-			confirmPasswordFlow,
-			countryFlow,
-			birthdayFlow,
 			snackBarFlow
 		) { array ->
 			val loading = array[0] as Boolean
-			val loginState = array[1] as Boolean
-			val firstName = array[2] as String
-			val lastName = array[3] as String
-			val email = array[4] as String
-			val password = array[5] as String
-			val confirmPassword = array[6] as String
-			val country = array[7] as String
-			val birthday = array[8] as String
-			val snackBar = array[9] as SnackBarState
+			val registrationState = array[1] as Boolean
+			val userName = array[2] as String
+			val email = array[3] as String
+			val password = array[4] as String
+			val snackBar = array[5] as SnackBarState
 			State(
 				loading = loading,
-				loginState = loginState,
-				firstNameValue = firstName,
-				secondNameValue = lastName,
+				registrationState = registrationState,
+				userNameValue = userName,
 				emailValue = email,
 				passwordValue = password,
-				confirmedPasswordValue = confirmPassword,
-				countryValue = country,
-				birthDayValue = birthday,
-				fieldStateFirstName = when {
-					firstName.isFieldEmpty() -> SimpleFieldState.Empty
+				fieldStateUserName = when {
+					userName.isFieldEmpty() -> SimpleFieldState.Empty
 					else -> SimpleFieldState.Success
-				},
-				fieldStateSecondName = when {
-					lastName.isFieldEmpty() -> SimpleFieldState.Empty
-					else -> {
-						SimpleFieldState.Success
-					}
 				},
 				fieldStateEmail = when {
 					email.isEmailCorrect() -> EmailFieldState.Success
@@ -101,31 +75,11 @@ class SignUpViewModel @Inject constructor(
 					password.isFieldEmpty() -> PasswordFieldState.Empty
 					else -> PasswordFieldState.Success
 				},
-				fieldStateConfirmedPassword = when {
-					confirmPassword.isFieldEmpty() -> PasswordFieldState.Empty
-					else -> PasswordFieldState.Success
-				},
-				fieldStateCountry = when {
-					country.isFieldEmpty() -> SimpleFieldState.Empty
-					else -> {
-						SimpleFieldState.Success
-					}
-				},
-				fieldStateBirthDay = when {
-					birthday.isFieldEmpty() -> SimpleFieldState.Empty
-					else -> {
-						SimpleFieldState.Success
-					}
-				},
 				snackBar = snackBar,
 				dismissSnackBar = { snackBarFlow.value = SnackBarState() },
-				onFirstNameChanged = { firstNameFlow.value = it },
-				onSecondNameChanged = { lastNameFlow.value = it },
+				onUserNameChanged = { userNameFlow.value = it },
 				onEmailChanged = { emailFlow.value = it },
 				onPasswordChanged = { passwordFlow.value = it },
-				onConfirmedPasswordChanged = { confirmPasswordFlow.value = it },
-				onCountryChanged = { countryFlow.value = it },
-				onBirthChanged = { birthdayFlow.value = it },
 				onRegisterClicked = ::onRegister
 			)
 		}
@@ -133,14 +87,10 @@ class SignUpViewModel @Inject constructor(
 
 	val stateFlow = combineState(
 		loading,
-		loginState,
-		firstNameStateValue,
-		lastNameStateValue,
+		registrationState,
+		userNameStateValue,
 		emailStateValue,
 		passwordStateValue,
-		confirmPasswordStateValue,
-		countryStateValue,
-		birthdayPasswordStateValue,
 		snackBarState
 	)
 
@@ -156,7 +106,7 @@ class SignUpViewModel @Inject constructor(
 				fieldStatePassword is PasswordFieldState.Success
 
 		}
-		loginState.value = false
+		registrationState.value = false
 		snackBarState.value = SnackBarState(
 			if (isAllFieldsValid) {
 				R.string.problem_error
@@ -170,17 +120,14 @@ class SignUpViewModel @Inject constructor(
 	private fun onRegister() = viewModelScope.launch {
 		loading.value = true
 		val createUserDto = CreateUserDto(
-			firstName = firstNameStateValue.value,
-			lastName = lastNameStateValue.value,
+			firstName = userNameStateValue.value,
 			email = emailStateValue.value,
 			password = passwordStateValue.value,
-			confirmPassword = confirmPasswordStateValue.value,
-			country = countryStateValue.value,
-			birthday = birthdayPasswordStateValue.value
+			confirmPassword = passwordStateValue.value,
 		)
 		repository.registration(createUserDto).run {
 			when (this) {
-				is Result.Success -> loginState.value = true // FIXME
+				is Result.Success -> registrationState.value = true // FIXME
 				is Result.Error -> {
 					handleError()
 				}
@@ -192,29 +139,17 @@ class SignUpViewModel @Inject constructor(
 	@Immutable
 	data class State(
 		val loading: Boolean = false,
-		val loginState: Boolean = false,
-		val firstNameValue: String = "",
-		val secondNameValue: String = "",
+		val registrationState: Boolean = false,
+		val userNameValue: String = "",
 		val emailValue: String = "",
 		val passwordValue: String = "",
-		val confirmedPasswordValue: String = "",
-		val countryValue: String = "",
-		val birthDayValue: String = "",
-		val fieldStateFirstName: SimpleFieldState = SimpleFieldState.Waiting(R.string.required),
-		val fieldStateSecondName: SimpleFieldState = SimpleFieldState.Waiting(R.string.required),
+		val fieldStateUserName: SimpleFieldState = SimpleFieldState.Waiting(R.string.required),
 		val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting(R.string.required),
 		val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting(R.string.required),
-		val fieldStateConfirmedPassword: PasswordFieldState = PasswordFieldState.Waiting(R.string.required),
-		val fieldStateCountry: SimpleFieldState = SimpleFieldState.Waiting(R.string.required),
-		val fieldStateBirthDay: SimpleFieldState = SimpleFieldState.Waiting(R.string.required),
 		val snackBar: SnackBarState = SnackBarState(),
-		val onFirstNameChanged: (String) -> Unit = {},
-		val onSecondNameChanged: (String) -> Unit = {},
+		val onUserNameChanged: (String) -> Unit = {},
 		val onEmailChanged: (String) -> Unit = {},
 		val onPasswordChanged: (String) -> Unit = {},
-		val onConfirmedPasswordChanged: (String) -> Unit = {},
-		val onCountryChanged: (String) -> Unit = {},
-		val onBirthChanged: (String) -> Unit = {},
 		val onRegisterClicked: () -> Unit = {},
 		val dismissSnackBar: () -> Unit = {}
 	)

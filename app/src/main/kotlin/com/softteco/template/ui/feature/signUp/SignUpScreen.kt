@@ -108,28 +108,14 @@ private fun ScreenContent(
 					Text(stringResource(id = R.string.loading))
 				}
 				SimpleField(
-					state.fieldStateFirstName,
-					R.string.first_name,
-					state.firstNameValue,
-					state.onFirstNameChanged,
-					modifier = modifier.fillMaxWidth(),
-				)
-				SimpleField(
-					state.fieldStateSecondName,
-					R.string.last_name,
-					state.secondNameValue,
-					state.onSecondNameChanged,
-					modifier = modifier.fillMaxWidth(),
-				)
-
-				EmailField(state = state, modifier = modifier.fillMaxWidth())
-				PasswordField(state = state, modifier = modifier.fillMaxWidth())
-				PasswordField(state = state, modifier = modifier.fillMaxWidth())
-
-				TextFieldWithDropDownComponent(
 				state = state,
 					modifier = modifier.fillMaxWidth(),
 				)
+
+
+				EmailField(state = state, modifier = modifier.fillMaxWidth())
+				PasswordField(state = state, modifier = modifier.fillMaxWidth())
+
 
 				Box(
 					modifier = Modifier.padding(
@@ -154,50 +140,24 @@ private fun ScreenContent(
 }
 
 @Composable
-private fun DatePickerField(state: SignUpViewModel.State,
-                            modifier: Modifier = Modifier){
-	OutlinedTextField(
-		value = state.birthDayValue,
-		onValueChange = {
-			state.onBirthChanged(it)
-		},
-
-		readOnly = true,
-		modifier = modifier.clickable {  },
-		label = {
-			Text(text = stringResource(id = R.string.birth_day))
-		},
-		isError = state.fieldStateBirthDay is SimpleFieldState.Empty,
-
-	)
-	if (state.fieldStateBirthDay is SimpleFieldState.Empty) {
-		Text(text = stringResource(id = R.string.required), color = MaterialTheme.colorScheme.error)
-	}
-
-}
-
-@Composable
 private fun SimpleField(
-	fieldState: SimpleFieldState,
-	labelStr: Int,
-	fieldValue: String,
-	onFieldChanged: (String) -> Unit = {},
+	state: SignUpViewModel.State,
 	modifier: Modifier = Modifier,
 ) {
 
 	OutlinedTextField(
-		value = fieldValue,
+		value = state.userNameValue,
 		onValueChange = {
-			onFieldChanged(it)
+			state.onUserNameChanged(it)
 		},
 		modifier = modifier,
 		label = {
-			Text(text = stringResource(id = labelStr))
+			Text(text = stringResource(id = R.string.user_name))
 		},
-		isError = fieldState is SimpleFieldState.Empty
+		isError = state.fieldStateUserName is SimpleFieldState.Empty
 
 	)
-	if (fieldState is SimpleFieldState.Empty) {
+	if (state.fieldStateUserName is SimpleFieldState.Empty) {
 		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
 	}
 }
@@ -274,60 +234,6 @@ private fun PasswordField(
 	)
 	if (state.fieldStatePassword is PasswordFieldState.Empty) {
 		Text(text = stringResource(R.string.required), color = MaterialTheme.colorScheme.error)
-	}
-}
-
-@Composable
-fun TextFieldWithDropDownComponent(
-	state: SignUpViewModel.State,
-	modifier: Modifier = Modifier
-) {
-	val country by remember { mutableStateOf("") }
-	val countryList = mutableListOf("Belarus", "Poland", "Italia", "Spain")
-
-	val userSelectedString: (String) -> Unit = {
-		state.onCountryChanged(it)
-	}
-	val isOpen = remember { mutableStateOf(false) }
-	val openCloseOfDropDownList: (Boolean) -> Unit = {
-		isOpen.value = it
-	}
-	Box(modifier = modifier) {
-		Column {
-			OutlinedTextField(
-				value = country,
-				onValueChange = {
-					state.onCountryChanged(it)
-				},
-				modifier = Modifier.fillMaxWidth(),
-				isError = state.fieldStateCountry is SimpleFieldState.Empty,
-				label = {
-					Text(text = stringResource(id = R.string.country))
-				},
-			)
-			DropdownMenu(
-				modifier = modifier,
-				expanded = isOpen.value,
-				onDismissRequest = { openCloseOfDropDownList(false) }
-			) {
-				countryList.forEach {
-					DropdownMenuItem(text = { Text(text = it) }, onClick = {
-						openCloseOfDropDownList(false)
-						userSelectedString(it)
-					})
-				}
-			}
-		}
-		Spacer(
-			modifier = Modifier
-				.matchParentSize()
-				.background(Color.Transparent)
-				.padding(10.dp)
-				.clickable(onClick = { isOpen.value = true })
-		)
-	}
-	if (state.fieldStateCountry is SimpleFieldState.Empty) {
-		Text(text = stringResource(id = R.string.required), color = Color.Red)
 	}
 }
 

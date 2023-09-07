@@ -19,7 +19,7 @@
     <string name="registration_password_condition1"> at least 6 characters</string>
     <string name="registration_password_condition2">at least 1 uppercase letter</string>
     <string name="birth_day">Birth day</string>
-    <string name="first_name">First name</string>
+    <string name="user_name">Username</string>
     <string name="last_name">Last name</string>
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_mismatching">Password mismatch</string>
