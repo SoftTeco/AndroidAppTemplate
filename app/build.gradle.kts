@@ -131,5 +131,10 @@ dependencies {
     testImplementation(libs.io.kotest.kotest.assertions)
 
     coreLibraryDesugaring(libs.androidx.compose.desugar)
-
+    testImplementation(libs.org.jetbrains.kotlinx.coroutines.test)
+    testImplementation(libs.org.junit.jupiter.jupiter)
+    testImplementation(libs.org.junit.vintage.engine)
+    testImplementation(libs.io.mockk.mockk)
+    testImplementation(libs.app.cash.turbine)
+    testImplementation(libs.io.kotest.kotest.assertions)
 }

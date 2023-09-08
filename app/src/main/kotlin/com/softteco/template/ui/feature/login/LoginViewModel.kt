@@ -32,7 +32,6 @@ class LoginViewModel @Inject constructor(
 	private var emailStateValue = MutableStateFlow("")
 	private var passwordStateValue = MutableStateFlow("")
 	private var snackBarState = MutableStateFlow(SnackBarState())
-	private var simpleFieldState = MutableStateFlow(SimpleFieldState())
 
 	val state = combine(
 		loading,
