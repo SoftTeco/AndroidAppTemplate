@@ -37,7 +37,7 @@ class SignUpViewModel @Inject constructor(
 	private var passwordStateValue = MutableStateFlow("")
 	private var snackBarState = MutableStateFlow(SnackBarState())
 
-	fun combineState(
+	private fun combineState(
 		loadingFlow: MutableStateFlow<Boolean>,
 		registrationStateFlow: MutableStateFlow<Boolean>,
 		userNameFlow: MutableStateFlow<String>,
@@ -90,7 +90,7 @@ class SignUpViewModel @Inject constructor(
 		}
 	}
 
-	val stateFlow = combineState(
+	private val stateFlow = combineState(
 		loading,
 		registrationState,
 		userNameStateValue,
