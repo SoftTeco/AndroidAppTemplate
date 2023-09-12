@@ -36,7 +36,18 @@ android {
     buildTypes {
 
         val envBaseUrl = "\"${System.getenv("BASE_URL")}\""
+        val envBluetoothServiceUUID = "\"${System.getenv("BLUETOOTH_SERVICE_UUID_VALUE")}\""
+        val envBluetoothCharacteristicForWriteUUID =
+            "\"${System.getenv("BLUETOOTH_CHARACTERISTIC_FOR_WRITE_UUID_VALUE")}\""
         val baseUrl = gradleLocalProperties(rootDir).getProperty("BASE_URL", envBaseUrl)
+        val bluetoothServiceUUID = gradleLocalProperties(rootDir).getProperty(
+            "BLUETOOTH_SERVICE_UUID_VALUE",
+            envBluetoothServiceUUID
+        )
+        val bluetoothCharacteristicForWriteUUID = gradleLocalProperties(rootDir).getProperty(
+            "BLUETOOTH_CHARACTERISTIC_FOR_WRITE_UUID_VALUE",
+            envBluetoothCharacteristicForWriteUUID
+        )
 
         release {
             isMinifyEnabled = false
@@ -46,10 +57,22 @@ android {
             )
             isDebuggable = false
             buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "BLUETOOTH_SERVICE_UUID_VALUE", bluetoothServiceUUID)
+            buildConfigField(
+                "String",
+                "BLUETOOTH_CHARACTERISTIC_FOR_WRITE_UUID_VALUE",
+                bluetoothCharacteristicForWriteUUID
+            )
         }
         debug {
             isDebuggable = true
             buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "BLUETOOTH_SERVICE_UUID_VALUE", bluetoothServiceUUID)
+            buildConfigField(
+                "String",
+                "BLUETOOTH_CHARACTERISTIC_FOR_WRITE_UUID_VALUE",
+                bluetoothCharacteristicForWriteUUID
+            )
         }
     }
     compileOptions {
@@ -110,6 +133,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
     implementation(libs.rxAndroidBle)
+    implementation(libs.nordicSemiBLE)
+    implementation(libs.nordicSemiScanner)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
