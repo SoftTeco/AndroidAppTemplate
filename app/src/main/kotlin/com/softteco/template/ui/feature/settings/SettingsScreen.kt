@@ -29,7 +29,7 @@ private fun ScreenContent(
     modifier: Modifier = Modifier
 ) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
             Text(state.data)
         }
     }
