@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.softteco.template.ui.feature.apisample.ApiSampleScreen
+import com.softteco.template.ui.feature.bluetooth.BluetoothScreen
 import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
 import com.softteco.template.ui.feature.settings.SettingsScreen
@@ -30,6 +31,7 @@ fun AppNavHost(
     ) {
         bottomBarGraph(navController)
         homeGraph(navController)
+        bleGraph(navController)
         profileGraph(navController)
         settingsGraph(navController)
     }
@@ -42,7 +44,8 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
-                onApiSampleClicked = { navController.navigate(Screen.ApiSample.route) }
+                onApiSampleClicked = { navController.navigate(Screen.ApiSample.route) },
+                onBLEClicked = { navController.navigate(Screen.BLE.route) }
             )
         }
         composable(Screen.Profile.route) {
@@ -63,6 +66,17 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
     ) {
         composable(Screen.ApiSample.route) {
             ApiSampleScreen(onBackClicked = { navController.popBackStack() })
+        }
+    }
+}
+
+fun NavGraphBuilder.bleGraph(navController: NavController) {
+    navigation(
+        startDestination = Screen.Home.route,
+        route = Graph.Home.route
+    ) {
+        composable(Screen.BLE.route) {
+            BluetoothScreen(onBackClicked = { navController.popBackStack() })
         }
     }
 }
