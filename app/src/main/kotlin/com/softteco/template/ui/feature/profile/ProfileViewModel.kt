@@ -73,6 +73,7 @@ class ProfileViewModel @Inject constructor(
                 ErrorEntity.NotFound -> R.string.error_example
                 ErrorEntity.ServiceUnavailable -> R.string.error_example
                 ErrorEntity.Unknown -> R.string.error_example
+                ErrorEntity.Bluetooth -> R.string.error_example
             }
             snackbarState.value = SnackBarState(
                 textId = textId,
