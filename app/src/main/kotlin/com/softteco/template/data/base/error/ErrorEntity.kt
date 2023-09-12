@@ -4,6 +4,7 @@ sealed class ErrorEntity(val isDisplayable: Boolean) {
     companion object {
         const val NETWORK_ERROR = "Network Error"
         const val API_ERROR = "API Error"
+        const val BLUETOOTH_ERROR = "Bluetooth Error"
         const val UNKNOWN_ERROR = "Unknown Error"
     }
 
@@ -14,6 +15,8 @@ sealed class ErrorEntity(val isDisplayable: Boolean) {
     object NotFound : ErrorEntity(false)
 
     object ServiceUnavailable : ErrorEntity(false)
+
+    object Bluetooth : ErrorEntity(false)
 
     object Unknown : ErrorEntity(true)
 }
