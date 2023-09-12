@@ -19,10 +19,12 @@ import com.softteco.template.ui.theme.Dimens
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onApiSampleClicked: () -> Unit = {},
+    onBLEClicked: () -> Unit = {},
 ) {
     ScreenContent(
         state = viewModel.state.collectAsState().value,
         onApiSampleClicked = { onApiSampleClicked() },
+        onBLEClicked = { onBLEClicked() },
     )
 }
 
@@ -30,13 +32,17 @@ fun HomeScreen(
 private fun ScreenContent(
     state: HomeViewModel.State,
     modifier: Modifier = Modifier,
-    onApiSampleClicked: () -> Unit = {}
+    onApiSampleClicked: () -> Unit = {},
+    onBLEClicked: () -> Unit = {}
 ) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
             Text(state.data)
             Button(onClick = onApiSampleClicked) {
                 Text("To Api Sample")
+            }
+            Button(onClick = onBLEClicked) {
+                Text("To BLE")
             }
         }
     }
