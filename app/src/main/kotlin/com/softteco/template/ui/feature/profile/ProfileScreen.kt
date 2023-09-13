@@ -48,7 +48,7 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
                 if (state.loading) {
                     Text("Loading...") // string resources should be used
                 } else {
