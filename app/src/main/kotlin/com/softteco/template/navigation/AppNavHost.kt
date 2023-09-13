@@ -12,8 +12,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.softteco.template.ui.feature.apisample.ApiSampleScreen
 import com.softteco.template.ui.feature.home.HomeScreen
+import com.softteco.template.ui.feature.login.LoginScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
 import com.softteco.template.ui.feature.settings.SettingsScreen
+import com.softteco.template.ui.feature.signUp.SignUpScreen
 import com.softteco.template.ui.feature.signature.SignatureScreen
 
 @Composable
@@ -42,7 +44,8 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
-                onApiSampleClicked = { navController.navigate(Screen.ApiSample.route) }
+                onApiSampleClicked = { navController.navigate(Screen.ApiSample.route) },
+                onGoLoginClicked = { navController.navigate(Screen.Login.route) }
             )
         }
         composable(Screen.Profile.route) {
@@ -52,6 +55,16 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
         }
         composable(Screen.Settings.route) {
             SettingsScreen()
+        }
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onBackClicked = { navController.navigateUp() },
+                onLoginClicked = {},
+                onSignUpClicked = { navController.navigate(Screen.SignUp.route) }
+            )
+        }
+        composable(Screen.SignUp.route) {
+            SignUpScreen(onBackClicked = { navController.navigateUp() })
         }
     }
 }

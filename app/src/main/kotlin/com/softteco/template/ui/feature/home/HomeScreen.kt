@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softteco.template.R
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
@@ -19,10 +21,12 @@ import com.softteco.template.ui.theme.Dimens
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onApiSampleClicked: () -> Unit = {},
+    onGoLoginClicked: () -> Unit = {},
 ) {
     ScreenContent(
         state = viewModel.state.collectAsState().value,
         onApiSampleClicked = { onApiSampleClicked() },
+        onGoLoggingClicked = { onGoLoginClicked() }
     )
 }
 
@@ -30,13 +34,17 @@ fun HomeScreen(
 private fun ScreenContent(
     state: HomeViewModel.State,
     modifier: Modifier = Modifier,
-    onApiSampleClicked: () -> Unit = {}
+    onApiSampleClicked: () -> Unit = {},
+    onGoLoggingClicked: () -> Unit = {}
 ) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
             Text(state.data)
             Button(onClick = onApiSampleClicked) {
                 Text("To Api Sample")
+            }
+            Button(onClick = onGoLoggingClicked) {
+                Text(stringResource(id = R.string.go_to_login))
             }
         }
     }

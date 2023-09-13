@@ -32,7 +32,7 @@ private fun ScreenContent(
     modifier: Modifier = Modifier
 ) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingNormal)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault)) {
             Text(state.data)
             Button(onClick = onBackClicked) {
                 Text("Back")
