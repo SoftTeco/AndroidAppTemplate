@@ -16,6 +16,7 @@ import com.softteco.template.navigation.AppNavHost.RESET_PASSWORD_PATH
 import com.softteco.template.navigation.AppNavHost.RESET_TOKEN_ARG
 import com.softteco.template.ui.feature.apisample.ApiSampleScreen
 import com.softteco.template.ui.feature.forgotPassword.ForgotPasswordScreen
+import com.softteco.template.ui.feature.bluetooth.BluetoothScreen
 import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.login.LoginScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
@@ -59,6 +60,7 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
             HomeScreen(
                 onLoginClicked = { navController.navigate(Screen.Login.route) },
                 onSignatureClicked = { navController.navigate(Screen.ApiSample.route) },
+                onBleClicked = { navController.navigate(Screen.Bluetooth.route) }
             )
         }
         composable(Screen.Profile.route) {
@@ -83,6 +85,11 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 onLoginClicked = {},
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
                 onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) }
+            )
+        }
+        composable(Screen.Bluetooth.route) {
+            BluetoothScreen(
+                onBackClicked = { navController.navigateUp() }
             )
         }
         composable(Screen.SignUp.route) {

@@ -144,8 +144,7 @@ sealed class HomeCards(
         titleId = R.string.ble,
         descriptionId = R.string.ble_description,
         drawableRes = R.drawable.baseline_bluetooth_24,
-        onClick = onClick,
-        enabled = false,
+        onClick = onClick
     )
 }
 

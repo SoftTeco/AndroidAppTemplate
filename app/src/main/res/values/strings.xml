@@ -6,6 +6,7 @@
     <string name="error_example">Network Error!</string>
     <string name="back_description">back</string>
     <string name="login">Log in</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="loading">Loading…</string>
@@ -17,6 +18,11 @@
     <string name="registration_password_condition2">at least 1 uppercase letter</string>
     <string name="user_name">Username</string>
     <string name="go_to_login">Go to Log in screen</string>
+    <string name="go_to_bluetooth">Go to Bluetooth screen</string>
+    <string name="send">Send</string>
+    <string name="receive">Receive</string>
+    <string name="connect">connect</string>
+    <string name="disconnect">disconnect</string>
     <string name="visibility">visibility</string>
     <string name="reset_password">Reset password</string>
     <string name="enter_new_password">Please, enter new password</string>
