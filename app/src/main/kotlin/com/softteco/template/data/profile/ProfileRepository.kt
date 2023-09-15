@@ -4,6 +4,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.data.profile.dto.ForgotPasswordDto
 import com.softteco.template.data.profile.dto.LoginAuthDto
+import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.data.profile.entity.Profile
 
 interface ProfileRepository {
@@ -15,6 +16,8 @@ interface ProfileRepository {
     suspend fun login(userAuth: LoginAuthDto): Result<String>
 
     suspend fun registration(user: CreateUserDto): Result<String>
+
+    suspend fun resetPassword(resetPasswordDto: ResetPasswordDto): Result<String>
 
     suspend fun restorePassword(email: ForgotPasswordDto): Result<String>
 }

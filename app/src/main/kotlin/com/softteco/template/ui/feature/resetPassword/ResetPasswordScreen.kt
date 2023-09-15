@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.signUp
+package com.softteco.template.ui.feature.resetPassword
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Done
@@ -37,36 +35,31 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
-import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.TextSnackbarContainer
-import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.SimpleFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
 @Composable
-fun SignUpScreen(
+fun ResetPasswordScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignUpViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {}
+    gotToLoginScreen: () -> Unit = {},
+    viewModel: ResetPasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     ScreenContent(
         state = state,
         modifier = modifier,
-        onBackClicked = onBackClicked
+        gotToLoginScreen = gotToLoginScreen,
     )
 }
 
 @Composable
 private fun ScreenContent(
-    state: SignUpViewModel.State,
+    state: ResetPasswordViewModel.State,
     modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit = {}
+    gotToLoginScreen: () -> Unit = {}
 ) {
-    val scrollState = rememberScrollState()
-
     TextSnackbarContainer(
         modifier = modifier,
         snackbarText = stringResource(state.snackBar.textId),
@@ -74,51 +67,37 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
+            modifier = Modifier
+                .padding(Dimens.PaddingExtraLarge),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTopAppBar(
-                stringResource(id = R.string.sign_up),
-                showBackIcon = true,
-                modifier = Modifier.fillMaxWidth(),
-                onBackClicked = onBackClicked
-            )
-            Column(
-                modifier = Modifier
-                    .padding(Dimens.PaddingNormal)
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                if (state.loading) {
-                    Text(stringResource(id = R.string.loading))
-                }
-                UserNameField(
-                    state = state,
-                    modifier = Modifier.fillMaxWidth(),
+            if (state.loading) {
+                Text(stringResource(id = R.string.loading))
+            }
+
+            Text(text = stringResource(id = R.string.enter_new_password))
+            PasswordField(state = state, modifier = Modifier.fillMaxWidth())
+            Box(
+                modifier = Modifier.padding(
+                    Dimens.PaddingNormal,
+                    Dimens.PaddingNormal,
+                    Dimens.PaddingNormal
                 )
-                EmailField(state = state, modifier = Modifier.fillMaxWidth())
-                PasswordField(state = state, modifier = Modifier.fillMaxWidth())
-                Box(
-                    modifier = Modifier.padding(
-                        Dimens.PaddingNormal,
-                        Dimens.PaddingNormal,
-                        Dimens.PaddingNormal
-                    )
+            ) {
+                Button(
+                    onClick = {
+                        state.onResetPasswordClicked()
+                        if (state.resetPasswordState) {
+                            gotToLoginScreen()
+                        }
+                    },
+                    shape = MaterialTheme.shapes.large,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(Dimens.PaddingExtraLarge)
                 ) {
-                    Button(
-                        onClick = {
-                            state.onRegisterClicked()
-                            if (state.registrationState) {
-                                // transfer to user's screen
-                            }
-                        },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(Dimens.PaddingExtraLarge)
-                    ) {
-                        Text(text = stringResource(id = R.string.sign_up))
-                    }
+                    Text(text = stringResource(id = R.string.reset_password))
                 }
             }
         }
@@ -126,59 +105,8 @@ private fun ScreenContent(
 }
 
 @Composable
-private fun UserNameField(
-    state: SignUpViewModel.State,
-    modifier: Modifier = Modifier
-) {
-    Column {
-        OutlinedTextField(
-            value = state.userNameValue,
-            onValueChange = {
-                state.onUserNameChanged(it)
-            },
-            modifier = modifier,
-            label = {
-                Text(text = stringResource(id = R.string.user_name))
-            },
-            isError = state.fieldStateUserName is SimpleFieldState.Empty
-        )
-        val errorText = when (state.fieldStateUserName) {
-            is SimpleFieldState.Empty -> stringResource(R.string.required)
-            else -> ""
-        }
-        Text(errorText, color = MaterialTheme.colorScheme.error)
-    }
-}
-
-@Composable
-private fun EmailField(
-    state: SignUpViewModel.State,
-    modifier: Modifier = Modifier,
-) {
-    Column {
-        OutlinedTextField(
-            value = state.emailValue,
-            onValueChange = {
-                state.onEmailChanged(it)
-            },
-            modifier = modifier,
-            label = {
-                Text(text = stringResource(id = R.string.email))
-            },
-            isError = state.fieldStateEmail is EmailFieldState.Empty || state.fieldStateEmail is EmailFieldState.Error
-        )
-        val errorText = when (state.fieldStateEmail) {
-            is EmailFieldState.Empty -> stringResource(R.string.required)
-            is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-            else -> ""
-        }
-        Text(errorText, color = MaterialTheme.colorScheme.error)
-    }
-}
-
-@Composable
 private fun PasswordField(
-    state: SignUpViewModel.State,
+    state: ResetPasswordViewModel.State,
     modifier: Modifier = Modifier
 ) {
     Column {
@@ -236,11 +164,7 @@ fun ConditionRow(
         label = "ColorAnimation"
     )
 
-    val icon = if (check) {
-        Icons.Rounded.Check
-    } else {
-        Icons.Rounded.Close
-    }
+    val icon = if (check) Icons.Rounded.Check else Icons.Rounded.Close
 
     Row(modifier = modifier) {
         Icon(
@@ -261,7 +185,7 @@ fun ConditionRow(
 private fun Preview() {
     AppTheme {
         ScreenContent(
-            SignUpViewModel.State()
+            ResetPasswordViewModel.State()
         )
     }
 }
