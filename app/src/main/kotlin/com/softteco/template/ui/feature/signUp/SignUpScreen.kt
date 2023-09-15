@@ -49,7 +49,7 @@ import com.softteco.template.ui.theme.Dimens
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {},
+    onBackClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     ScreenContent(
@@ -63,7 +63,7 @@ fun SignUpScreen(
 private fun ScreenContent(
     state: SignUpViewModel.State,
     modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit = {},
+    onBackClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -95,10 +95,16 @@ private fun ScreenContent(
                 }
                 UserNameField(
                     state = state,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
-                EmailField(state = state, modifier = Modifier.fillMaxWidth())
-                PasswordField(state = state, modifier = Modifier.fillMaxWidth())
+                EmailField(
+                    state = state,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                PasswordField(
+                    state = state,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Box(
                     modifier = Modifier.padding(
                         Dimens.PaddingNormal,
@@ -238,7 +244,7 @@ private fun PasswordField(
 fun ConditionRow(
     condition: String,
     check: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val color by animateColorAsState(
         targetValue = if (check) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,

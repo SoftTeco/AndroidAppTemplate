@@ -72,6 +72,9 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
             ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
         }
     }
+    composable(Screen.ForgotPassword.route) {
+        ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
+    }
 }
 
 fun NavGraphBuilder.homeGraph(navController: NavController) {
