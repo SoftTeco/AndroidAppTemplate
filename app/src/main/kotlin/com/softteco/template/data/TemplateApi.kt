@@ -1,6 +1,7 @@
 package com.softteco.template.data
 
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.data.profile.dto.ForgotPasswordDto
 import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.data.profile.entity.Profile
 import retrofit2.http.Body
@@ -21,4 +22,7 @@ interface TemplateApi {
 
     @POST("/api/auth/registration")
     suspend fun registration(@Body user: CreateUserDto): String
+
+    @POST("/api/auth/forgotPassword")
+    suspend fun restorePassword(@Body email: ForgotPasswordDto): String
 }

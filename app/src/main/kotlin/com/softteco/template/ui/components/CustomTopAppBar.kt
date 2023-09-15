@@ -22,7 +22,8 @@ fun CustomTopAppBar(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
 ) {
-    TopAppBar(modifier = modifier,
+    TopAppBar(
+        modifier = modifier,
         title = {
             Text(text = title)
         },
@@ -36,5 +37,6 @@ fun CustomTopAppBar(
                     )
                 }
             }
-        })
+        }
+    )
 }

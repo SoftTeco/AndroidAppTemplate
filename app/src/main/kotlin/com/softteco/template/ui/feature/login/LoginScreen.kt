@@ -45,7 +45,8 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {},
+    onForgotPasswordClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -54,7 +55,8 @@ fun LoginScreen(
         state = state,
         onBackClicked = onBackClicked,
         onLoginClicked = onLoginClicked,
-        onSignUpClicked = onSignUpClicked
+        onSignUpClicked = onSignUpClicked,
+        onForgotPasswordClicked = onForgotPasswordClicked
     )
 }
 
@@ -64,7 +66,8 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {},
+    onForgotPasswordClicked: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = modifier,
@@ -121,6 +124,14 @@ private fun ScreenContent(
                     modifier = Modifier.padding(Dimens.PaddingDefault),
                     onClick = {
                         onSignUpClicked()
+                    },
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                ClickableText(
+                    text = AnnotatedString(stringResource(id = R.string.forgot_password)),
+                    modifier = Modifier.padding(Dimens.PaddingDefault),
+                    onClick = {
+                        onForgotPasswordClicked()
                     },
                     style = MaterialTheme.typography.bodyLarge
                 )
