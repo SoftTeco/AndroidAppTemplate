@@ -47,6 +47,7 @@ fun LoginScreen(
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -57,6 +58,7 @@ fun LoginScreen(
         onLoginClicked = onLoginClicked,
         onSignUpClicked = onSignUpClicked,
         onForgotPasswordClicked = onForgotPasswordClicked
+        onSignUpClicked = onSignUpClicked
     )
 }
 
@@ -68,6 +70,7 @@ private fun ScreenContent(
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = modifier,

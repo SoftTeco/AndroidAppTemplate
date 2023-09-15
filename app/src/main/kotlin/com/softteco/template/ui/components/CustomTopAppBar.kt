@@ -24,6 +24,7 @@ fun CustomTopAppBar(
 ) {
     TopAppBar(
         modifier = modifier,
+    TopAppBar(modifier = modifier,
         title = {
             Text(text = title)
         },
@@ -39,4 +40,5 @@ fun CustomTopAppBar(
             }
         }
     )
+        })
 }
