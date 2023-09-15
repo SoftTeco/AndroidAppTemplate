@@ -3,7 +3,7 @@ package com.softteco.template.ui.feature.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,7 +45,8 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {},
+    onForgotPasswordClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -54,7 +55,8 @@ fun LoginScreen(
         state = state,
         onBackClicked = onBackClicked,
         onLoginClicked = onLoginClicked,
-        onSignUpClicked = onSignUpClicked
+        onSignUpClicked = onSignUpClicked,
+        onForgotPasswordClicked = onForgotPasswordClicked
     )
 }
 
@@ -64,7 +66,8 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {},
+    onForgotPasswordClicked: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = modifier,
@@ -73,7 +76,6 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -85,7 +87,7 @@ private fun ScreenContent(
             )
             Column(
                 modifier = Modifier.padding(Dimens.PaddingNormal),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (state.loading) {
@@ -118,9 +120,16 @@ private fun ScreenContent(
                 }
                 ClickableText(
                     text = AnnotatedString(stringResource(id = R.string.sign_up)),
-                    modifier = Modifier.padding(Dimens.PaddingDefault),
                     onClick = {
                         onSignUpClicked()
+                    },
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
+                ClickableText(
+                    text = AnnotatedString(stringResource(id = R.string.forgot_password)),
+                    onClick = {
+                        onForgotPasswordClicked()
                     },
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -150,8 +159,7 @@ private fun EmailField(
             when (state.fieldStateEmail) {
                 is EmailFieldState.Empty -> stringResource(R.string.required)
                 is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-                EmailFieldState.Success -> ""
-                is EmailFieldState.Waiting -> ""
+                else -> ""
             }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
@@ -199,8 +207,7 @@ private fun PasswordField(
             when (state.fieldStatePassword) {
                 PasswordFieldState.Empty -> stringResource(R.string.required)
                 is PasswordFieldState.Error -> ""
-                PasswordFieldState.Success -> ""
-                is PasswordFieldState.Waiting -> ""
+                else -> ""
             }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
