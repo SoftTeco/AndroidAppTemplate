@@ -4,6 +4,7 @@ import com.softteco.template.data.TemplateApi
 import com.softteco.template.data.base.error.ErrorHandler
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.data.profile.dto.ForgotPasswordDto
 import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.data.profile.entity.Profile
 import javax.inject.Inject
@@ -46,6 +47,15 @@ internal class ProfileRepositoryImpl @Inject constructor(
     override suspend fun registration(user: CreateUserDto): Result<String> {
         return try {
             Result.Success(templateApi.registration(user))
+        } catch (e: Exception) {
+            Result.Error(errorHandler.getError(e))
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun restorePassword(email: ForgotPasswordDto): Result<String> {
+        return try {
+            Result.Success(templateApi.restorePassword(email))
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))
         }

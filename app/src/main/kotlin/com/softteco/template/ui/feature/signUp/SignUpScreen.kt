@@ -131,23 +131,24 @@ private fun UserNameField(
     state: SignUpViewModel.State,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
-        value = state.userNameValue,
-        onValueChange = {
-            state.onUserNameChanged(it)
-        },
-        modifier = modifier,
-        label = {
-            Text(text = stringResource(id = R.string.user_name))
-        },
-        isError = state.fieldStateUserName is SimpleFieldState.Empty
-    )
-    val errorText = when (state.fieldStateUserName) {
-        is SimpleFieldState.Empty -> stringResource(R.string.required)
-        is SimpleFieldState.Success -> ""
-        is SimpleFieldState.Waiting -> ""
+    Column {
+        OutlinedTextField(
+            value = state.userNameValue,
+            onValueChange = {
+                state.onUserNameChanged(it)
+            },
+            modifier = modifier,
+            label = {
+                Text(text = stringResource(id = R.string.user_name))
+            },
+            isError = state.fieldStateUserName is SimpleFieldState.Empty
+        )
+        val errorText = when (state.fieldStateUserName) {
+            is SimpleFieldState.Empty -> stringResource(R.string.required)
+            else -> ""
+        }
+        Text(errorText, color = MaterialTheme.colorScheme.error)
     }
-    Text(errorText, color = MaterialTheme.colorScheme.error)
 }
 
 @Composable
@@ -170,8 +171,7 @@ private fun EmailField(
         val errorText = when (state.fieldStateEmail) {
             is EmailFieldState.Empty -> stringResource(R.string.required)
             is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-            EmailFieldState.Success -> ""
-            is EmailFieldState.Waiting -> ""
+            else -> ""
         }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
@@ -217,9 +217,7 @@ private fun PasswordField(
         )
         val errorText = when (state.fieldStatePassword) {
             PasswordFieldState.Empty -> stringResource(R.string.required)
-            is PasswordFieldState.Error -> ""
-            PasswordFieldState.Success -> ""
-            is PasswordFieldState.Waiting -> ""
+            else -> ""
         }
         Text(errorText, color = MaterialTheme.colorScheme.error)
         Spacer(modifier = Modifier.height(Dimens.PaddingDefault))

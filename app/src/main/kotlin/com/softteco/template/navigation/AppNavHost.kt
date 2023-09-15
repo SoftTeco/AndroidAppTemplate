@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.softteco.template.ui.feature.apisample.ApiSampleScreen
+import com.softteco.template.ui.feature.forgotPassword.ForgotPasswordScreen
 import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.login.LoginScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
@@ -60,11 +61,15 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
             LoginScreen(
                 onBackClicked = { navController.navigateUp() },
                 onLoginClicked = {},
-                onSignUpClicked = { navController.navigate(Screen.SignUp.route) }
+                onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
+                onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) }
             )
         }
         composable(Screen.SignUp.route) {
             SignUpScreen(onBackClicked = { navController.navigateUp() })
+        }
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
         }
     }
 }

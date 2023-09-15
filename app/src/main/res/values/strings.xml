@@ -26,4 +26,7 @@
     <string name="signature">Signature</string>
     <string name="signature_description">Graphic signature</string>
 
+    <string name="forgot_password">Forgot password</string>
+    <string name="restore_password">Restore password</string>
+    <string name="check_email">Check your email</string>
 </resources>
