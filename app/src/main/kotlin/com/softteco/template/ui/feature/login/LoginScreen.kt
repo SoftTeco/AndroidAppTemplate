@@ -3,7 +3,6 @@ package com.softteco.template.ui.feature.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -47,7 +46,6 @@ fun LoginScreen(
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
-    onSignUpClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -58,7 +56,6 @@ fun LoginScreen(
         onLoginClicked = onLoginClicked,
         onSignUpClicked = onSignUpClicked,
         onForgotPasswordClicked = onForgotPasswordClicked
-        onSignUpClicked = onSignUpClicked
     )
 }
 
@@ -70,7 +67,6 @@ private fun ScreenContent(
     onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
-    onSignUpClicked: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = modifier,
@@ -79,7 +75,6 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -164,8 +159,7 @@ private fun EmailField(
             when (state.fieldStateEmail) {
                 is EmailFieldState.Empty -> stringResource(R.string.required)
                 is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-                EmailFieldState.Success -> ""
-                is EmailFieldState.Waiting -> ""
+                else -> ""
             }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
@@ -213,8 +207,7 @@ private fun PasswordField(
             when (state.fieldStatePassword) {
                 PasswordFieldState.Empty -> stringResource(R.string.required)
                 is PasswordFieldState.Error -> ""
-                PasswordFieldState.Success -> ""
-                is PasswordFieldState.Waiting -> ""
+                else -> ""
             }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }

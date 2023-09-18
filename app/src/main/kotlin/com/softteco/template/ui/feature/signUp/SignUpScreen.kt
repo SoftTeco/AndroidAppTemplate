@@ -56,7 +56,6 @@ fun SignUpScreen(
         state = state,
         modifier = modifier,
         onBackClicked = onBackClicked
-        state = state, modifier = modifier, onBackClicked = onBackClicked
     )
 }
 
@@ -65,7 +64,6 @@ private fun ScreenContent(
     state: SignUpViewModel.State,
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {}
-    state: SignUpViewModel.State, modifier: Modifier = Modifier, onBackClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -112,13 +110,6 @@ private fun ScreenContent(
                         Dimens.PaddingNormal,
                         Dimens.PaddingNormal,
                         Dimens.PaddingNormal
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                EmailField(state = state, modifier = Modifier.fillMaxWidth())
-                PasswordField(state = state, modifier = Modifier.fillMaxWidth())
-                Box(
-                    modifier = Modifier.padding(
-                        Dimens.PaddingNormal, Dimens.PaddingNormal, Dimens.PaddingNormal
                     )
                 ) {
                     Button(
@@ -160,27 +151,11 @@ private fun UserNameField(
         )
         val errorText = when (state.fieldStateUserName) {
             is SimpleFieldState.Empty -> stringResource(R.string.required)
-            is SimpleFieldState.Success -> ""
-            is SimpleFieldState.Waiting -> ""
+            else -> ""
         }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
 }
-
-    OutlinedTextField(value = state.userNameValue, onValueChange = {
-        state.onUserNameChanged(it)
-    }, modifier = modifier, label = {
-        Text(text = stringResource(id = R.string.user_name))
-    }, isError = state.fieldStateUserName is SimpleFieldState.Empty
-    )
-    val errorText = when (state.fieldStateUserName) {
-        is SimpleFieldState.Empty -> stringResource(R.string.required)
-        is SimpleFieldState.Success -> ""
-        is SimpleFieldState.Waiting -> ""
-    }
-    Text(errorText, color = MaterialTheme.colorScheme.error)
-}
-
 
 @Composable
 private fun EmailField(
@@ -190,7 +165,6 @@ private fun EmailField(
     Column {
         OutlinedTextField(
             value = state.emailValue,
-        OutlinedTextField(value = state.emailValue,
             onValueChange = {
                 state.onEmailChanged(it)
             },
@@ -203,8 +177,7 @@ private fun EmailField(
         val errorText = when (state.fieldStateEmail) {
             is EmailFieldState.Empty -> stringResource(R.string.required)
             is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-            EmailFieldState.Success -> ""
-            is EmailFieldState.Waiting -> ""
+            else -> ""
         }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
@@ -247,35 +220,10 @@ private fun PasswordField(
             } else {
                 VisualTransformation.None
             }
-        OutlinedTextField(value = state.passwordValue, onValueChange = {
-            state.onPasswordChanged(it)
-        }, modifier = modifier, label = {
-            Text(text = stringResource(id = R.string.password))
-        }, isError = state.fieldStatePassword is PasswordFieldState.Empty, trailingIcon = {
-            IconButton(onClick = {
-                passwordVisibility = !passwordVisibility
-            }) {
-                Icon(
-                    imageVector = if (passwordVisibility) {
-                        Icons.Default.Create
-                    } else {
-                        Icons.Default.Done
-                    },
-                    contentDescription = stringResource(id = R.string.visibility),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }, visualTransformation = if (passwordVisibility) {
-            PasswordVisualTransformation()
-        } else {
-            VisualTransformation.None
-        }
         )
         val errorText = when (state.fieldStatePassword) {
             PasswordFieldState.Empty -> stringResource(R.string.required)
-            is PasswordFieldState.Error -> ""
-            PasswordFieldState.Success -> ""
-            is PasswordFieldState.Waiting -> ""
+            else -> ""
         }
         Text(errorText, color = MaterialTheme.colorScheme.error)
         Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
@@ -297,7 +245,6 @@ fun ConditionRow(
     condition: String,
     check: Boolean,
     modifier: Modifier = Modifier
-    condition: String, check: Boolean, modifier: Modifier = Modifier
 ) {
     val color by animateColorAsState(
         targetValue = if (check) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,
@@ -320,7 +267,6 @@ fun ConditionRow(
         Text(
             text = condition,
             color = color
-            text = condition, color = color
         )
     }
 }

@@ -3,7 +3,6 @@ package com.softteco.template.ui.feature.forgotPassword
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,7 +52,6 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -118,8 +116,7 @@ private fun EmailField(
             when (state.fieldStateEmail) {
                 is EmailFieldState.Empty -> stringResource(R.string.required)
                 is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-                EmailFieldState.Success -> ""
-                is EmailFieldState.Waiting -> ""
+                else -> ""
             }
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
