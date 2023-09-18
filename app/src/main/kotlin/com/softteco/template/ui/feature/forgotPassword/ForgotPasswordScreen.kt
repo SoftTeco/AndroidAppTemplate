@@ -85,7 +85,6 @@ private fun ScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(Dimens.PaddingExtraLarge)
-
                     ) {
                         Text(text = stringResource(id = R.string.restore_password))
                     }

@@ -68,9 +68,9 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
         composable(Screen.SignUp.route) {
             SignUpScreen(onBackClicked = { navController.navigateUp() })
         }
-    }
-    composable(Screen.ForgotPassword.route) {
-        ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
+        }
     }
 }
 

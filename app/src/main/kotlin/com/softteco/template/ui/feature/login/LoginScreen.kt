@@ -3,6 +3,7 @@ package com.softteco.template.ui.feature.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -86,7 +87,7 @@ private fun ScreenContent(
             )
             Column(
                 modifier = Modifier.padding(Dimens.PaddingNormal),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (state.loading) {
@@ -119,15 +120,14 @@ private fun ScreenContent(
                 }
                 ClickableText(
                     text = AnnotatedString(stringResource(id = R.string.sign_up)),
-                    modifier = Modifier.padding(Dimens.PaddingDefault),
                     onClick = {
                         onSignUpClicked()
                     },
                     style = MaterialTheme.typography.bodyLarge
                 )
+                Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
                 ClickableText(
                     text = AnnotatedString(stringResource(id = R.string.forgot_password)),
-                    modifier = Modifier.padding(Dimens.PaddingDefault),
                     onClick = {
                         onForgotPasswordClicked()
                     },
