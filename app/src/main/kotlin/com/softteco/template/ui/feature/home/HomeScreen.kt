@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.softteco.template.R
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.ui.theme.RoundedCornerSizes
 
 @Composable
 fun HomeScreen(
@@ -53,8 +55,7 @@ private fun ScreenContent(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(Dimens.PaddingSmall)
     ) {
-        items(cards.size) { index ->
-            val item = cards[index]
+        items(cards) { item ->
             HomeCard(
                 title = stringResource(id = item.titleId),
                 description = stringResource(id = item.descriptionId),
@@ -81,7 +82,7 @@ private fun HomeCard(
         modifier = modifier
             .padding(Dimens.PaddingSmall),
         onClick = { if (isEnabled) onClick() },
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(RoundedCornerSizes.Medium),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         )
@@ -110,7 +111,7 @@ private fun HomeCard(
             Icon(
                 modifier = Modifier.size(32.dp),
                 painter = painterResource(drawableRes),
-                contentDescription = null,
+                contentDescription = title,
             )
         }
     }
