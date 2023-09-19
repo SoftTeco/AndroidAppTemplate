@@ -49,17 +49,21 @@ import com.softteco.template.ui.theme.Dimens
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     ScreenContent(
-        state = state, modifier = modifier, onBackClicked = onBackClicked
+        state = state,
+        modifier = modifier,
+        onBackClicked = onBackClicked
     )
 }
 
 @Composable
 private fun ScreenContent(
-    state: SignUpViewModel.State, modifier: Modifier = Modifier, onBackClicked: () -> Unit = {}
+    state: SignUpViewModel.State,
+    modifier: Modifier = Modifier,
+    onBackClicked: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -97,7 +101,9 @@ private fun ScreenContent(
                 PasswordField(state = state, modifier = Modifier.fillMaxWidth())
                 Box(
                     modifier = Modifier.padding(
-                        Dimens.PaddingNormal, Dimens.PaddingNormal, Dimens.PaddingNormal
+                        Dimens.PaddingNormal,
+                        Dimens.PaddingNormal,
+                        Dimens.PaddingNormal
                     )
                 ) {
                     Button(
@@ -125,11 +131,16 @@ private fun UserNameField(
     state: SignUpViewModel.State,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(value = state.userNameValue, onValueChange = {
-        state.onUserNameChanged(it)
-    }, modifier = modifier, label = {
-        Text(text = stringResource(id = R.string.user_name))
-    }, isError = state.fieldStateUserName is SimpleFieldState.Empty
+    OutlinedTextField(
+        value = state.userNameValue,
+        onValueChange = {
+            state.onUserNameChanged(it)
+        },
+        modifier = modifier,
+        label = {
+            Text(text = stringResource(id = R.string.user_name))
+        },
+        isError = state.fieldStateUserName is SimpleFieldState.Empty
     )
     val errorText = when (state.fieldStateUserName) {
         is SimpleFieldState.Empty -> stringResource(R.string.required)
@@ -139,14 +150,14 @@ private fun UserNameField(
     Text(errorText, color = MaterialTheme.colorScheme.error)
 }
 
-
 @Composable
 private fun EmailField(
     state: SignUpViewModel.State,
     modifier: Modifier = Modifier,
 ) {
     Column {
-        OutlinedTextField(value = state.emailValue,
+        OutlinedTextField(
+            value = state.emailValue,
             onValueChange = {
                 state.onEmailChanged(it)
             },
@@ -173,29 +184,36 @@ private fun PasswordField(
 ) {
     Column {
         var passwordVisibility by remember { mutableStateOf(true) }
-        OutlinedTextField(value = state.passwordValue, onValueChange = {
-            state.onPasswordChanged(it)
-        }, modifier = modifier, label = {
-            Text(text = stringResource(id = R.string.password))
-        }, isError = state.fieldStatePassword is PasswordFieldState.Empty, trailingIcon = {
-            IconButton(onClick = {
-                passwordVisibility = !passwordVisibility
-            }) {
-                Icon(
-                    imageVector = if (passwordVisibility) {
-                        Icons.Default.Create
-                    } else {
-                        Icons.Default.Done
-                    },
-                    contentDescription = stringResource(id = R.string.visibility),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+        OutlinedTextField(
+            value = state.passwordValue,
+            onValueChange = {
+                state.onPasswordChanged(it)
+            },
+            modifier = modifier,
+            label = {
+                Text(text = stringResource(id = R.string.password))
+            },
+            isError = state.fieldStatePassword is PasswordFieldState.Empty,
+            trailingIcon = {
+                IconButton(onClick = {
+                    passwordVisibility = !passwordVisibility
+                }) {
+                    Icon(
+                        imageVector = if (passwordVisibility) {
+                            Icons.Default.Create
+                        } else {
+                            Icons.Default.Done
+                        },
+                        contentDescription = stringResource(id = R.string.visibility),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility) {
+                PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
             }
-        }, visualTransformation = if (passwordVisibility) {
-            PasswordVisualTransformation()
-        } else {
-            VisualTransformation.None
-        }
         )
         val errorText = when (state.fieldStatePassword) {
             PasswordFieldState.Empty -> stringResource(R.string.required)
@@ -220,7 +238,9 @@ private fun PasswordField(
 
 @Composable
 fun ConditionRow(
-    condition: String, check: Boolean, modifier: Modifier = Modifier
+    condition: String,
+    check: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val color by animateColorAsState(
         targetValue = if (check) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,
@@ -241,7 +261,8 @@ fun ConditionRow(
         )
         Spacer(modifier = Modifier.width(Dimens.PaddingDefault))
         Text(
-            text = condition, color = color
+            text = condition,
+            color = color
         )
     }
 }
