@@ -44,8 +44,8 @@ fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
-                onApiSampleClicked = { navController.navigate(Screen.ApiSample.route) },
-                onGoLoginClicked = { navController.navigate(Screen.Login.route) }
+                onLoginClicked = { navController.navigate(Screen.Login.route) },
+                onSignatureClicked = { navController.navigate(Screen.ApiSample.route) },
             )
         }
         composable(Screen.Profile.route) {
