@@ -21,4 +21,12 @@
     <string name="forgot_password">Forgot password</string>
     <string name="restore_password">Restore password</string>
     <string name="check_email">Check your email</string>
+
+    <!-- Home screen -->
+    <string name="ble">BLE</string>
+    <string name="ble_description">Connection and data transmission</string>
+    <string name="login_description">Log in, Sign up, Restore password</string>
+    <string name="signature">Signature</string>
+    <string name="signature_description">Graphic signature</string>
+
 </resources>
