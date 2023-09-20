@@ -18,9 +18,8 @@
     <string name="user_name">Username</string>
     <string name="go_to_login">Go to Log in screen</string>
     <string name="visibility">visibility</string>
-    <string name="forgot_password">Forgot password</string>
-    <string name="restore_password">Restore password</string>
-    <string name="check_email">Check your email</string>
+    <string name="reset_password">Reset password</string>
+    <string name="enter_new_password">Please, enter new password</string>
 
     <!-- Home screen -->
     <string name="ble">BLE</string>
