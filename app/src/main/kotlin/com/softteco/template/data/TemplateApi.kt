@@ -1,6 +1,7 @@
 package com.softteco.template.data
 
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.data.profile.dto.ForgotPasswordDto
 import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.data.profile.entity.Profile
@@ -26,4 +27,7 @@ interface TemplateApi {
 
     @PATCH("/api/auth/resetPassword")
     suspend fun resetPassword(@Body password: ResetPasswordDto): String
+
+    @POST("/api/auth/forgotPassword")
+    suspend fun restorePassword(@Body email: ForgotPasswordDto): String
 }

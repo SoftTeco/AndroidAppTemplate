@@ -92,7 +92,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
             route = Screen.ResetPassword.route,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "$DEEP_LINK_URI/$RESET_PASSWORD_PATH={$RESET_TOKEN_ARG}"
+                    uriPattern = "$DEEP_LINK_URI/$RESET_PASSWORD_PATH/{$RESET_TOKEN_ARG}"
                 }
             )
         ) {
