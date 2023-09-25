@@ -34,6 +34,15 @@
     <string name="signature">Signature</string>
     <string name="signature_description">Graphic signature</string>
 
+    <!-- Signature screen -->
+    <string name="clear">Clear</string>
+    <string name="save_as_svg">Save as SVG</string>
+    <string name="save_as_jpg">Save as JPG</string>
+    <string name="sign_here">Sign here:</string>
+    <string name="result">Result:</string>
+    <string name="empty_here">Empty here</string>
+    <string name="delete_file">Delete file</string>
+
     <string name="forgot_password">Forgot password</string>
     <string name="restore_password">Restore password</string>
     <string name="check_email">Check your email</string>

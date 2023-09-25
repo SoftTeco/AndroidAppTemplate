@@ -111,6 +111,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.signature.pad.compose)
+    implementation(libs.io.coil.kt.coil.svg)
+    implementation(libs.io.coil.kt.coil.compose)
 
     implementation(libs.preferences.data.store)
 

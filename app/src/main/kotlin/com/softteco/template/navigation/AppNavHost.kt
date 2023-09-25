@@ -64,8 +64,8 @@ fun NavGraphBuilder.bottomBarGraph(
             HomeScreen(
                 modifier = modifier,
                 onLoginClicked = { navController.navigate(Screen.Login.route) },
-                onSignatureClicked = { },
                 onBleClicked = { navController.navigate(Screen.Bluetooth.route) },
+                onSignatureClicked = { navController.navigate(Screen.Signature.route) },
             )
         }
         composable(Screen.Profile.route) {
