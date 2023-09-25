@@ -197,11 +197,7 @@ private fun PasswordField(
                     )
                 }
             },
-            visualTransformation = if (passwordVisibility) {
-                PasswordVisualTransformation()
-            } else {
-                VisualTransformation.None
-            }
+            visualTransformation = if (passwordVisibility) PasswordVisualTransformation() else VisualTransformation.None
         )
         val errorText =
             when (state.fieldStatePassword) {
