@@ -13,7 +13,7 @@ sealed class Screen(val route: String) {
 
     object SignUp : Screen("sign_up")
 
-    object ResetPassword : Screen("reset_password/{token}")
+    object ResetPassword : Screen("reset_password")
 
     object ForgotPassword : Screen("forgot_password")
 }
