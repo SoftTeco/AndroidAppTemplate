@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
@@ -69,6 +70,7 @@ private fun ScreenContent(
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
 ) {
+    val selected = remember { mutableStateOf(false) }
     TextSnackbarContainer(
         modifier = modifier,
         snackbarText = stringResource(state.snackBar.textId),
@@ -130,8 +132,16 @@ private fun ScreenContent(
                     text = AnnotatedString(stringResource(id = R.string.forgot_password)),
                     onClick = {
                         onForgotPasswordClicked()
+                        selected.value = !selected.value
                     },
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = if (!selected.value) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.inversePrimary
+                        },
+                        textDecoration = TextDecoration.Underline
+                    )
                 )
             }
         }
