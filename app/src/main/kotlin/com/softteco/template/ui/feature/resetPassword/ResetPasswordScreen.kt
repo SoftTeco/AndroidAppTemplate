@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
@@ -126,7 +126,7 @@ private fun PasswordField(
                     passwordVisibility = !passwordVisibility
                 }) {
                     Icon(
-                        imageVector = if (passwordVisibility) Icons.Default.Create else Icons.Default.Done,
+                        imageVector = if (passwordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                         contentDescription = stringResource(id = R.string.visibility),
                         tint = MaterialTheme.colorScheme.primary
                     )
