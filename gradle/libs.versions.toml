@@ -86,7 +86,6 @@ org-junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", 
 io-mockk-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 app-cash-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 io-kotest-kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-androidx-constraintlayout-compose-android = { group = "androidx.constraintlayout", name = "constraintlayout-compose-android", version = "1.1.0-alpha12" }
 
 
 [plugins]
