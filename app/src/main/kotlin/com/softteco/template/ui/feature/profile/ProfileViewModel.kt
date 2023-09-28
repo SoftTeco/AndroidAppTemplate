@@ -3,12 +3,11 @@ package com.softteco.template.ui.feature.profile
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.R
-import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -52,32 +51,16 @@ class ProfileViewModel @Inject constructor(
             profileRepository.getUser(UUID.randomUUID().toString()).run {
                 when (val result = this) {
                     is Result.Success -> profileState.value = result.data
-                    is Result.Error -> handleError(result.error)
+                    is Result.Error -> handleApiError(result, snackbarState)
                 }
             }
             profileRepository.getApi().run {
                 when (val result = this) {
                     is Result.Success -> greetingState.value = result.data
-                    is Result.Error -> handleError(result.error)
+                    is Result.Error -> handleApiError(result, snackbarState)
                 }
             }
             loading.value = false
-        }
-    }
-
-    private fun handleError(error: ErrorEntity) {
-        if (error.isDisplayable) {
-            val textId = when (error) {
-                ErrorEntity.AccessDenied -> R.string.error_example
-                ErrorEntity.Network -> R.string.error_example
-                ErrorEntity.NotFound -> R.string.error_example
-                ErrorEntity.ServiceUnavailable -> R.string.error_example
-                ErrorEntity.Unknown -> R.string.error_example
-            }
-            snackbarState.value = SnackBarState(
-                textId = textId,
-                show = true,
-            )
         }
     }
 
