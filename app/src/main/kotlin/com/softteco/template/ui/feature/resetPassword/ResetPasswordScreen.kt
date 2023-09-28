@@ -79,7 +79,13 @@ private fun ScreenContent(
                 stringResource(id = R.string.loading),
                 modifier = Modifier.alpha(if (state.loading) 1f else 0f)
             )
-
+                .padding(Dimens.PaddingExtraLarge),
+            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (state.loading) {
+                Text(stringResource(id = R.string.loading))
+            }
             Text(text = stringResource(id = R.string.enter_new_password))
             PasswordField(state = state, modifier = Modifier.fillMaxWidth())
             Box(

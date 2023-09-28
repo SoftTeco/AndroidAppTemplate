@@ -73,6 +73,9 @@ private fun ScreenContent(
                     stringResource(id = R.string.loading),
                     modifier = Modifier.alpha(if (state.loading) 1f else 0f)
                 )
+                if (state.loading) {
+                    Text(stringResource(id = R.string.loading))
+                }
                 EmailField(state = state, Modifier.fillMaxWidth())
                 Box(
                     modifier = Modifier.padding(
@@ -120,6 +123,7 @@ private fun EmailField(
             is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
             else -> ""
         }
+
         Text(errorText, color = MaterialTheme.colorScheme.error)
     }
 }

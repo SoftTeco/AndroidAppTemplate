@@ -97,6 +97,10 @@ private fun ScreenContent(
                     stringResource(id = R.string.loading),
                     modifier = Modifier.alpha(if (state.loading) 1f else 0f)
                 )
+
+                if (state.loading) {
+                    Text(stringResource(id = R.string.loading))
+                }
                 EmailField(state = state, Modifier.fillMaxWidth())
                 PasswordField(state = state, Modifier.fillMaxWidth())
                 Box(
