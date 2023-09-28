@@ -142,6 +142,9 @@ private fun ScreenContent(
                         },
                         textDecoration = TextDecoration.Underline
                     )
+
+                    },
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
