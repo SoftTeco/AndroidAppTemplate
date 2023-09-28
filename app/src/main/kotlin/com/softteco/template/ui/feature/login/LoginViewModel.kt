@@ -94,6 +94,7 @@ class LoginViewModel @Inject constructor(
                     is Result.Success ->
                         loginState.value = true // TODO: if success - go to profile screen
                     is Result.Error -> handleApiError(result, snackBarState)
+
                 }
             }
         } else {

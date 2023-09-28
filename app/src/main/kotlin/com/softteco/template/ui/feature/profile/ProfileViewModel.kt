@@ -3,6 +3,7 @@ package com.softteco.template.ui.feature.profile
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
@@ -51,7 +52,7 @@ class ProfileViewModel @Inject constructor(
             profileRepository.getUser(UUID.randomUUID().toString()).run {
                 when (val result = this) {
                     is Result.Success -> profileState.value = result.data
-                    is Result.Error -> handleApiError(result, snackbarState)
+                     is Result.Error -> handleApiError(result, snackbarState)
                 }
             }
             profileRepository.getApi().run {
@@ -63,6 +64,7 @@ class ProfileViewModel @Inject constructor(
             loading.value = false
         }
     }
+
 
     @Immutable
     data class State(

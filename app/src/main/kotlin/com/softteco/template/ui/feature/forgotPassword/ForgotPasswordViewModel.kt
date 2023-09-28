@@ -1,5 +1,4 @@
 package com.softteco.template.ui.feature.forgotPassword
-
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
