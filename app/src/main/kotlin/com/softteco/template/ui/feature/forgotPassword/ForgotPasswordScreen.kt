@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
+import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.TextSnackbarContainer
-import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
@@ -69,7 +68,12 @@ private fun ScreenContent(
                 if (state.loading) {
                     Text(stringResource(id = R.string.loading))
                 }
-                EmailField(state = state, Modifier.fillMaxWidth())
+                EmailField(
+                    state.emailValue,
+                    state.onEmailChanged,
+                    state.fieldStateEmail,
+                    Modifier.fillMaxWidth()
+                )
                 Box(
                     modifier = Modifier.padding(
                         Dimens.PaddingNormal,
@@ -91,33 +95,6 @@ private fun ScreenContent(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun EmailField(
-    state: ForgotPasswordViewModel.State,
-    modifier: Modifier = Modifier,
-) {
-    Column {
-        OutlinedTextField(
-            value = state.emailValue,
-            onValueChange = {
-                state.onEmailChanged(it)
-            },
-            modifier = modifier,
-            label = {
-                Text(text = stringResource(id = R.string.email))
-            },
-            isError = state.fieldStateEmail is EmailFieldState.Empty || state.fieldStateEmail is EmailFieldState.Error
-        )
-        val errorText =
-            when (state.fieldStateEmail) {
-                is EmailFieldState.Empty -> stringResource(R.string.required)
-                is EmailFieldState.Error -> stringResource(R.string.email_not_valid)
-                else -> ""
-            }
-        Text(errorText, color = MaterialTheme.colorScheme.error)
     }
 }
 
