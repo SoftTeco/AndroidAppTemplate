@@ -105,6 +105,7 @@ dependencies {
     ksp(libs.moshi.codegen)
     implementation(libs.okhttp)
     implementation(libs.okhttpLoggingInterceptor)
+    implementation(libs.androidx.compose.icons)
 
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
