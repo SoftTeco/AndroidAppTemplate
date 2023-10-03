@@ -1,5 +1,8 @@
 package com.softteco.template.ui.feature.login
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
@@ -71,6 +75,11 @@ private fun ScreenContent(
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val color =
+        if (isPressed) MaterialTheme.colorScheme.inversePrimary else MaterialTheme.colorScheme.primary
+
     TextSnackbarContainer(
         modifier = modifier,
         snackbarText = stringResource(state.snackBar.textId),
@@ -130,12 +139,19 @@ private fun ScreenContent(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
-                ClickableText(
-                    text = AnnotatedString(stringResource(id = R.string.forgot_password)),
-                    onClick = {
-                        onForgotPasswordClicked()
-                    },
-                    style = MaterialTheme.typography.bodyLarge
+                Text(
+                    text = stringResource(id = R.string.forgot_password),
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
+                            onForgotPasswordClicked()
+                        },
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        textDecoration = TextDecoration.Underline,
+                        color = color
+                    )
                 )
             }
         }
