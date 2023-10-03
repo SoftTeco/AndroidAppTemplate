@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,16 +35,17 @@ import com.softteco.template.ui.theme.RoundedCornerSizes
 
 @Composable
 fun HomeScreen(
-    onLoginClicked: () -> Unit = {},
-    onSignatureClicked: () -> Unit = {},
-    onBleClicked: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    onLoginClicked: () -> Unit,
+    onSignatureClicked: () -> Unit,
+    onBleClicked: () -> Unit,
 ) {
     val cards = listOf(
         HomeCards.LoginCard(onLoginClicked),
         HomeCards.SignatureCard(onSignatureClicked),
         HomeCards.BleCard(onBleClicked),
     )
-    ScreenContent(cards)
+    ScreenContent(modifier = modifier, cards = cards)
 }
 
 @Composable
@@ -50,19 +53,24 @@ private fun ScreenContent(
     cards: List<HomeCards>,
     modifier: Modifier = Modifier,
 ) {
-    LazyVerticalGrid(
-        modifier = modifier,
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(Dimens.PaddingSmall)
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        items(cards) { item ->
-            HomeCard(
-                title = stringResource(id = item.titleId),
-                description = stringResource(id = item.descriptionId),
-                drawableRes = item.drawableRes,
-                onClick = item.onClick,
-                isEnabled = item.enabled,
-            )
+        LazyVerticalGrid(
+            modifier = modifier,
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(Dimens.PaddingSmall)
+        ) {
+            items(cards) { item ->
+                HomeCard(
+                    title = stringResource(id = item.titleId),
+                    description = stringResource(id = item.descriptionId),
+                    drawableRes = item.drawableRes,
+                    onClick = item.onClick,
+                    isEnabled = item.enabled,
+                )
+            }
         }
     }
 }

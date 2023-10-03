@@ -40,9 +40,9 @@ fun AppNavHost(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier.padding(paddingValues = paddingValues)
+        modifier = modifier,
     ) {
-        bottomBarGraph(navController)
+        bottomBarGraph(navController, Modifier.padding(paddingValues = paddingValues))
         homeGraph(navController)
         profileGraph(navController)
         settingsGraph(navController)
@@ -50,24 +50,30 @@ fun AppNavHost(
     }
 }
 
-fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
+fun NavGraphBuilder.bottomBarGraph(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     navigation(
         startDestination = Screen.Home.route,
         route = Graph.BottomBar.route
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
+                modifier = modifier,
                 onLoginClicked = { navController.navigate(Screen.Login.route) },
-                onSignatureClicked = { navController.navigate(Screen.ApiSample.route) },
+                onSignatureClicked = { },
+                onBleClicked = { },
             )
         }
         composable(Screen.Profile.route) {
             ProfileScreen(
+                modifier,
                 onSignatureClicked = { navController.navigate(Screen.Signature.route) }
             )
         }
         composable(Screen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(modifier)
         }
     }
 }
