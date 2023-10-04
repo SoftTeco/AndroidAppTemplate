@@ -1,7 +1,6 @@
 package com.softteco.template.ui.feature.signUp
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +24,7 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
+import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.feature.SimpleFieldState
 import com.softteco.template.ui.theme.AppTheme
@@ -77,10 +76,6 @@ private fun ScreenContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    stringResource(id = R.string.loading),
-                    modifier = Modifier.alpha(if (state.loading) 1f else 0f)
-                )
                 UserNameField(
                     state = state,
                     modifier = Modifier.fillMaxWidth(),
@@ -99,28 +94,17 @@ private fun ScreenContent(
                     isPasswordHasUpperCase = state.isPasswordHasUpperCase,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Box(
-                    modifier = Modifier.padding(
-                        Dimens.PaddingNormal,
-                        Dimens.PaddingNormal,
-                        Dimens.PaddingNormal
-                    )
-                ) {
-                    Button(
-                        onClick = {
-                            state.onRegisterClicked()
-                            if (state.registrationState) {
-                                // transfer to user's screen
-                            }
-                        },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(Dimens.PaddingExtraLarge)
-                    ) {
-                        Text(text = stringResource(id = R.string.sign_up))
+                PrimaryButton(
+                    buttonText = stringResource(id = R.string.sign_up),
+                    showLoader = state.loading,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        state.onRegisterClicked()
+                        if (state.registrationState) {
+                            // transfer to user's screen
+                        }
                     }
-                }
+                )
             }
         }
     }
