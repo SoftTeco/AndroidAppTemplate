@@ -24,8 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -99,18 +97,16 @@ private fun ScreenContent(
                     modifier = Modifier.alpha(if (state.loading) 1f else 0f)
                 )
                 EmailField(
-                    state.emailValue,
-                    state.onEmailChanged,
-                    state.fieldStateEmail,
-                    Modifier.fillMaxWidth()
+                    emailValue = state.emailValue,
+                    onEmailChanged = state.onEmailChanged,
+                    fieldStateEmail = state.fieldStateEmail,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 PasswordField(
-                    state.passwordValue,
-                    state.onPasswordChanged,
-                    state.fieldStatePassword,
-                    null,
-                    null,
-                    Modifier.fillMaxWidth()
+                    passwordValue = state.passwordValue,
+                    onPasswordChanged = state.onPasswordChanged,
+                    fieldStatePassword = state.fieldStatePassword,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Box(
                     modifier = Modifier.padding(

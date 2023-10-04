@@ -36,8 +36,8 @@ fun PasswordField(
     passwordValue: String,
     onPasswordChanged: (String) -> Unit,
     fieldStatePassword: PasswordFieldState,
-    isPasswordHasMinimum: Boolean?,
-    isPasswordHasUpperCase: Boolean?,
+    isPasswordHasMinimum: Boolean? = null,
+    isPasswordHasUpperCase: Boolean? = null,
     modifier: Modifier = Modifier
 ) {
     Column {

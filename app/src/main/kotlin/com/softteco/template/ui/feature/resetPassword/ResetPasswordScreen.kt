@@ -65,12 +65,12 @@ private fun ScreenContent(
 
             Text(text = stringResource(id = R.string.enter_new_password))
             PasswordField(
-                state.passwordValue,
-                state.onPasswordChanged,
-                state.fieldStatePassword,
-                state.isPasswordHasMinimum,
-                state.isPasswordHasUpperCase,
-                Modifier.fillMaxWidth()
+                passwordValue = state.passwordValue,
+                onPasswordChanged = state.onPasswordChanged,
+                fieldStatePassword = state.fieldStatePassword,
+                isPasswordHasMinimum = state.isPasswordHasMinimum,
+                isPasswordHasUpperCase = state.isPasswordHasUpperCase,
+                modifier = Modifier.fillMaxWidth()
             )
             Box(
                 modifier = Modifier.padding(

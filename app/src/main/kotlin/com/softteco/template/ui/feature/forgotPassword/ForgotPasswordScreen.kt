@@ -72,10 +72,10 @@ private fun ScreenContent(
                     Text(stringResource(id = R.string.loading))
                 }
                 EmailField(
-                    state.emailValue,
-                    state.onEmailChanged,
-                    state.fieldStateEmail,
-                    Modifier.fillMaxWidth()
+                    emailValue = state.emailValue,
+                    onEmailChanged = state.onEmailChanged,
+                    fieldStateEmail = state.fieldStateEmail,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Text(
                     stringResource(id = R.string.loading),

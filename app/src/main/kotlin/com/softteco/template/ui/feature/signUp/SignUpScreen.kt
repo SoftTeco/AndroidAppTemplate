@@ -86,18 +86,18 @@ private fun ScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 EmailField(
-                    state.emailValue,
-                    state.onEmailChanged,
-                    state.fieldStateEmail,
-                    Modifier.fillMaxWidth()
+                    emailValue = state.emailValue,
+                    onEmailChanged = state.onEmailChanged,
+                    fieldStateEmail = state.fieldStateEmail,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 PasswordField(
-                    state.passwordValue,
-                    state.onPasswordChanged,
-                    state.fieldStatePassword,
-                    state.isPasswordHasMinimum,
-                    state.isPasswordHasUpperCase,
-                    Modifier.fillMaxWidth()
+                    passwordValue = state.passwordValue,
+                    onPasswordChanged = state.onPasswordChanged,
+                    fieldStatePassword = state.fieldStatePassword,
+                    isPasswordHasMinimum = state.isPasswordHasMinimum,
+                    isPasswordHasUpperCase = state.isPasswordHasUpperCase,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Box(
                     modifier = Modifier.padding(
