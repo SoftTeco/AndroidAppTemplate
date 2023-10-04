@@ -99,7 +99,7 @@ fun PasswordField(
 }
 
 @Composable
-fun ConditionRow(
+private fun ConditionRow(
     condition: String,
     check: Boolean,
     modifier: Modifier = Modifier
