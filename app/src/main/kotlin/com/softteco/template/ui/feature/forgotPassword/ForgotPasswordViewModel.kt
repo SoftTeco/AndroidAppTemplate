@@ -1,15 +1,16 @@
 package com.softteco.template.ui.feature.forgotPassword
+
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
-import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ForgotPasswordDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
+import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,20 +69,6 @@ class ForgotPasswordViewModel @Inject constructor(
         }
     }
 
-    private fun handleError(error: ErrorEntity) {
-        val textId = when (error) {
-            ErrorEntity.AccessDenied -> R.string.error_example
-            ErrorEntity.Network -> R.string.error_example
-            ErrorEntity.NotFound -> R.string.error_example
-            ErrorEntity.ServiceUnavailable -> R.string.error_example
-            ErrorEntity.Unknown -> R.string.error_example
-        }
-        snackBarState.value = SnackBarState(
-            textId = textId,
-            show = true,
-        )
-    }
-
     private fun handleSuccess() {
         forgotPasswordState.value = true
         snackBarState.value = SnackBarState(
@@ -100,9 +87,7 @@ class ForgotPasswordViewModel @Inject constructor(
                 )
                 when (val result = repository.restorePassword(forgotPassword)) {
                     is Result.Success -> handleSuccess()
-                    is Result.Error -> {
-                        handleError(result.error)
-                    }
+                    is Result.Error -> handleApiError(result, snackBarState)
                 }
             }
         } else {
