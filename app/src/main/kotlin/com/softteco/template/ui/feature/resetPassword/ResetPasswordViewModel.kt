@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
-import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
@@ -14,6 +13,7 @@ import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
 import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
+import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,20 +58,6 @@ class ResetPasswordViewModel @Inject constructor(
         State()
     )
 
-    private fun handleError(error: ErrorEntity) {
-        val textId = when (error) {
-            ErrorEntity.AccessDenied -> R.string.error_example
-            ErrorEntity.Network -> R.string.error_example
-            ErrorEntity.NotFound -> R.string.error_example
-            ErrorEntity.ServiceUnavailable -> R.string.error_example
-            ErrorEntity.Unknown -> R.string.error_example
-        }
-        snackBarState.value = SnackBarState(
-            textId = textId,
-            show = true,
-        )
-    }
-
     private fun onResetPassword() {
         loading.value = true
         val isAllFieldsValid = state.value.run {
@@ -86,12 +72,8 @@ class ResetPasswordViewModel @Inject constructor(
                     confirmPassword = passwordStateValue.value,
                 )
                 when (val result = repository.resetPassword(resetPasswordDto)) {
-                    is Result.Success ->
-                        resetPasswordState.value = true
-
-                    is Result.Error -> {
-                        handleError(result.error)
-                    }
+                    is Result.Success -> resetPasswordState.value = true
+                    is Result.Error -> handleApiError(result, snackBarState)
                 }
             }
         } else {
