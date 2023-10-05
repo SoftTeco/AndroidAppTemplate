@@ -31,4 +31,10 @@
     <string name="forgot_password">Forgot password</string>
     <string name="restore_password">Restore password</string>
     <string name="check_email">Check your email</string>
+
+    <string name="error_access_denied">"Check permissions to access this resource"</string>
+    <string name="error_network">"Check your internet connection and try again"</string>
+    <string name="error_not_found">"Make sure you've entered the correct information"</string>
+    <string name="error_service_unavailable">"Our services are temporarily unavailable"</string>
+    <string name="error_unknown">"An unexpected error occurred"</string>
 </resources>
