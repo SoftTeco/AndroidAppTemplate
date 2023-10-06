@@ -10,6 +10,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.softteco.template.ui.theme.Dimens
@@ -17,18 +19,18 @@ import com.softteco.template.ui.theme.Dimens
 @Composable
 fun PrimaryButton(
     buttonText: String,
-    showLoader: Boolean,
+    loading: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    val isButtonEnabled = remember { mutableStateOf(true) }
     Box(
         modifier = modifier.padding(
-            Dimens.PaddingNormal,
-            Dimens.PaddingLarge,
-            Dimens.PaddingNormal
+            Dimens.PaddingLarge
         )
     ) {
         Button(
+            enabled = isButtonEnabled.value,
             onClick = {
                 onClick()
             },
@@ -38,12 +40,14 @@ fun PrimaryButton(
                 .height(Dimens.PaddingExtraLarge)
 
         ) {
-            if (showLoader) {
+            if (loading) {
+                isButtonEnabled.value = false
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(Dimens.PaddingLarge)
+                    modifier = Modifier.size(Dimens.PaddingNormal)
                 )
             } else {
+                isButtonEnabled.value = true
                 Text(text = buttonText)
             }
         }
@@ -53,5 +57,5 @@ fun PrimaryButton(
 @Preview
 @Composable
 fun PrimaryButtonPreview() {
-    PrimaryButton(buttonText = "Button", showLoader = false, onClick = {})
+    PrimaryButton(buttonText = "Button", loading = false, onClick = {})
 }

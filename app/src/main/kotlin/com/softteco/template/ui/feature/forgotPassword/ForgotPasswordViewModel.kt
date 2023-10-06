@@ -78,10 +78,9 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     private fun onForgotPassword() {
-        loading.value = true
-
         if (state.value.fieldStateEmail is EmailFieldState.Success) {
             viewModelScope.launch {
+                loading.value = true
                 val forgotPassword = ForgotPasswordDto(
                     email = emailStateValue.value
                 )
@@ -89,6 +88,7 @@ class ForgotPasswordViewModel @Inject constructor(
                     is Result.Success -> handleSuccess()
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
+                loading.value = false
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -96,7 +96,6 @@ class ForgotPasswordViewModel @Inject constructor(
                 true
             )
         }
-        loading.value = false
     }
 
     @Immutable

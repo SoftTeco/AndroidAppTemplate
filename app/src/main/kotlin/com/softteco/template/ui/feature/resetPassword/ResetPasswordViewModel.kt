@@ -59,13 +59,13 @@ class ResetPasswordViewModel @Inject constructor(
     )
 
     private fun onResetPassword() {
-        loading.value = true
         val isAllFieldsValid = state.value.run {
             fieldStatePassword is PasswordFieldState.Success &&
                 isPasswordHasUpperCase && isPasswordHasMinimum
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
+                loading.value = true
                 val resetPasswordDto = ResetPasswordDto(
                     token = token,
                     password = passwordStateValue.value,
@@ -75,6 +75,7 @@ class ResetPasswordViewModel @Inject constructor(
                     is Result.Success -> resetPasswordState.value = true
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
+                loading.value = false
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -82,7 +83,6 @@ class ResetPasswordViewModel @Inject constructor(
                 true
             )
         }
-        loading.value = false
     }
 
     @Immutable

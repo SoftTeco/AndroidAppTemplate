@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.EmailField
+import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
@@ -73,7 +71,7 @@ private fun ScreenContent(
                 )
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.restore_password),
-                    showLoader = state.loading,
+                    loading = state.loading,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { state.onRestorePasswordClicked() }
                 )

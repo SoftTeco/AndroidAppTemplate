@@ -79,13 +79,13 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun onLogin() {
-        loading.value = true
         val isAllFieldsValid = state.value.run {
             fieldStateEmail is EmailFieldState.Success &&
                 fieldStatePassword is PasswordFieldState.Success
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
+                loading.value = true
                 val userAuthDto = LoginAuthDto(
                     email = emailStateValue.value,
                     password = passwordStateValue.value
@@ -94,6 +94,7 @@ class LoginViewModel @Inject constructor(
                     is Result.Success -> loginState.value = true // TODO: if success - go to profile screen
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
+                loading.value = false
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -101,7 +102,6 @@ class LoginViewModel @Inject constructor(
                 true
             )
         }
-        loading.value = false
     }
 
     @Immutable

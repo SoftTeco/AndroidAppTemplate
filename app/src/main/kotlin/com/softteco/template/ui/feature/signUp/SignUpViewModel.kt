@@ -91,7 +91,6 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun onRegister() {
-        loading.value = true
         val isAllFieldsValid = state.value.run {
             fieldStateEmail is EmailFieldState.Success &&
                 fieldStatePassword is PasswordFieldState.Success &&
@@ -100,6 +99,7 @@ class SignUpViewModel @Inject constructor(
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
+                loading.value = true
                 val createUserDto = CreateUserDto(
                     firstName = userNameStateValue.value,
                     email = emailStateValue.value,
@@ -110,6 +110,7 @@ class SignUpViewModel @Inject constructor(
                     is Result.Success -> registrationState.value = true // TODO: if success - go to profile screen
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
+                loading.value = false
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -117,7 +118,6 @@ class SignUpViewModel @Inject constructor(
                 true
             )
         }
-        loading.value = false
     }
 
     @Immutable

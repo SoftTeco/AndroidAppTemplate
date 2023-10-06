@@ -4,11 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -96,7 +94,7 @@ private fun ScreenContent(
                 )
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.sign_up),
-                    showLoader = state.loading,
+                    loading = state.loading,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         state.onRegisterClicked()
