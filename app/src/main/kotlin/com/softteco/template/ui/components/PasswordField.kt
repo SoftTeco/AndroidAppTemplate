@@ -36,9 +36,9 @@ fun PasswordField(
     passwordValue: String,
     onPasswordChanged: (String) -> Unit,
     fieldStatePassword: PasswordFieldState,
+    modifier: Modifier = Modifier,
     isPasswordHasMinimum: Boolean? = null,
     isPasswordHasUpperCase: Boolean? = null,
-    modifier: Modifier = Modifier
 ) {
     Column {
         var passwordVisibility by remember { mutableStateOf(true) }
