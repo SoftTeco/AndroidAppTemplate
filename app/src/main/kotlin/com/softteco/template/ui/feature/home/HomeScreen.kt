@@ -18,7 +18,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,24 +52,19 @@ private fun ScreenContent(
     cards: List<HomeCards>,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
+    LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(Dimens.PaddingSmall)
     ) {
-        LazyVerticalGrid(
-            modifier = modifier,
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(Dimens.PaddingSmall)
-        ) {
-            items(cards) { item ->
-                HomeCard(
-                    title = stringResource(id = item.titleId),
-                    description = stringResource(id = item.descriptionId),
-                    drawableRes = item.drawableRes,
-                    onClick = item.onClick,
-                    isEnabled = item.enabled,
-                )
-            }
+        items(cards) { item ->
+            HomeCard(
+                title = stringResource(id = item.titleId),
+                description = stringResource(id = item.descriptionId),
+                drawableRes = item.drawableRes,
+                onClick = item.onClick,
+                isEnabled = item.enabled,
+            )
         }
     }
 }
