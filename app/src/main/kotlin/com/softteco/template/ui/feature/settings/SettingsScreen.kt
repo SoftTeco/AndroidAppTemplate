@@ -17,10 +17,11 @@ import com.softteco.template.ui.theme.Dimens
 
 @Composable
 fun SettingsScreen(
+    modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    ScreenContent(state = state)
+    ScreenContent(modifier = modifier, state = state)
 }
 
 @Composable

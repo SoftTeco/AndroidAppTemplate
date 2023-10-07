@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,16 +34,17 @@ import com.softteco.template.ui.theme.RoundedCornerSizes
 
 @Composable
 fun HomeScreen(
-    onLoginClicked: () -> Unit = {},
-    onSignatureClicked: () -> Unit = {},
-    onBleClicked: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    onLoginClicked: () -> Unit,
+    onSignatureClicked: () -> Unit,
+    onBleClicked: () -> Unit,
 ) {
     val cards = listOf(
         HomeCards.LoginCard(onLoginClicked),
         HomeCards.SignatureCard(onSignatureClicked),
         HomeCards.BleCard(onBleClicked),
     )
-    ScreenContent(cards)
+    ScreenContent(modifier = modifier, cards = cards)
 }
 
 @Composable
@@ -51,7 +53,7 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(Dimens.PaddingSmall)
     ) {
