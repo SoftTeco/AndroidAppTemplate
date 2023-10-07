@@ -1,6 +1,7 @@
 package com.softteco.template.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +16,7 @@ fun AppContent(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             AppBottomBar(navController = navController)
         }
