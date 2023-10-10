@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +28,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
+import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
@@ -114,24 +114,23 @@ private fun ScreenContent(
                             onLoginClicked() // transfer to user's screen
                         }
                     }
-                )
-                ClickableText(
-                    text = AnnotatedString(stringResource(id = R.string.sign_up)),
-                    onClick = {
-                        onSignUpClicked()
-                    },
-                    style = MaterialTheme.typography.bodyLarge
+                }
+                SecondaryButton(
+                    title = stringResource(id = R.string.sign_up),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.PaddingSmall),
+                    onClick = { onSignUpClicked() }
                 )
                 Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
                 Text(
                     text = stringResource(id = R.string.forgot_password),
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {
-                            onForgotPasswordClicked()
-                        },
+                    modifier = Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        onForgotPasswordClicked()
+                    },
                     style = MaterialTheme.typography.bodyLarge.copy(
                         textDecoration = TextDecoration.Underline,
                         color = color
