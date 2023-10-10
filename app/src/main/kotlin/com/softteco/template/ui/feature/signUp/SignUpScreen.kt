@@ -95,7 +95,9 @@ private fun ScreenContent(
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.sign_up),
                     loading = state.loading,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.PaddingLarge),
                     onClick = {
                         state.onRegisterClicked()
                         if (state.registrationState) {

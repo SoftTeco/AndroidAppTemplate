@@ -66,7 +66,9 @@ private fun ScreenContent(
             PrimaryButton(
                 buttonText = stringResource(id = R.string.reset_password),
                 loading = state.loading,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Dimens.PaddingLarge),
                 onClick = {
                     state.onResetPasswordClicked()
                     if (state.resetPasswordState) {

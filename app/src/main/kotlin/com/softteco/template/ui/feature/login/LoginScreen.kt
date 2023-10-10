@@ -105,7 +105,9 @@ private fun ScreenContent(
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.login),
                     loading = state.loading,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.PaddingLarge),
                     onClick = {
                         state.onLoginClicked()
                         if (state.loginState) {

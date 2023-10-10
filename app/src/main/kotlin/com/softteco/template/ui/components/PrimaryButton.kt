@@ -2,8 +2,6 @@ package com.softteco.template.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,13 +19,11 @@ fun PrimaryButton(
     buttonText: String,
     loading: Boolean,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     val isButtonEnabled = remember { mutableStateOf(true) }
     Box(
-        modifier = modifier.padding(
-            Dimens.PaddingLarge
-        )
+        modifier = modifier
     ) {
         Button(
             enabled = isButtonEnabled.value,
@@ -37,8 +33,6 @@ fun PrimaryButton(
             shape = MaterialTheme.shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(Dimens.PaddingExtraLarge)
-
         ) {
             if (loading) {
                 isButtonEnabled.value = false
