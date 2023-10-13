@@ -40,14 +40,16 @@ class SignUpViewModel @Inject constructor(
 
     val state = combine(
         loading,
+        registrationState,
         userNameStateValue,
         emailStateValue,
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) { loading, userName, emailValue, passwordValue, snackBar, emailState ->
+    ) { loading, registrationState, userName, emailValue, passwordValue, snackBar, emailState ->
         State(
             loading = loading,
+            registrationState = registrationState,
             userNameValue = userName,
             emailValue = emailValue,
             passwordValue = passwordValue,

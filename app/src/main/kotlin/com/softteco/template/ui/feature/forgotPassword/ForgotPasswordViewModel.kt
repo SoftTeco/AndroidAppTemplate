@@ -27,7 +27,6 @@ class ForgotPasswordViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val loading = MutableStateFlow(false)
-    private val forgotPasswordState = MutableStateFlow(false)
     private var emailStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
     private val emailFieldState =
@@ -70,7 +69,6 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     private fun handleSuccess() {
-        forgotPasswordState.value = true
         snackBarState.value = SnackBarState(
             textId = R.string.check_email,
             show = true,
@@ -101,7 +99,6 @@ class ForgotPasswordViewModel @Inject constructor(
     @Immutable
     data class State(
         val loading: Boolean = false,
-        val forgotPasswordState: Boolean = false,
         val emailValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting,
         val snackBar: SnackBarState = SnackBarState(),

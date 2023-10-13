@@ -35,11 +35,13 @@ class ResetPasswordViewModel @Inject constructor(
 
     val state = combine(
         loading,
+        resetPasswordState,
         passwordStateValue,
         snackBarState,
-    ) { loading, passwordValue, snackBar ->
+    ) { loading, resetPasswordState, passwordValue, snackBar ->
         State(
             loading = loading,
+            resetPasswordState = resetPasswordState,
             passwordValue = passwordValue,
             fieldStatePassword = when {
                 passwordValue.isEmpty() -> PasswordFieldState.Empty
