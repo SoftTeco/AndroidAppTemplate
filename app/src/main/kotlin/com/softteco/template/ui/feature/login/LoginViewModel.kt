@@ -11,12 +11,12 @@ import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
+import com.softteco.template.utils.combine
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,13 +37,15 @@ class LoginViewModel @Inject constructor(
 
     val state = combine(
         loading,
+        loginState,
         emailStateValue,
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) { loading, emailValue, passwordValue, snackBar, emailState ->
+    ) { loading, loginState, emailValue, passwordValue, snackBar, emailState ->
         State(
             loading = loading,
+            loginState = loginState,
             emailValue = emailValue,
             passwordValue = passwordValue,
             snackBar = snackBar,
