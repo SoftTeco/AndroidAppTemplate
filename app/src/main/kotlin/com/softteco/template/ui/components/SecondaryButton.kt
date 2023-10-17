@@ -1,6 +1,5 @@
 package com.softteco.template.ui.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -14,15 +13,11 @@ fun SecondaryButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Box(
-        modifier = modifier
+    OutlinedButton(
+        shape = MaterialTheme.shapes.large,
+        modifier = modifier.fillMaxWidth(),
+        onClick = { onClick() }
     ) {
-        OutlinedButton(
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { onClick() }
-        ) {
-            Text(title)
-        }
+        Text(title)
     }
 }
