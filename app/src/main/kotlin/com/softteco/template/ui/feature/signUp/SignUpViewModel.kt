@@ -47,25 +47,25 @@ class SignUpViewModel @Inject constructor(
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) { loading, registrationState, userName, emailValue, passwordValue, snackBar, emailState ->
+    ) {
         State(
-            loading = loading,
-            registrationState = registrationState,
-            userNameValue = userName,
-            emailValue = emailValue,
-            passwordValue = passwordValue,
+            loading = loading.value,
+            registrationState = registrationState.value,
+            userNameValue = userNameStateValue.value,
+            emailValue = emailStateValue.value,
+            passwordValue = passwordStateValue.value,
             fieldStateUserName = when {
-                userName.isEmpty() -> SimpleFieldState.Empty
+                userNameStateValue.value.isEmpty() -> SimpleFieldState.Empty
                 else -> SimpleFieldState.Success
             },
-            fieldStateEmail = emailState,
+            fieldStateEmail = emailFieldState.value,
             fieldStatePassword = when {
-                passwordValue.isEmpty() -> PasswordFieldState.Empty
+                passwordStateValue.value.isEmpty() -> PasswordFieldState.Empty
                 else -> PasswordFieldState.Success
             },
-            isPasswordHasMinimum = passwordValue.isHasMinimum(),
-            isPasswordHasUpperCase = passwordValue.isHasCapitalizedLetter(),
-            snackBar = snackBar,
+            isPasswordHasMinimum = passwordStateValue.value.isHasMinimum(),
+            isPasswordHasUpperCase = passwordStateValue.value.isHasCapitalizedLetter(),
+            snackBar = snackBarState.value,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onUserNameChanged = { userNameStateValue.value = it },
             onEmailChanged = {

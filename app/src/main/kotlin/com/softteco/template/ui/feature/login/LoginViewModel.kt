@@ -43,22 +43,22 @@ class LoginViewModel @Inject constructor(
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) { loading, loginState, emailValue, passwordValue, snackBar, emailState ->
+    ) {
         State(
-            loading = loading,
-            loginState = loginState,
-            emailValue = emailValue,
-            passwordValue = passwordValue,
-            snackBar = snackBar,
+            loading = loading.value,
+            loginState = loginState.value,
+            emailValue = emailStateValue.value,
+            passwordValue = passwordStateValue.value,
+            snackBar = snackBarState.value,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
                 validateEmail(it)
             },
             onPasswordChanged = { passwordStateValue.value = it },
-            fieldStateEmail = emailState,
+            fieldStateEmail = emailFieldState.value,
             fieldStatePassword = when {
-                passwordValue.isEmpty() -> PasswordFieldState.Empty
+                passwordStateValue.value.isEmpty() -> PasswordFieldState.Empty
                 else -> PasswordFieldState.Success
             },
             onLoginClicked = ::onLogin,
