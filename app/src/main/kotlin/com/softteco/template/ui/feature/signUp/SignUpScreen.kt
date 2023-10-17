@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
+import com.softteco.template.data.base.error.StateHandler
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
@@ -100,7 +101,7 @@ private fun ScreenContent(
                         .padding(top = Dimens.PaddingLarge),
                     onClick = {
                         state.onRegisterClicked()
-                        if (state.registrationState) {
+                        if (state.registrationState is StateHandler.Success) {
                             // transfer to user's screen
                         }
                     }

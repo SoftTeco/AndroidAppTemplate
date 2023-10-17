@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
+import com.softteco.template.data.base.error.StateHandler
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
@@ -71,7 +72,7 @@ private fun ScreenContent(
                     .padding(top = Dimens.PaddingLarge),
                 onClick = {
                     state.onResetPasswordClicked()
-                    if (state.resetPasswordState) {
+                    if (state.resetPasswordState is StateHandler.Success) {
                         gotToLoginScreen()
                     }
                 }

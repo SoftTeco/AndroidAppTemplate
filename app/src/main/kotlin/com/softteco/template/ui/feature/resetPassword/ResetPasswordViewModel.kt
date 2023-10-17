@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
+import com.softteco.template.data.base.error.StateHandler
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.navigation.AppNavHost
@@ -28,7 +29,7 @@ class ResetPasswordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val loading = MutableStateFlow(false)
-    private val resetPasswordState = MutableStateFlow(false)
+    private val resetPasswordState = MutableStateFlow<StateHandler>(StateHandler.Loading)
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
@@ -74,8 +75,8 @@ class ResetPasswordViewModel @Inject constructor(
                     confirmPassword = passwordStateValue.value,
                 )
                 when (val result = repository.resetPassword(resetPasswordDto)) {
-                    is Result.Success -> resetPasswordState.value = true
-                    is Result.Error -> handleApiError(result, snackBarState)
+                    is Result.Success -> resetPasswordState.value = StateHandler.Success
+                    is Result.Error -> StateHandler.Error(handleApiError(result, snackBarState))
                 }
                 loading.value = false
             }
@@ -90,7 +91,7 @@ class ResetPasswordViewModel @Inject constructor(
     @Immutable
     data class State(
         val loading: Boolean = false,
-        val resetPasswordState: Boolean = false,
+        val resetPasswordState: StateHandler = StateHandler.Loading,
         val passwordValue: String = "",
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
         val isPasswordHasMinimum: Boolean = false,

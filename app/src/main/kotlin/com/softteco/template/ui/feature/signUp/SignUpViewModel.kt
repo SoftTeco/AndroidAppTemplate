@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
+import com.softteco.template.data.base.error.StateHandler
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.ui.components.SnackBarState
@@ -30,7 +31,7 @@ class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
 ) : ViewModel() {
     private val loading = MutableStateFlow(false)
-    private val registrationState = MutableStateFlow(false)
+    private val registrationState = MutableStateFlow<StateHandler>(StateHandler.Loading)
     private var userNameStateValue = MutableStateFlow("")
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
@@ -109,8 +110,8 @@ class SignUpViewModel @Inject constructor(
                     confirmPassword = passwordStateValue.value,
                 )
                 when (val result = repository.registration(createUserDto)) {
-                    is Result.Success -> registrationState.value = true
-                    is Result.Error -> handleApiError(result, snackBarState)
+                    is Result.Success -> registrationState.value = StateHandler.Success
+                    is Result.Error -> StateHandler.Error(handleApiError(result, snackBarState))
                 }
                 loading.value = false
             }
@@ -125,7 +126,7 @@ class SignUpViewModel @Inject constructor(
     @Immutable
     data class State(
         val loading: Boolean = false,
-        val registrationState: Boolean = false,
+        val registrationState: StateHandler = StateHandler.Loading,
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",
