@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -31,6 +28,7 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
+import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
@@ -92,10 +90,6 @@ private fun ScreenContent(
                 verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    stringResource(id = R.string.loading),
-                    modifier = Modifier.alpha(if (state.loading) 1f else 0f)
-                )
                 EmailField(
                     emailValue = state.emailValue,
                     onEmailChanged = state.onEmailChanged,
@@ -108,29 +102,19 @@ private fun ScreenContent(
                     fieldStatePassword = state.fieldStatePassword,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Box(
-                    modifier = Modifier.padding(
-                        Dimens.PaddingNormal,
-                        Dimens.PaddingLarge,
-                        Dimens.PaddingNormal
-                    )
-                ) {
-                    Button(
-                        onClick = {
-                            state.onLoginClicked()
-                            if (state.loginState) {
-                                onLoginClicked() // transfer to user's screen
-                            }
-                        },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(Dimens.PaddingExtraLarge)
-
-                    ) {
-                        Text(text = stringResource(id = R.string.login))
+                PrimaryButton(
+                    buttonText = stringResource(id = R.string.login),
+                    loading = state.loading,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.PaddingLarge),
+                    onClick = {
+                        state.onLoginClicked()
+                        if (state.loginState) {
+                            onLoginClicked() // transfer to user's screen
+                        }
                     }
-                }
+                )
                 ClickableText(
                     text = AnnotatedString(stringResource(id = R.string.sign_up)),
                     onClick = {
