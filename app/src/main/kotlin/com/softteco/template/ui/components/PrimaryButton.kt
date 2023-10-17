@@ -1,6 +1,5 @@
 package com.softteco.template.ui.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -19,20 +18,18 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Box(modifier = modifier) {
-        Button(
-            onClick = { if (!loading) onClick() },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (loading) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(Dimens.PaddingNormal)
-                )
-            } else {
-                Text(text = buttonText)
-            }
+    Button(
+        onClick = { if (!loading) onClick() },
+        shape = MaterialTheme.shapes.large,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        if (loading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(Dimens.PaddingNormal)
+            )
+        } else {
+            Text(text = buttonText)
         }
     }
 }
