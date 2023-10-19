@@ -2,6 +2,7 @@
 
 # Template
 ![test workflow](https://github.com/SoftTeco/AndroidAppTemplate/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/gh/SoftTeco/AndroidAppTemplate/graph/badge.svg)](https://codecov.io/gh/SoftTeco/AndroidAppTemplate)
 ![lint workflow](https://github.com/SoftTeco/AndroidAppTemplate/actions/workflows/lint.yml/badge.svg)
 
 Sample application to demonstrate usage of Jetpack Compose, Kotlin Flow, Android Hilt, etc.
