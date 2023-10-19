@@ -112,9 +112,11 @@ private fun ScreenContent(
                         if (state.loginState) {
                             onLoginClicked() // transfer to user's screen
                         }
-                    })
+                    }
+                )
                 SecondaryButton(
                     title = stringResource(id = R.string.sign_up),
+                    loading = false,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.PaddingSmall),
