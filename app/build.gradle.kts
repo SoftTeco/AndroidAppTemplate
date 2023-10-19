@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.icons)
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi.onverter)
@@ -105,7 +106,6 @@ dependencies {
     ksp(libs.moshi.codegen)
     implementation(libs.okhttp)
     implementation(libs.okhttpLoggingInterceptor)
-    implementation(libs.androidx.compose.icons)
 
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
@@ -124,4 +124,12 @@ dependencies {
     testImplementation(libs.io.mockk.mockk)
     testImplementation(libs.app.cash.turbine)
     testImplementation(libs.io.kotest.kotest.assertions)
+}
+
+tasks.withType<Test> {
+    testLogging {
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        events("started", "skipped", "passed", "failed")
+        showStandardStreams = true
+    }
 }
