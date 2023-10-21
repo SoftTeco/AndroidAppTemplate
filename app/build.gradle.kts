@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.android.junit5)
+    jacoco
 }
 
 android {
@@ -131,5 +132,16 @@ tasks.withType<Test> {
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         events("started", "skipped", "passed", "failed")
         showStandardStreams = true
+    }
+    configure<JacocoTaskExtension> {
+        isEnabled = true
+        isIncludeNoLocationClasses = false
+    }
+}
+
+tasks.register("jacocoTestReport", JacocoReport::class) {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
     }
 }
