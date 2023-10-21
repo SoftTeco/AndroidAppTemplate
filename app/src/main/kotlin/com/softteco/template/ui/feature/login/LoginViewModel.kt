@@ -91,7 +91,7 @@ class LoginViewModel @Inject constructor(
                     password = passwordStateValue.value
                 )
                 when (val result = repository.login(userAuthDto)) {
-                    is Result.Success -> loginState.value = true // TODO: if success - go to profile screen
+                    is Result.Success -> loginState.value = true
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
                 loading.value = false

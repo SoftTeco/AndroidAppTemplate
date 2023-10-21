@@ -1,6 +1,7 @@
 <img src="app/src/main/ic_launcher-playstore.png" alt="icon" width="100"/>
 
 # Template
+![lint workflow](https://github.com/SoftTeco/AndroidAppTemplate/actions/workflows/lint.yml/badge.svg)
 
 Sample application to demonstrate usage of Jetpack Compose, Kotlin Flow, Android Hilt, etc.
 
