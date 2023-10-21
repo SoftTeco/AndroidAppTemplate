@@ -107,7 +107,7 @@ class SignUpViewModel @Inject constructor(
                     confirmPassword = passwordStateValue.value,
                 )
                 when (val result = repository.registration(createUserDto)) {
-                    is Result.Success -> registrationState.value = true // TODO: if success - go to profile screen
+                    is Result.Success -> registrationState.value = true
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
                 loading.value = false

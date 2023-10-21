@@ -34,10 +34,10 @@ import com.softteco.template.ui.theme.RoundedCornerSizes
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     onLoginClicked: () -> Unit,
     onSignatureClicked: () -> Unit,
     onBleClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val cards = listOf(
         HomeCards.LoginCard(onLoginClicked),
