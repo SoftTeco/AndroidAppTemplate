@@ -43,6 +43,7 @@ moshi = "1.14.0"
 room = "2.5.2"
 composeMaterialDialog = "0.9.0"
 iconCompose = "1.5.1"
+dataStore = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -72,6 +73,7 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-compose-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "iconCompose" }
+preferences-data-store = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
 
 
 junit = { module = "junit:junit", version.ref = "junit" }
