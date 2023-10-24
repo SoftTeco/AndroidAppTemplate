@@ -41,9 +41,9 @@ fun AppNavHost(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier.padding(paddingValues = paddingValues)
+        modifier = modifier,
     ) {
-        bottomBarGraph(navController)
+        bottomBarGraph(navController, Modifier.padding(paddingValues = paddingValues))
         homeGraph(navController)
         profileGraph(navController)
         settingsGraph(navController)
@@ -51,25 +51,30 @@ fun AppNavHost(
     }
 }
 
-fun NavGraphBuilder.bottomBarGraph(navController: NavController) {
+fun NavGraphBuilder.bottomBarGraph(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     navigation(
         startDestination = Screen.Home.route,
         route = Graph.BottomBar.route
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
+                modifier = modifier,
                 onLoginClicked = { navController.navigate(Screen.Login.route) },
-                onSignatureClicked = { navController.navigate(Screen.ApiSample.route) },
-                onBleClicked = { navController.navigate(Screen.Bluetooth.route) }
+                onSignatureClicked = { },
+                onBleClicked = { navController.navigate(Screen.Bluetooth.route) },
             )
         }
         composable(Screen.Profile.route) {
             ProfileScreen(
+                modifier,
                 onSignatureClicked = { navController.navigate(Screen.Signature.route) }
             )
         }
         composable(Screen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(modifier)
         }
     }
 }
@@ -85,11 +90,6 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 onLoginClicked = {},
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
                 onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) }
-            )
-        }
-        composable(Screen.Bluetooth.route) {
-            BluetoothScreen(
-                onBackClicked = { navController.navigateUp() }
             )
         }
         composable(Screen.SignUp.route) {
@@ -120,6 +120,11 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
     ) {
         composable(Screen.ApiSample.route) {
             ApiSampleScreen(onBackClicked = { navController.popBackStack() })
+        }
+        composable(Screen.Bluetooth.route) {
+            BluetoothScreen(
+                onBackClicked = { navController.navigateUp() }
+            )
         }
     }
 }

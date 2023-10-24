@@ -15,19 +15,22 @@ import javax.inject.Inject
 @HiltViewModel
 class BluetoothViewModel @Inject constructor() : ViewModel() {
 
-    private val bluetoothDevices = mutableListOf(
-        BluetoothDevice("first", "00:00:00:00:01", 1),
-        BluetoothDevice("second", "00:00:00:00:02", 2),
-        BluetoothDevice("third", "00:00:00:00:03", 3)
-    )
     private var snackBarState = MutableStateFlow(SnackBarState())
+    private var bluetoothDevices = MutableStateFlow(
+        listOf(
+            BluetoothDevice("first", "00:00:00:00:01", 1),
+            BluetoothDevice("second", "00:00:00:00:02", 2),
+            BluetoothDevice("third", "00:00:00:00:03", 3)
+        )
+    )
 
     val state = combine(
+        bluetoothDevices,
         snackBarState
-    ) { snackBar ->
+    ) { bluetoothDevices, snackBar ->
         State(
             bluetoothDevices = bluetoothDevices,
-            snackBar = snackBar.first(),
+            snackBar = snackBar,
             dismissSnackBar = { snackBarState.value = SnackBarState() }
         )
     }.stateIn(
@@ -38,7 +41,7 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
 
     @Immutable
     data class State(
-        val bluetoothDevices: MutableList<BluetoothDevice> = mutableListOf(),
+        val bluetoothDevices: List<BluetoothDevice> = listOf(),
         val snackBar: SnackBarState = SnackBarState(),
         val dismissSnackBar: () -> Unit = {}
     )

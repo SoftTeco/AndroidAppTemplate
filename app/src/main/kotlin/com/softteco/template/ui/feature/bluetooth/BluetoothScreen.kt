@@ -5,14 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,13 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
-import com.softteco.template.ui.theme.Dimens.PaddingExtraSmall
-import com.softteco.template.ui.theme.Dimens.PaddingSmall
+import com.softteco.template.ui.theme.Dimens.PaddingNormal
 
 @Composable
 fun BluetoothScreen(
@@ -76,7 +78,8 @@ private fun BluetoothDevicesList(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(PaddingDefault)
+        contentPadding = PaddingValues(PaddingDefault),
+        verticalArrangement = Arrangement.spacedBy(PaddingNormal)
     ) {
         items(state.bluetoothDevices) { bluetoothDevice ->
             BluetoothDeviceCard(
@@ -96,43 +99,35 @@ private fun BluetoothDeviceCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(PaddingDefault)
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = MaterialTheme.shapes.medium
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(R.drawable.ic_bluetooth),
-                contentDescription = "ic_bluetooth",
-                modifier = Modifier
-                    .padding(PaddingSmall),
-                contentScale = ContentScale.Fit
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(all = PaddingDefault)
+        ) {
+            Icon(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(R.drawable.baseline_bluetooth_24),
+                contentDescription = stringResource(id = R.string.bluetooth_icon_description)
             )
-            Column(Modifier.padding(PaddingSmall)) {
+            Spacer(Modifier.weight(1f))
+            Column {
                 Text(text = name)
                 Text(text = macAddress)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_signal_level),
-                        contentDescription = "ic_bluetooth",
-                        modifier = Modifier
-                            .padding(PaddingExtraSmall),
-                        contentScale = ContentScale.Fit
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_signal_level_24),
+                        contentDescription = stringResource(id = R.string.signal_level_icon_description)
                     )
                     Text(text = rssi.toString())
                 }
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(PaddingSmall),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
-            ) {
-                Button(onClick = {}) {
-                    Text(stringResource(id = R.string.connect))
-                }
+            Spacer(Modifier.weight(2f))
+            Button(onClick = {}) {
+                Text(stringResource(id = R.string.connect))
             }
         }
     }
