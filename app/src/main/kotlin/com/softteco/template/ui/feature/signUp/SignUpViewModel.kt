@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.base.error.StateHandler
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.ui.components.SnackBarState
@@ -30,8 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
 ) : ViewModel() {
-    private val loading = MutableStateFlow(false)
-    private val registrationState = MutableStateFlow<StateHandler>(StateHandler.Loading)
+    private val registrationState = MutableStateFlow<SignupState>(SignupState.Default)
     private var userNameStateValue = MutableStateFlow("")
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
@@ -40,32 +38,30 @@ class SignUpViewModel @Inject constructor(
         MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
-        loading,
         registrationState,
         userNameStateValue,
         emailStateValue,
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) {
+    ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState ->
         State(
-            loading = loading.value,
-            registrationState = registrationState.value,
-            userNameValue = userNameStateValue.value,
-            emailValue = emailStateValue.value,
-            passwordValue = passwordStateValue.value,
+            registrationState = registrationState,
+            userNameValue = userName,
+            emailValue = emailValue,
+            passwordValue = passwordValue,
             fieldStateUserName = when {
-                userNameStateValue.value.isEmpty() -> SimpleFieldState.Empty
+                userName.isEmpty() -> SimpleFieldState.Empty
                 else -> SimpleFieldState.Success
             },
-            fieldStateEmail = emailFieldState.value,
+            fieldStateEmail = emailState,
             fieldStatePassword = when {
-                passwordStateValue.value.isEmpty() -> PasswordFieldState.Empty
+                passwordValue.isEmpty() -> PasswordFieldState.Empty
                 else -> PasswordFieldState.Success
             },
-            isPasswordHasMinimum = passwordStateValue.value.isHasMinimum(),
-            isPasswordHasUpperCase = passwordStateValue.value.isHasCapitalizedLetter(),
-            snackBar = snackBarState.value,
+            isPasswordHasMinimum = passwordValue.isHasMinimum(),
+            isPasswordHasUpperCase = passwordValue.isHasCapitalizedLetter(),
+            snackBar = snackBar,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onUserNameChanged = { userNameStateValue.value = it },
             onEmailChanged = {
@@ -102,7 +98,7 @@ class SignUpViewModel @Inject constructor(
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
-                loading.value = true
+                registrationState.value = SignupState.Loading
                 val createUserDto = CreateUserDto(
                     firstName = userNameStateValue.value,
                     email = emailStateValue.value,
@@ -110,10 +106,10 @@ class SignUpViewModel @Inject constructor(
                     confirmPassword = passwordStateValue.value,
                 )
                 when (val result = repository.registration(createUserDto)) {
-                    is Result.Success -> registrationState.value = StateHandler.Success
-                    is Result.Error -> StateHandler.Error(handleApiError(result, snackBarState))
+                    is Result.Success -> registrationState.value = SignupState.Success
+                    is Result.Error -> handleApiError(result, snackBarState)
                 }
-                loading.value = false
+                registrationState.value = SignupState.Default
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -125,8 +121,8 @@ class SignUpViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val loading: Boolean = false,
-        val registrationState: StateHandler = StateHandler.Loading,
+        val registrationState: SignupState = SignupState.Default,
+        val snackBar: SnackBarState = SnackBarState(),
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",
@@ -135,11 +131,17 @@ class SignUpViewModel @Inject constructor(
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
         val isPasswordHasMinimum: Boolean = false,
         val isPasswordHasUpperCase: Boolean = false,
-        val snackBar: SnackBarState = SnackBarState(),
         val onUserNameChanged: (String) -> Unit = {},
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onRegisterClicked: () -> Unit = {},
         val dismissSnackBar: () -> Unit = {}
     )
+
+    @Immutable
+    sealed class SignupState {
+        object Default : SignupState()
+        object Loading : SignupState()
+        object Success : SignupState()
+    }
 }

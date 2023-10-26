@@ -5,19 +5,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.base.error.StateHandler
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.LoginAuthDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
-import com.softteco.template.utils.combine
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,8 +27,7 @@ class LoginViewModel @Inject constructor(
     private val repository: ProfileRepository,
 ) : ViewModel() {
 
-    private val loading = MutableStateFlow(false)
-    private val loginState = MutableStateFlow<StateHandler>(StateHandler.Loading)
+    private val loginState = MutableStateFlow<LoginState>(LoginState.Default)
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
@@ -37,26 +35,24 @@ class LoginViewModel @Inject constructor(
         MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
-        loading,
         loginState,
         emailStateValue,
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) {
+    ) { loginState, emailValue, passwordValue, snackBar, emailState ->
         State(
-            loading = loading.value,
-            loginState = loginState.value,
-            emailValue = emailStateValue.value,
-            passwordValue = passwordStateValue.value,
-            snackBar = snackBarState.value,
+            loginState = loginState,
+            emailValue = emailValue,
+            passwordValue = passwordValue,
+            snackBar = snackBar,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
                 validateEmail(it)
             },
             onPasswordChanged = { passwordStateValue.value = it },
-            fieldStateEmail = emailFieldState.value,
+            fieldStateEmail = emailState,
             fieldStatePassword = when {
                 passwordStateValue.value.isEmpty() -> PasswordFieldState.Empty
                 else -> PasswordFieldState.Success
@@ -88,16 +84,16 @@ class LoginViewModel @Inject constructor(
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
-                loading.value = true
+                loginState.value = LoginState.Loading
                 val userAuthDto = LoginAuthDto(
                     email = emailStateValue.value,
                     password = passwordStateValue.value
                 )
                 when (val result = repository.login(userAuthDto)) {
-                    is Result.Success -> loginState.value = StateHandler.Success
-                    is Result.Error -> loginState.value = StateHandler.Error(handleApiError(result, snackBarState))
+                    is Result.Success -> loginState.value = LoginState.Success
+                    is Result.Error -> handleApiError(result, snackBarState)
                 }
-                loading.value = false
+                loginState.value = LoginState.Default
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -109,16 +105,22 @@ class LoginViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val loading: Boolean = false,
-        val loginState: StateHandler = StateHandler.Loading,
+        val loginState: LoginState = LoginState.Default,
+        val snackBar: SnackBarState = SnackBarState(),
         val emailValue: String = "",
         val passwordValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting,
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
-        val snackBar: SnackBarState = SnackBarState(),
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onLoginClicked: () -> Unit = {},
         val dismissSnackBar: () -> Unit = {}
     )
+
+    @Immutable
+    sealed class LoginState {
+        object Default : LoginState()
+        object Loading : LoginState()
+        object Success : LoginState()
+    }
 }

@@ -25,21 +25,21 @@ import kotlin.time.Duration.Companion.seconds
 class ForgotPasswordViewModel @Inject constructor(
     private val repository: ProfileRepository,
 ) : ViewModel() {
-
-    private val loading = MutableStateFlow(false)
+    private val forgotPasswordState =
+        MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Default)
     private var emailStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
     private val emailFieldState =
         MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
-        loading,
+        forgotPasswordState,
         emailStateValue,
         snackBarState,
         emailFieldState
-    ) { loading, emailValue, snackBar, emailState ->
+    ) { forgotPasswordState, emailValue, snackBar, emailState ->
         State(
-            loading = loading,
+            forgotPasswordState = forgotPasswordState,
             emailValue = emailValue,
             snackBar = snackBar,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
@@ -78,15 +78,18 @@ class ForgotPasswordViewModel @Inject constructor(
     private fun onForgotPassword() {
         if (state.value.fieldStateEmail is EmailFieldState.Success) {
             viewModelScope.launch {
-                loading.value = true
+                forgotPasswordState.value = ForgotPasswordState.Loading
                 val forgotPassword = ForgotPasswordDto(
                     email = emailStateValue.value
                 )
                 when (val result = repository.restorePassword(forgotPassword)) {
-                    is Result.Success -> handleSuccess()
+                    is Result.Success -> {
+                        forgotPasswordState.value = ForgotPasswordState.Success
+                        handleSuccess()
+                    }
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
-                loading.value = false
+                forgotPasswordState.value = ForgotPasswordState.Default
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -98,7 +101,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val loading: Boolean = false,
+        val forgotPasswordState: ForgotPasswordState = ForgotPasswordState.Default,
         val emailValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting,
         val snackBar: SnackBarState = SnackBarState(),
@@ -106,4 +109,11 @@ class ForgotPasswordViewModel @Inject constructor(
         val onRestorePasswordClicked: () -> Unit = {},
         val dismissSnackBar: () -> Unit = {}
     )
+
+    @Immutable
+    sealed class ForgotPasswordState {
+        object Default : ForgotPasswordState()
+        object Loading : ForgotPasswordState()
+        object Success : ForgotPasswordState()
+    }
 }

@@ -71,7 +71,7 @@ private fun ScreenContent(
                 )
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.restore_password),
-                    loading = state.loading,
+                    loading = state.forgotPasswordState == ForgotPasswordViewModel.ForgotPasswordState.Loading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.PaddingLarge),
