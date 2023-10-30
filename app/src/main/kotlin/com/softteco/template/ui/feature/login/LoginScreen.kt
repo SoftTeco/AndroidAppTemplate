@@ -103,13 +103,13 @@ private fun ScreenContent(
                 )
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.login),
-                    loading = state.loading,
+                    loading = state.loginState == LoginViewModel.LoginState.Loading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.PaddingLarge),
                     onClick = {
                         state.onLoginClicked()
-                        if (state.loginState) {
+                        if (state.loginState == LoginViewModel.LoginState.Success) {
                             onLoginClicked() // transfer to user's screen
                         }
                     }

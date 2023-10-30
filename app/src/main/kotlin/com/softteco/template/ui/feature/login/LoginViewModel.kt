@@ -27,8 +27,7 @@ class LoginViewModel @Inject constructor(
     private val repository: ProfileRepository,
 ) : ViewModel() {
 
-    private val loading = MutableStateFlow(false)
-    private val loginState = MutableStateFlow(false)
+    private val loginState = MutableStateFlow<LoginState>(LoginState.Default)
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
@@ -36,14 +35,14 @@ class LoginViewModel @Inject constructor(
         MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
-        loading,
+        loginState,
         emailStateValue,
         passwordStateValue,
         snackBarState,
         emailFieldState
-    ) { loading, emailValue, passwordValue, snackBar, emailState ->
+    ) { loginState, emailValue, passwordValue, snackBar, emailState ->
         State(
-            loading = loading,
+            loginState = loginState,
             emailValue = emailValue,
             passwordValue = passwordValue,
             snackBar = snackBar,
@@ -55,7 +54,7 @@ class LoginViewModel @Inject constructor(
             onPasswordChanged = { passwordStateValue.value = it },
             fieldStateEmail = emailState,
             fieldStatePassword = when {
-                passwordValue.isEmpty() -> PasswordFieldState.Empty
+                passwordStateValue.value.isEmpty() -> PasswordFieldState.Empty
                 else -> PasswordFieldState.Success
             },
             onLoginClicked = ::onLogin,
@@ -85,16 +84,16 @@ class LoginViewModel @Inject constructor(
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
-                loading.value = true
+                loginState.value = LoginState.Loading
                 val userAuthDto = LoginAuthDto(
                     email = emailStateValue.value,
                     password = passwordStateValue.value
                 )
                 when (val result = repository.login(userAuthDto)) {
-                    is Result.Success -> loginState.value = true
+                    is Result.Success -> loginState.value = LoginState.Success
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
-                loading.value = false
+                loginState.value = LoginState.Default
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -106,16 +105,22 @@ class LoginViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val loading: Boolean = false,
-        val loginState: Boolean = false,
+        val loginState: LoginState = LoginState.Default,
+        val snackBar: SnackBarState = SnackBarState(),
         val emailValue: String = "",
         val passwordValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting,
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
-        val snackBar: SnackBarState = SnackBarState(),
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onLoginClicked: () -> Unit = {},
         val dismissSnackBar: () -> Unit = {}
     )
+
+    @Immutable
+    sealed class LoginState {
+        object Default : LoginState()
+        object Loading : LoginState()
+        object Success : LoginState()
+    }
 }

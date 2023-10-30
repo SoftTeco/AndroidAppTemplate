@@ -1,6 +1,7 @@
 package com.softteco.template.utils
 
 import kotlinx.coroutines.flow.Flow
+
 @Suppress("MagicNumber")
 inline fun <T1, T2, T3, T4, T5, T6, R> combine(
     flow: Flow<T1>,
@@ -26,7 +27,7 @@ inline fun <T1, T2, T3, T4, T5, T6, R> combine(
             args[2] as T3,
             args[3] as T4,
             args[4] as T5,
-            args[5] as T6,
+            args[5] as T6
         )
     }
 }

@@ -65,13 +65,13 @@ private fun ScreenContent(
             )
             PrimaryButton(
                 buttonText = stringResource(id = R.string.reset_password),
-                loading = state.loading,
+                loading = state.resetPasswordState == ResetPasswordViewModel.ResetPasswordState.Loading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Dimens.PaddingLarge),
                 onClick = {
                     state.onResetPasswordClicked()
-                    if (state.resetPasswordState) {
+                    if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
                         gotToLoginScreen()
                     }
                 }
