@@ -8,6 +8,7 @@ import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
@@ -15,7 +16,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @ExtendWith(MainDispatcherExtension::class)
@@ -28,44 +28,48 @@ class ProfileViewModelTest : BaseTest() {
 
     @Test
     fun `when screen is open and data isn't received then loading is shown`() = runTest {
-        coEvery { profileRepository.getUser(any()) } coAnswers {
+        coEvery { profileRepository.getUser() } coAnswers {
             delay(1.seconds) // emulation a delay in receiving data
             Result.Success(testProfile)
         }
         viewModel = ProfileViewModel(profileRepository)
 
         viewModel.state.test {
-            awaitItem().loading shouldBe true
+            awaitItem().profileState shouldBe ProfileViewModel.GetProfileState.Loading
         }
     }
 
     @Test
     fun `when screen is open and data received then profile data is shown`() = runTest {
-        coEvery { profileRepository.getUser(any()) } returns Result.Success(testProfile)
+        coEvery { profileRepository.getUser() } returns Result.Success(testProfile)
         viewModel = ProfileViewModel(profileRepository)
 
         viewModel.state.test {
             awaitItem().run {
-                loading shouldBe false
-                profile shouldBe testProfile
+                profileState.shouldBeTypeOf<ProfileViewModel.GetProfileState.Success>()
+                (profileState as ProfileViewModel.GetProfileState.Success).profile shouldBe testProfile
             }
         }
-        coVerify(exactly = 1) { profileRepository.getUser(any()) }
+        coVerify(exactly = 1) { profileRepository.getUser() }
     }
 
     @Test
     fun `when screen is open and network error happened then snackbar is shown`() = runTest {
-        coEvery { profileRepository.getUser(any()) } returns Result.Error(ErrorEntity.Network)
+        coEvery { profileRepository.getUser() } returns Result.Error(ErrorEntity.Network)
         viewModel = ProfileViewModel(profileRepository)
 
         viewModel.state.test {
             awaitItem().snackbar.show shouldBe true
         }
-        coVerify(exactly = 1) { profileRepository.getUser(any()) }
+        coVerify(exactly = 1) { profileRepository.getUser() }
     }
 
     companion object {
-        private val userId = UUID.randomUUID().toString()
-        private val testProfile = Profile(id = userId, name = "John Doe")
+        private val testProfile = Profile(
+            id = 1,
+            username = "nickname",
+            email = "email@gmail.com",
+            createdAt = "2023-10-30 16:54:49.615966"
+        )
     }
 }
