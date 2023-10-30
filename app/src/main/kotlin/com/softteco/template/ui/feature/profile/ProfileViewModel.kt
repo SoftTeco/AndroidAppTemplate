@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,21 +21,15 @@ class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
-    private val profileState = MutableStateFlow(Profile())
-    private val greetingState = MutableStateFlow("")
+    private val profileState = MutableStateFlow<GetProfileState>(GetProfileState.Loading)
     private val snackbarState = MutableStateFlow(SnackBarState())
-    private val loading = MutableStateFlow(true)
 
     val state = combine(
-        loading,
         profileState,
-        greetingState,
         snackbarState
-    ) { loading, user, greeting, snackbar ->
+    ) { profile, snackbar ->
         State(
-            loading = loading,
-            profile = user,
-            greeting = greeting,
+            profileState = profile,
             snackbar = snackbar,
             dismissSnackBar = { snackbarState.value = SnackBarState() }
         )
@@ -48,28 +41,29 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            profileRepository.getUser(UUID.randomUUID().toString()).run {
-                when (val result = this) {
-                    is Result.Success -> profileState.value = result.data
-                    is Result.Error -> handleApiError(result, snackbarState)
+            profileRepository.getUser().let { result ->
+                profileState.value = when (result) {
+                    is Result.Success -> GetProfileState.Success(result.data)
+                    is Result.Error -> {
+                        handleApiError(result, snackbarState)
+                        GetProfileState.Error
+                    }
                 }
             }
-            profileRepository.getApi().run {
-                when (val result = this) {
-                    is Result.Success -> greetingState.value = result.data
-                    is Result.Error -> handleApiError(result, snackbarState)
-                }
-            }
-            loading.value = false
         }
     }
 
     @Immutable
     data class State(
-        val loading: Boolean = false,
-        val profile: Profile = Profile(),
-        val greeting: String = "",
+        val profileState: GetProfileState = GetProfileState.Loading,
         val snackbar: SnackBarState = SnackBarState(),
         val dismissSnackBar: () -> Unit = {},
     )
+
+    @Immutable
+    sealed class GetProfileState {
+        class Success(val profile: Profile) : GetProfileState()
+        object Loading : GetProfileState()
+        object Error : GetProfileState()
+    }
 }

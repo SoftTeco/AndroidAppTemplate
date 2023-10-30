@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.ForgotPasswordDto
+import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
@@ -79,17 +79,21 @@ class ForgotPasswordViewModel @Inject constructor(
         if (state.value.fieldStateEmail is EmailFieldState.Success) {
             viewModelScope.launch {
                 forgotPasswordState.value = ForgotPasswordState.Loading
-                val forgotPassword = ForgotPasswordDto(
-                    email = emailStateValue.value
-                )
-                when (val result = repository.restorePassword(forgotPassword)) {
+
+                val email = ResetPasswordDto(email = emailStateValue.value)
+
+                val result = repository.resetPassword(email)
+                forgotPasswordState.value = when (result) {
                     is Result.Success -> {
-                        forgotPasswordState.value = ForgotPasswordState.Success
                         handleSuccess()
+                        ForgotPasswordState.Success
                     }
-                    is Result.Error -> handleApiError(result, snackBarState)
+
+                    is Result.Error -> {
+                        handleApiError(result, snackBarState)
+                        ForgotPasswordState.Default
+                    }
                 }
-                forgotPasswordState.value = ForgotPasswordState.Default
             }
         } else {
             snackBarState.value = SnackBarState(

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.LoginAuthDto
+import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
@@ -85,15 +85,24 @@ class LoginViewModel @Inject constructor(
         if (isAllFieldsValid) {
             viewModelScope.launch {
                 loginState.value = LoginState.Loading
-                val userAuthDto = LoginAuthDto(
+
+                val credentials = CredentialsDto(
                     email = emailStateValue.value,
                     password = passwordStateValue.value
                 )
-                when (val result = repository.login(userAuthDto)) {
-                    is Result.Success -> loginState.value = LoginState.Success
-                    is Result.Error -> handleApiError(result, snackBarState)
+
+                val result = repository.login(credentials)
+                loginState.value = when (result) {
+                    is Result.Success -> {
+                        snackBarState.value = SnackBarState(R.string.success, true)
+                        LoginState.Success
+                    }
+
+                    is Result.Error -> {
+                        handleApiError(result, snackBarState)
+                        LoginState.Default
+                    }
                 }
-                loginState.value = LoginState.Default
             }
         } else {
             snackBarState.value = SnackBarState(

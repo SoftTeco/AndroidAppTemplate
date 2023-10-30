@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -86,13 +87,21 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onBackClicked = { navController.navigateUp() },
-                onLoginClicked = {},
+                onSuccess = {
+                    navController.navigate(
+                        Screen.Profile.route,
+                        NavOptions.Builder().setPopUpTo(Screen.Home.route, true).build()
+                    )
+                },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
                 onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) }
             )
         }
         composable(Screen.SignUp.route) {
-            SignUpScreen(onBackClicked = { navController.navigateUp() })
+            SignUpScreen(
+                onBackClicked = { navController.navigateUp() },
+                onSuccess = { navController.navigate(Screen.Login.route) }
+            )
         }
         composable(
             route = Screen.ResetPassword.route,
@@ -103,11 +112,14 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
             )
         ) {
             ResetPasswordScreen(
-                gotToLoginScreen = { navController.navigate(Screen.Login.route) },
+                onSuccess = { navController.navigate(Screen.Login.route) },
             )
         }
         composable(Screen.ForgotPassword.route) {
-            ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
+            ForgotPasswordScreen(
+                onBackClicked = { navController.navigateUp() },
+                onSuccess = { navController.navigate(Screen.Login.route) }
+            )
         }
     }
 }
