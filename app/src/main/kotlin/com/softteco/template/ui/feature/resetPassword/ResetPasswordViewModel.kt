@@ -27,19 +27,20 @@ class ResetPasswordViewModel @Inject constructor(
     private val repository: ProfileRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val loading = MutableStateFlow(false)
-    private val resetPasswordState = MutableStateFlow(false)
+
+    private val resetPasswordState =
+        MutableStateFlow<ResetPasswordState>(ResetPasswordState.Default)
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
 
     val state = combine(
-        loading,
+        resetPasswordState,
         passwordStateValue,
         snackBarState,
-    ) { loading, passwordValue, snackBar ->
+    ) { resetPasswordState, passwordValue, snackBar ->
         State(
-            loading = loading,
+            resetPasswordState = resetPasswordState,
             passwordValue = passwordValue,
             fieldStatePassword = when {
                 passwordValue.isEmpty() -> PasswordFieldState.Empty
@@ -65,17 +66,17 @@ class ResetPasswordViewModel @Inject constructor(
         }
         if (isAllFieldsValid) {
             viewModelScope.launch {
-                loading.value = true
+                resetPasswordState.value = ResetPasswordState.Loading
                 val resetPasswordDto = ResetPasswordDto(
                     token = token,
                     password = passwordStateValue.value,
                     confirmPassword = passwordStateValue.value,
                 )
                 when (val result = repository.resetPassword(resetPasswordDto)) {
-                    is Result.Success -> resetPasswordState.value = true
+                    is Result.Success -> resetPasswordState.value = ResetPasswordState.Success
                     is Result.Error -> handleApiError(result, snackBarState)
                 }
-                loading.value = false
+                resetPasswordState.value = ResetPasswordState.Default
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -87,8 +88,7 @@ class ResetPasswordViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val loading: Boolean = false,
-        val resetPasswordState: Boolean = false,
+        val resetPasswordState: ResetPasswordState = ResetPasswordState.Default,
         val passwordValue: String = "",
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
         val isPasswordHasMinimum: Boolean = false,
@@ -98,4 +98,11 @@ class ResetPasswordViewModel @Inject constructor(
         val onResetPasswordClicked: () -> Unit = {},
         val dismissSnackBar: () -> Unit = {}
     )
+
+    @Immutable
+    sealed class ResetPasswordState {
+        object Default : ResetPasswordState()
+        object Loading : ResetPasswordState()
+        object Success : ResetPasswordState()
+    }
 }
