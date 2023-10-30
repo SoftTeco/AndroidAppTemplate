@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" />
                 <data android:scheme="http" />
-                <data android:host="209.38.220.2"/>
+                <data android:host="template.softteco.com.deep_link"/>
             </intent-filter>
         </activity>
     </application>
