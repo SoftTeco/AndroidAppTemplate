@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.ResetPasswordDto
+import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.PasswordFieldState
@@ -67,16 +67,24 @@ class ResetPasswordViewModel @Inject constructor(
         if (isAllFieldsValid) {
             viewModelScope.launch {
                 resetPasswordState.value = ResetPasswordState.Loading
-                val resetPasswordDto = ResetPasswordDto(
-                    token = token,
+
+                val newPassword = NewPasswordDto(
                     password = passwordStateValue.value,
-                    confirmPassword = passwordStateValue.value,
+                    confirmation = passwordStateValue.value,
                 )
-                when (val result = repository.resetPassword(resetPasswordDto)) {
-                    is Result.Success -> resetPasswordState.value = ResetPasswordState.Success
-                    is Result.Error -> handleApiError(result, snackBarState)
+
+                val result = repository.changePassword(token, newPassword)
+                resetPasswordState.value = when (result) {
+                    is Result.Success -> {
+                        snackBarState.value = SnackBarState(R.string.success, true)
+                        ResetPasswordState.Success
+                    }
+
+                    is Result.Error -> {
+                        handleApiError(result, snackBarState)
+                        ResetPasswordState.Default
+                    }
                 }
-                resetPasswordState.value = ResetPasswordState.Default
             }
         } else {
             snackBarState.value = SnackBarState(

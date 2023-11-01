@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,18 +21,27 @@ import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ResetPasswordScreen(
+    onSuccess: () -> Unit,
     modifier: Modifier = Modifier,
-    gotToLoginScreen: () -> Unit = {},
     viewModel: ResetPasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.resetPasswordState) {
+        if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
+            delay(2.seconds)
+            onSuccess()
+        }
+    }
+
     ScreenContent(
         state = state,
         modifier = modifier,
-        gotToLoginScreen = gotToLoginScreen,
     )
 }
 
@@ -39,7 +49,6 @@ fun ResetPasswordScreen(
 private fun ScreenContent(
     state: ResetPasswordViewModel.State,
     modifier: Modifier = Modifier,
-    gotToLoginScreen: () -> Unit = {}
 ) {
     TextSnackbarContainer(
         modifier = modifier,
@@ -69,12 +78,7 @@ private fun ScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Dimens.PaddingLarge),
-                onClick = {
-                    state.onResetPasswordClicked()
-                    if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
-                        gotToLoginScreen()
-                    }
-                }
+                onClick = { state.onResetPasswordClicked() }
             )
         }
     }

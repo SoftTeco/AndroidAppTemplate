@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,18 +28,29 @@ import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.feature.SimpleFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SignUpScreen(
+    onBackClicked: () -> Unit,
+    onSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.registrationState) {
+        if (state.registrationState is SignUpViewModel.SignupState.Success) {
+            delay(2.seconds)
+            onSuccess()
+        }
+    }
+
     ScreenContent(
         state = state,
         modifier = modifier,
-        onBackClicked = onBackClicked
+        onBackClicked = onBackClicked,
     )
 }
 
@@ -46,7 +58,7 @@ fun SignUpScreen(
 private fun ScreenContent(
     state: SignUpViewModel.State,
     modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -98,12 +110,7 @@ private fun ScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.PaddingLarge),
-                    onClick = {
-                        state.onRegisterClicked()
-                        if (state.registrationState == SignUpViewModel.SignupState.Success) {
-                            // transfer to user's screen
-                        }
-                    }
+                    onClick = { state.onRegisterClicked() }
                 )
             }
         }
@@ -140,7 +147,8 @@ private fun UserNameField(
 private fun Preview() {
     AppTheme {
         ScreenContent(
-            SignUpViewModel.State()
+            SignUpViewModel.State(),
+            onBackClicked = {},
         )
     }
 }

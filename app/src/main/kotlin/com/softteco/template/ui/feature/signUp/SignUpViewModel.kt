@@ -99,17 +99,25 @@ class SignUpViewModel @Inject constructor(
         if (isAllFieldsValid) {
             viewModelScope.launch {
                 registrationState.value = SignupState.Loading
+
                 val createUserDto = CreateUserDto(
-                    firstName = userNameStateValue.value,
+                    username = userNameStateValue.value,
                     email = emailStateValue.value,
                     password = passwordStateValue.value,
-                    confirmPassword = passwordStateValue.value,
                 )
-                when (val result = repository.registration(createUserDto)) {
-                    is Result.Success -> registrationState.value = SignupState.Success
-                    is Result.Error -> handleApiError(result, snackBarState)
+
+                val result = repository.registration(createUserDto)
+                registrationState.value = when (result) {
+                    is Result.Success -> {
+                        snackBarState.value = SnackBarState(R.string.success, true)
+                        SignupState.Success(result.data)
+                    }
+
+                    is Result.Error -> {
+                        handleApiError(result, snackBarState)
+                        SignupState.Default
+                    }
                 }
-                registrationState.value = SignupState.Default
             }
         } else {
             snackBarState.value = SnackBarState(
@@ -142,6 +150,6 @@ class SignUpViewModel @Inject constructor(
     sealed class SignupState {
         object Default : SignupState()
         object Loading : SignupState()
-        object Success : SignupState()
+        class Success(val email: String) : SignupState()
     }
 }

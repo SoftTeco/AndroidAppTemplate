@@ -2,22 +2,20 @@ package com.softteco.template.data.profile
 
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.dto.CreateUserDto
-import com.softteco.template.data.profile.dto.ForgotPasswordDto
-import com.softteco.template.data.profile.dto.LoginAuthDto
+import com.softteco.template.data.profile.dto.CredentialsDto
+import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.data.profile.entity.Profile
 
 interface ProfileRepository {
 
-    suspend fun getApi(): Result<String>
+    suspend fun getUser(): Result<Profile>
 
-    suspend fun getUser(id: String): Result<Profile>
-
-    suspend fun login(userAuth: LoginAuthDto): Result<String>
+    suspend fun login(credentials: CredentialsDto): Result<Unit>
 
     suspend fun registration(user: CreateUserDto): Result<String>
 
-    suspend fun resetPassword(resetPasswordDto: ResetPasswordDto): Result<String>
+    suspend fun changePassword(resetToken: String, newPasswordDto: NewPasswordDto): Result<Unit>
 
-    suspend fun restorePassword(email: ForgotPasswordDto): Result<String>
+    suspend fun resetPassword(email: ResetPasswordDto): Result<Unit>
 }

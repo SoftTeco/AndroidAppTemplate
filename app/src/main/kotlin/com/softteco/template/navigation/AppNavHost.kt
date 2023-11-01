@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -26,8 +27,8 @@ import com.softteco.template.ui.feature.signUp.SignUpScreen
 import com.softteco.template.ui.feature.signature.SignatureScreen
 
 object AppNavHost {
-    const val DEEP_LINK_URI = "http://209.38.220.2:3148/api/user"
-    const val RESET_PASSWORD_PATH = "resetPassword_?token"
+    const val DEEP_LINK_URI = "https://template.softteco.com.deep_link"
+    const val RESET_PASSWORD_PATH = "reset_password"
     const val RESET_TOKEN_ARG = "token"
 }
 
@@ -87,28 +88,39 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onBackClicked = { navController.navigateUp() },
-                onLoginClicked = {},
+                onSuccess = {
+                    navController.navigate(
+                        Screen.Profile.route,
+                        NavOptions.Builder().setPopUpTo(Screen.Home.route, true).build()
+                    )
+                },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
                 onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) }
             )
         }
         composable(Screen.SignUp.route) {
-            SignUpScreen(onBackClicked = { navController.navigateUp() })
+            SignUpScreen(
+                onBackClicked = { navController.navigateUp() },
+                onSuccess = { navController.navigate(Screen.Login.route) }
+            )
         }
         composable(
             route = Screen.ResetPassword.route,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "$DEEP_LINK_URI/$RESET_PASSWORD_PATH={$RESET_TOKEN_ARG}"
+                    uriPattern = "$DEEP_LINK_URI/$RESET_PASSWORD_PATH/{$RESET_TOKEN_ARG}"
                 }
             )
         ) {
             ResetPasswordScreen(
-                gotToLoginScreen = { navController.navigate(Screen.Login.route) },
+                onSuccess = { navController.navigate(Screen.Login.route) },
             )
         }
         composable(Screen.ForgotPassword.route) {
-            ForgotPasswordScreen(onBackClicked = { navController.navigateUp() })
+            ForgotPasswordScreen(
+                onBackClicked = { navController.navigateUp() },
+                onSuccess = { navController.navigate(Screen.Login.route) }
+            )
         }
     }
 }

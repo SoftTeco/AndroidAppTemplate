@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,14 +21,25 @@ import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ForgotPasswordScreen(
+    onBackClicked: () -> Unit,
+    onSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.forgotPasswordState) {
+        if (state.forgotPasswordState is ForgotPasswordViewModel.ForgotPasswordState.Success) {
+            delay(2.seconds)
+            onSuccess()
+        }
+    }
+
     ScreenContent(
         modifier = modifier,
         state = state,
@@ -39,7 +51,7 @@ fun ForgotPasswordScreen(
 private fun ScreenContent(
     state: ForgotPasswordViewModel.State,
     modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit,
 ) {
     TextSnackbarContainer(
         modifier = modifier,
@@ -86,6 +98,6 @@ private fun ScreenContent(
 @Composable
 private fun Preview() {
     AppTheme {
-        ScreenContent(state = ForgotPasswordViewModel.State())
+        ScreenContent(state = ForgotPasswordViewModel.State(), onBackClicked = {})
     }
 }
