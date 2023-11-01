@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,23 +32,31 @@ import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun LoginScreen(
+    onBackClicked: () -> Unit,
+    onSuccess: () -> Unit,
+    onSignUpClicked: () -> Unit,
+    onForgotPasswordClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {},
-    onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {},
-    onForgotPasswordClicked: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.loginState) {
+        if (state.loginState is LoginViewModel.LoginState.Success) {
+            delay(2.seconds)
+            onSuccess()
+        }
+    }
 
     ScreenContent(
         modifier = modifier,
         state = state,
         onBackClicked = onBackClicked,
-        onLoginClicked = onLoginClicked,
         onSignUpClicked = onSignUpClicked,
         onForgotPasswordClicked = onForgotPasswordClicked
     )
@@ -58,7 +67,6 @@ private fun ScreenContent(
     state: LoginViewModel.State,
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
-    onLoginClicked: () -> Unit = {},
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
 ) {
@@ -107,12 +115,7 @@ private fun ScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.PaddingLarge),
-                    onClick = {
-                        state.onLoginClicked()
-                        if (state.loginState == LoginViewModel.LoginState.Success) {
-                            onLoginClicked() // transfer to user's screen
-                        }
-                    }
+                    onClick = { state.onLoginClicked() }
                 )
                 SecondaryButton(
                     title = stringResource(id = R.string.sign_up),

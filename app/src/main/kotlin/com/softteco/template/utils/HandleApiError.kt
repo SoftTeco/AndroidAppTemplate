@@ -17,5 +17,5 @@ fun <T> handleApiError(
         is ErrorEntity.ServiceUnavailable -> R.string.error_service_unavailable
         is ErrorEntity.Unknown -> R.string.error_unknown
     }
-    errorStateFlow.value = SnackBarState(textId = textId, show = true)
+    errorStateFlow.value = SnackBarState(textId = textId, show = result.error.isDisplayable)
 }
