@@ -51,7 +51,7 @@ fun BluetoothScreen(
 @Composable
 private fun ScreenContent(
     state: BluetoothViewModel.State,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onBackClicked: () -> Unit
 ) {
     TextSnackbarContainer(
