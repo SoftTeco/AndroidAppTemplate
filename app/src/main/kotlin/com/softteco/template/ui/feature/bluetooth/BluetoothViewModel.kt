@@ -41,7 +41,7 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
 
     @Immutable
     data class State(
-        val bluetoothDevices: List<BluetoothDevice> = listOf(),
+        val bluetoothDevices: List<BluetoothDevice> = emptyList(),
         val snackBar: SnackBarState = SnackBarState(),
         val dismissSnackBar: () -> Unit = {}
     )

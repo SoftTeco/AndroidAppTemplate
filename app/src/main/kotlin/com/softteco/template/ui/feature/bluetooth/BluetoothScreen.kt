@@ -1,6 +1,5 @@
 package com.softteco.template.ui.feature.bluetooth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,14 +21,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingNormal
 
@@ -37,7 +37,7 @@ import com.softteco.template.ui.theme.Dimens.PaddingNormal
 fun BluetoothScreen(
     modifier: Modifier = Modifier,
     viewModel: BluetoothViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -51,8 +51,8 @@ fun BluetoothScreen(
 @Composable
 private fun ScreenContent(
     state: BluetoothViewModel.State,
-    modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit = {}
+    modifier: Modifier,
+    onBackClicked: () -> Unit
 ) {
     TextSnackbarContainer(
         modifier = modifier,
@@ -130,5 +130,16 @@ private fun BluetoothDeviceCard(
                 Text(stringResource(id = R.string.connect))
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    AppTheme {
+        ScreenContent(
+            BluetoothViewModel.State(),
+            Modifier
+        ) {}
     }
 }
