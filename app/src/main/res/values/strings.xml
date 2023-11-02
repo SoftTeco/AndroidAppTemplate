@@ -6,6 +6,7 @@
     <string name="error_example">Network Error!</string>
     <string name="back_description">back</string>
     <string name="login">Log in</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="loading">Loading…</string>
@@ -17,6 +18,10 @@
     <string name="registration_password_condition2">at least 1 uppercase letter</string>
     <string name="user_name">Username</string>
     <string name="go_to_login">Go to Log in screen</string>
+    <string name="send">Send</string>
+    <string name="receive">Receive</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">disconnect</string>
     <string name="visibility">visibility</string>
     <string name="reset_password">Reset password</string>
     <string name="enter_new_password">Please, enter new password</string>
@@ -46,4 +51,8 @@
     <string name="error_not_found">"Make sure you've entered the correct information"</string>
     <string name="error_service_unavailable">"Our services are temporarily unavailable"</string>
     <string name="error_unknown">"An unexpected error occurred"</string>
+
+    <!-- Bluetooth screen -->
+    <string name="bluetooth_icon_description">Baseline_bluetooth_24</string>
+    <string name="signal_level_icon_description">Baseline_signal_level_24</string>
 </resources>

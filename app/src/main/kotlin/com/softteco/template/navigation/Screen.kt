@@ -16,4 +16,6 @@ sealed class Screen(val route: String) {
     object ResetPassword : Screen("reset_password")
 
     object ForgotPassword : Screen("forgot_password")
+
+    object Bluetooth : Screen("bluetooth")
 }
