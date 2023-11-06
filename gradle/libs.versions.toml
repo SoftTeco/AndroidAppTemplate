@@ -44,6 +44,8 @@ room = "2.5.2"
 composeMaterialDialog = "0.9.0"
 iconCompose = "1.5.1"
 dataStore = "1.0.0"
+coil = "2.2.2"
+signaturePad = "0.1.2"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -74,6 +76,9 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-compose-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "iconCompose" }
 preferences-data-store = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
+io-coil-kt-coil-svg = { module = "io.coil-kt:coil-svg" , version.ref = "coil" }
+io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose" , version.ref = "coil" }
+signature-pad-compose = { module = "se.warting.signature:signature-pad", version.ref = "signaturePad" }
 
 
 junit = { module = "junit:junit", version.ref = "junit" }

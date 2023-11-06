@@ -139,7 +139,6 @@ sealed class HomeCards(
         descriptionId = R.string.signature_description,
         drawableRes = R.drawable.baseline_design_services_24,
         onClick = onClick,
-        enabled = false,
     )
 
     class BleCard(onClick: () -> Unit) : HomeCards(
