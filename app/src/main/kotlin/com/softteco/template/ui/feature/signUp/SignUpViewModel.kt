@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.signUp
 
 import androidx.compose.runtime.Immutable
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
+    private val userEncryptedDataStore: DataStore<CreateUserDto>,
 ) : ViewModel() {
     private val registrationState = MutableStateFlow<SignupState>(SignupState.Default)
     private var userNameStateValue = MutableStateFlow("")
