@@ -80,5 +80,4 @@ class CryptoManager {
         private const val KEY_STORE_ALIAS = "secret"
         private const val KEY_STORE_TYPE = "AndroidKeyStore"
     }
-
 }

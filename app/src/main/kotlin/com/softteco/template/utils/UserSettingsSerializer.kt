@@ -21,7 +21,7 @@ class UserSettingsSerializer(
                 deserializer = CreateUserDto.serializer(),
                 string = decryptedBytes.decodeToString()
             )
-        } catch(e: SerializationException) {
+        } catch (e: SerializationException) {
             e.printStackTrace()
             defaultValue
         }
