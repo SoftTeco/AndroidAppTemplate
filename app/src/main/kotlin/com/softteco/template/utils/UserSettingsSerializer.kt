@@ -4,6 +4,7 @@ import androidx.datastore.core.Serializer
 import com.softteco.template.data.profile.dto.CreateUserDto
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -22,7 +23,7 @@ class UserSettingsSerializer(
                 string = decryptedBytes.decodeToString()
             )
         } catch (e: SerializationException) {
-            e.printStackTrace()
+            Timber.e("Error reading from encrypted data store", e)
             defaultValue
         }
     }

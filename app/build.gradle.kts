@@ -118,6 +118,7 @@ dependencies {
 
     implementation(libs.preferences.data.store)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.timber)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

@@ -47,6 +47,7 @@ dataStore = "1.0.0"
 coil = "2.2.2"
 signaturePad = "0.1.2"
 kotlinxSerializationGson = "1.6.0"
+timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -81,6 +82,7 @@ io-coil-kt-coil-svg = { module = "io.coil-kt:coil-svg" , version.ref = "coil" }
 io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose" , version.ref = "coil" }
 signature-pad-compose = { module = "se.warting.signature:signature-pad", version.ref = "signaturePad" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationGson" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 
 junit = { module = "junit:junit", version.ref = "junit" }
