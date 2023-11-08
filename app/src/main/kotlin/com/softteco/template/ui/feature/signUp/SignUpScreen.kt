@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.signUp
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,9 +29,10 @@ import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
-import com.softteco.template.ui.feature.SimpleFieldState
+import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -72,7 +74,9 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -97,22 +101,25 @@ private fun ScreenContent(
                     emailValue = state.emailValue,
                     onEmailChanged = state.onEmailChanged,
                     fieldStateEmail = state.fieldStateEmail,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .padding(top = PaddingDefault)
+                        .fillMaxWidth()
                 )
                 PasswordField(
                     passwordValue = state.passwordValue,
                     onPasswordChanged = state.onPasswordChanged,
                     fieldStatePassword = state.fieldStatePassword,
-                    isPasswordHasMinimum = state.isPasswordHasMinimum,
-                    isPasswordHasUpperCase = state.isPasswordHasUpperCase,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .padding(top = PaddingDefault)
+                        .fillMaxWidth()
                 )
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.sign_up),
                     loading = state.registrationState == SignUpViewModel.SignupState.Loading,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.PaddingLarge),
+                        .padding(top = PaddingDefault)
+                        .fillMaxWidth(),
+                    enabled = state.isSignupBtnEnabled,
                     onClick = { state.onRegisterClicked() }
                 )
             }
@@ -135,18 +142,15 @@ private fun UserNameField(
             label = {
                 Text(text = stringResource(id = R.string.user_name))
             },
-            isError = state.fieldStateUserName is SimpleFieldState.Empty,
+            supportingText = {
+                Text(if (state.userNameValue.isBlank()) stringResource(R.string.required) else "")
+            },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Ascii,
             ),
             singleLine = true,
         )
-        val errorText = when (state.fieldStateUserName) {
-            is SimpleFieldState.Empty -> stringResource(R.string.required)
-            else -> ""
-        }
-        Text(errorText, color = MaterialTheme.colorScheme.error)
     }
 }
 
@@ -155,7 +159,7 @@ private fun UserNameField(
 private fun Preview() {
     AppTheme {
         ScreenContent(
-            SignUpViewModel.State(),
+            SignUpViewModel.State(fieldStatePassword = PasswordFieldState.Error(true, false)),
             onBackClicked = {},
         )
     }

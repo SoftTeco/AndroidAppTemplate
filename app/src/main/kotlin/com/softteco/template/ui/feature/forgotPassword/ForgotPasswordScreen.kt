@@ -1,10 +1,12 @@
 package com.softteco.template.ui.feature.forgotPassword
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,7 +62,9 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -87,6 +91,7 @@ private fun ScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.PaddingLarge),
+                    enabled = state.isResetBtnEnabled,
                     onClick = { state.onRestorePasswordClicked() }
                 )
             }

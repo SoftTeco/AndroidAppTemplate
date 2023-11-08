@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -82,7 +83,9 @@ private fun ScreenContent(
         onDismissSnackbar = state.dismissSnackBar,
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -112,17 +115,14 @@ private fun ScreenContent(
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.login),
                     loading = state.loginState == LoginViewModel.LoginState.Loading,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.PaddingLarge),
-                    onClick = { state.onLoginClicked() }
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = state.isLoginBtnEnabled,
+                    onClick = { state.onLoginClicked() },
                 )
                 SecondaryButton(
                     title = stringResource(id = R.string.sign_up),
                     loading = false,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.PaddingSmall),
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = { onSignUpClicked() }
                 )
                 Spacer(modifier = Modifier.height(Dimens.PaddingDefault))

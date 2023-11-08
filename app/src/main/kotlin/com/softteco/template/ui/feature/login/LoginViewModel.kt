@@ -10,17 +10,15 @@ import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
+import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -31,8 +29,7 @@ class LoginViewModel @Inject constructor(
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
-    private val emailFieldState =
-        MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
+    private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
         loginState,
@@ -46,18 +43,19 @@ class LoginViewModel @Inject constructor(
             emailValue = emailValue,
             passwordValue = passwordValue,
             snackBar = snackBar,
-            dismissSnackBar = { snackBarState.value = SnackBarState() },
-            onEmailChanged = {
-                emailStateValue.value = it.trim()
-                validateEmail(it)
-            },
-            onPasswordChanged = { passwordStateValue.value = it },
+            isLoginBtnEnabled = emailState is EmailFieldState.Success && passwordValue.isNotBlank(),
             fieldStateEmail = emailState,
             fieldStatePassword = when {
-                passwordStateValue.value.isEmpty() -> PasswordFieldState.Empty
+                passwordValue.isEmpty() -> PasswordFieldState.Empty
                 else -> PasswordFieldState.Success
             },
+            onEmailChanged = {
+                emailStateValue.value = it.trim()
+                validateEmail(emailStateValue, emailFieldState, viewModelScope)
+            },
+            onPasswordChanged = { passwordStateValue.value = it },
             onLoginClicked = ::onLogin,
+            dismissSnackBar = { snackBarState.value = SnackBarState() },
         )
     }.stateIn(
         viewModelScope,
@@ -65,50 +63,27 @@ class LoginViewModel @Inject constructor(
         State()
     )
 
-    private fun validateEmail(emailValue: String) {
-        viewModelScope.launch {
-            emailFieldState.value = EmailFieldState.Waiting
-            delay(1.seconds)
-            emailFieldState.value = when {
-                emailValue.isEmailCorrect() -> EmailFieldState.Success
-                emailValue.isEmpty() -> EmailFieldState.Empty
-                else -> EmailFieldState.Error
-            }
-        }
-    }
-
     private fun onLogin() {
-        val isAllFieldsValid = state.value.run {
-            fieldStateEmail is EmailFieldState.Success &&
-                fieldStatePassword is PasswordFieldState.Success
-        }
-        if (isAllFieldsValid) {
-            viewModelScope.launch {
-                loginState.value = LoginState.Loading
+        viewModelScope.launch {
+            loginState.value = LoginState.Loading
 
-                val credentials = CredentialsDto(
-                    email = emailStateValue.value,
-                    password = passwordStateValue.value
-                )
+            val credentials = CredentialsDto(
+                email = emailStateValue.value,
+                password = passwordStateValue.value
+            )
 
-                val result = repository.login(credentials)
-                loginState.value = when (result) {
-                    is Result.Success -> {
-                        snackBarState.value = SnackBarState(R.string.success, true)
-                        LoginState.Success
-                    }
+            val result = repository.login(credentials)
+            loginState.value = when (result) {
+                is Result.Success -> {
+                    snackBarState.value = SnackBarState(R.string.success, true)
+                    LoginState.Success
+                }
 
-                    is Result.Error -> {
-                        handleApiError(result, snackBarState)
-                        LoginState.Default
-                    }
+                is Result.Error -> {
+                    handleApiError(result, snackBarState)
+                    LoginState.Default
                 }
             }
-        } else {
-            snackBarState.value = SnackBarState(
-                R.string.empty_fields_error,
-                true
-            )
         }
     }
 
@@ -118,12 +93,13 @@ class LoginViewModel @Inject constructor(
         val snackBar: SnackBarState = SnackBarState(),
         val emailValue: String = "",
         val passwordValue: String = "",
-        val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting,
-        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
+        val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
+        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
+        val isLoginBtnEnabled: Boolean = false,
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onLoginClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {}
+        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable
