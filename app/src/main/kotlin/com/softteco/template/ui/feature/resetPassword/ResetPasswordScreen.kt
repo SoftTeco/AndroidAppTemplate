@@ -1,10 +1,11 @@
 package com.softteco.template.ui.feature.resetPassword
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +22,7 @@ import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -58,9 +60,9 @@ private fun ScreenContent(
     ) {
         Column(
             modifier = Modifier
-                .padding(Dimens.PaddingExtraLarge)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(PaddingExtraLarge)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = stringResource(id = R.string.enter_new_password))
@@ -68,16 +70,17 @@ private fun ScreenContent(
                 passwordValue = state.passwordValue,
                 onPasswordChanged = state.onPasswordChanged,
                 fieldStatePassword = state.fieldStatePassword,
-                isPasswordHasMinimum = state.isPasswordHasMinimum,
-                isPasswordHasUpperCase = state.isPasswordHasUpperCase,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .padding(top = PaddingExtraLarge)
+                    .fillMaxWidth()
             )
             PrimaryButton(
                 buttonText = stringResource(id = R.string.reset_password),
                 loading = state.resetPasswordState == ResetPasswordViewModel.ResetPasswordState.Loading,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimens.PaddingLarge),
+                    .padding(top = Dimens.PaddingDefault),
+                enabled = state.isResetBtnEnabled,
                 onClick = { state.onResetPasswordClicked() }
             )
         }

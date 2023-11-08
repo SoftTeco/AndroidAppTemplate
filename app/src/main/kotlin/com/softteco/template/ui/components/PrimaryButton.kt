@@ -16,11 +16,13 @@ fun PrimaryButton(
     buttonText: String,
     loading: Boolean,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
         onClick = { if (!loading) onClick() },
         shape = MaterialTheme.shapes.large,
+        enabled = enabled,
         modifier = modifier.fillMaxWidth()
     ) {
         if (loading) {

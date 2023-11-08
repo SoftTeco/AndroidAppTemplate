@@ -11,8 +11,7 @@ import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
-import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
+import com.softteco.template.ui.feature.validatePassword
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,16 +38,13 @@ class ResetPasswordViewModel @Inject constructor(
         passwordStateValue,
         snackBarState,
     ) { resetPasswordState, passwordValue, snackBar ->
+        val passwordState = validatePassword(passwordValue)
         State(
             resetPasswordState = resetPasswordState,
             passwordValue = passwordValue,
-            fieldStatePassword = when {
-                passwordValue.isEmpty() -> PasswordFieldState.Empty
-                else -> PasswordFieldState.Success
-            },
-            isPasswordHasMinimum = passwordValue.isHasMinimum(),
-            isPasswordHasUpperCase = passwordValue.isHasCapitalizedLetter(),
+            fieldStatePassword = passwordState,
             snackBar = snackBar,
+            isResetBtnEnabled = passwordState is PasswordFieldState.Success,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onPasswordChanged = { passwordStateValue.value = it },
             onResetPasswordClicked = ::onResetPassword
@@ -60,37 +56,26 @@ class ResetPasswordViewModel @Inject constructor(
     )
 
     private fun onResetPassword() {
-        val isAllFieldsValid = state.value.run {
-            fieldStatePassword is PasswordFieldState.Success &&
-                isPasswordHasUpperCase && isPasswordHasMinimum
-        }
-        if (isAllFieldsValid) {
-            viewModelScope.launch {
-                resetPasswordState.value = ResetPasswordState.Loading
+        viewModelScope.launch {
+            resetPasswordState.value = ResetPasswordState.Loading
 
-                val newPassword = NewPasswordDto(
-                    password = passwordStateValue.value,
-                    confirmation = passwordStateValue.value,
-                )
+            val newPassword = NewPasswordDto(
+                password = passwordStateValue.value,
+                confirmation = passwordStateValue.value,
+            )
 
-                val result = repository.changePassword(token, newPassword)
-                resetPasswordState.value = when (result) {
-                    is Result.Success -> {
-                        snackBarState.value = SnackBarState(R.string.success, true)
-                        ResetPasswordState.Success
-                    }
+            val result = repository.changePassword(token, newPassword)
+            resetPasswordState.value = when (result) {
+                is Result.Success -> {
+                    snackBarState.value = SnackBarState(R.string.success, true)
+                    ResetPasswordState.Success
+                }
 
-                    is Result.Error -> {
-                        handleApiError(result, snackBarState)
-                        ResetPasswordState.Default
-                    }
+                is Result.Error -> {
+                    handleApiError(result, snackBarState)
+                    ResetPasswordState.Default
                 }
             }
-        } else {
-            snackBarState.value = SnackBarState(
-                R.string.empty_fields_error,
-                true
-            )
         }
     }
 
@@ -98,13 +83,12 @@ class ResetPasswordViewModel @Inject constructor(
     data class State(
         val resetPasswordState: ResetPasswordState = ResetPasswordState.Default,
         val passwordValue: String = "",
-        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
-        val isPasswordHasMinimum: Boolean = false,
-        val isPasswordHasUpperCase: Boolean = false,
+        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
         val snackBar: SnackBarState = SnackBarState(),
+        val isResetBtnEnabled: Boolean = false,
         val onPasswordChanged: (String) -> Unit = {},
         val onResetPasswordClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {}
+        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable

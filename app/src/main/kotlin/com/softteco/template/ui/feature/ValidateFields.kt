@@ -1,6 +1,18 @@
 package com.softteco.template.ui.feature
 
 import com.softteco.template.Constants
+import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
+import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
+import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
+
+private const val INPUT_DELAY: Long = 600
 
 object ValidateFields {
 
@@ -24,15 +36,41 @@ sealed class EmailFieldState {
     object Error : EmailFieldState()
 }
 
-sealed class SimpleFieldState {
-    object Success : SimpleFieldState()
-    object Empty : SimpleFieldState()
-    object Waiting : SimpleFieldState()
-}
-
 sealed class PasswordFieldState {
     object Success : PasswordFieldState()
     object Empty : PasswordFieldState()
-    object Waiting : PasswordFieldState()
-    object Error : PasswordFieldState()
+    class Error(val isRightLength: Boolean, val isUppercase: Boolean) : PasswordFieldState()
+}
+
+@OptIn(FlowPreview::class)
+internal fun validateEmail(
+    fieldValue: MutableStateFlow<String>,
+    fieldState: MutableStateFlow<EmailFieldState>,
+    coroutineScope: CoroutineScope,
+) {
+    coroutineScope.launch {
+        fieldValue
+            .onEach { fieldState.value = EmailFieldState.Waiting }
+            .debounce(INPUT_DELAY.milliseconds).collect { value ->
+                fieldState.value = when {
+                    value.isEmailCorrect() -> EmailFieldState.Success
+                    value.isEmpty() -> EmailFieldState.Empty
+                    else -> EmailFieldState.Error
+                }
+            }
+    }
+}
+
+internal fun validatePassword(password: String): PasswordFieldState {
+    return when {
+        password.isBlank() -> PasswordFieldState.Empty
+        !password.isHasMinimum() || !password.isHasCapitalizedLetter() -> {
+            PasswordFieldState.Error(
+                isRightLength = password.isHasMinimum(),
+                isUppercase = password.isHasCapitalizedLetter()
+            )
+        }
+
+        else -> PasswordFieldState.Success
+    }
 }

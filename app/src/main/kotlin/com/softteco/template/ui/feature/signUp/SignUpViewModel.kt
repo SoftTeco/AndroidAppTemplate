@@ -10,20 +10,16 @@ import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.SimpleFieldState
-import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
-import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
-import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
+import com.softteco.template.ui.feature.validateEmail
+import com.softteco.template.ui.feature.validatePassword
 import com.softteco.template.utils.combine
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
@@ -34,8 +30,7 @@ class SignUpViewModel @Inject constructor(
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
-    private val emailFieldState =
-        MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
+    private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
         registrationState,
@@ -45,31 +40,26 @@ class SignUpViewModel @Inject constructor(
         snackBarState,
         emailFieldState
     ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState ->
+        val passwordState = validatePassword(passwordValue)
         State(
             registrationState = registrationState,
             userNameValue = userName,
             emailValue = emailValue,
             passwordValue = passwordValue,
-            fieldStateUserName = when {
-                userName.isEmpty() -> SimpleFieldState.Empty
-                else -> SimpleFieldState.Success
-            },
             fieldStateEmail = emailState,
-            fieldStatePassword = when {
-                passwordValue.isEmpty() -> PasswordFieldState.Empty
-                else -> PasswordFieldState.Success
-            },
-            isPasswordHasMinimum = passwordValue.isHasMinimum(),
-            isPasswordHasUpperCase = passwordValue.isHasCapitalizedLetter(),
+            fieldStatePassword = passwordState,
             snackBar = snackBar,
+            isSignupBtnEnabled = emailState is EmailFieldState.Success &&
+                passwordState is PasswordFieldState.Success &&
+                userName.isNotEmpty(),
             dismissSnackBar = { snackBarState.value = SnackBarState() },
-            onUserNameChanged = { userNameStateValue.value = it },
+            onUserNameChanged = { userNameStateValue.value = it.trim() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
-                validateEmail(it)
+                validateEmail(emailStateValue, emailFieldState, viewModelScope)
             },
-            onPasswordChanged = { passwordStateValue.value = it },
-            onRegisterClicked = ::onRegister
+            onPasswordChanged = { passwordStateValue.value = it.trim() },
+            onRegisterClicked = ::onRegister,
         )
     }.stateIn(
         viewModelScope,
@@ -77,53 +67,28 @@ class SignUpViewModel @Inject constructor(
         State()
     )
 
-    private fun validateEmail(emailValue: String) {
-        viewModelScope.launch {
-            emailFieldState.value = EmailFieldState.Waiting
-            delay(1.seconds)
-            emailFieldState.value = when {
-                emailValue.isEmailCorrect() -> EmailFieldState.Success
-                emailValue.isEmpty() -> EmailFieldState.Empty
-                else -> EmailFieldState.Error
-            }
-        }
-    }
-
     private fun onRegister() {
-        val isAllFieldsValid = state.value.run {
-            fieldStateEmail is EmailFieldState.Success &&
-                fieldStatePassword is PasswordFieldState.Success &&
-                fieldStateUserName is SimpleFieldState.Success &&
-                isPasswordHasUpperCase && isPasswordHasMinimum
-        }
-        if (isAllFieldsValid) {
-            viewModelScope.launch {
-                registrationState.value = SignupState.Loading
+        viewModelScope.launch {
+            registrationState.value = SignupState.Loading
 
-                val createUserDto = CreateUserDto(
-                    username = userNameStateValue.value,
-                    email = emailStateValue.value,
-                    password = passwordStateValue.value,
-                )
+            val createUserDto = CreateUserDto(
+                username = userNameStateValue.value,
+                email = emailStateValue.value,
+                password = passwordStateValue.value,
+            )
 
-                val result = repository.registration(createUserDto)
-                registrationState.value = when (result) {
-                    is Result.Success -> {
-                        snackBarState.value = SnackBarState(R.string.success, true)
-                        SignupState.Success(result.data)
-                    }
+            val result = repository.registration(createUserDto)
+            registrationState.value = when (result) {
+                is Result.Success -> {
+                    snackBarState.value = SnackBarState(R.string.success, true)
+                    SignupState.Success(result.data)
+                }
 
-                    is Result.Error -> {
-                        handleApiError(result, snackBarState)
-                        SignupState.Default
-                    }
+                is Result.Error -> {
+                    handleApiError(result, snackBarState)
+                    SignupState.Default
                 }
             }
-        } else {
-            snackBarState.value = SnackBarState(
-                R.string.empty_fields_error,
-                true
-            )
         }
     }
 
@@ -134,16 +99,14 @@ class SignUpViewModel @Inject constructor(
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",
-        val fieldStateUserName: SimpleFieldState = SimpleFieldState.Waiting,
-        val fieldStateEmail: EmailFieldState = EmailFieldState.Waiting,
-        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Waiting,
-        val isPasswordHasMinimum: Boolean = false,
-        val isPasswordHasUpperCase: Boolean = false,
+        val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
+        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
+        val isSignupBtnEnabled: Boolean = false,
         val onUserNameChanged: (String) -> Unit = {},
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onRegisterClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {}
+        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable
