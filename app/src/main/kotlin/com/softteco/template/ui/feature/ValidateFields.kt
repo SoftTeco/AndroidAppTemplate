@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-const val INPUT_DELAY: Long = 600
+private const val INPUT_DELAY: Long = 600
 
 object ValidateFields {
 
