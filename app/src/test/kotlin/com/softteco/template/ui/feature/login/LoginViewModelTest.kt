@@ -4,94 +4,106 @@ import app.cash.turbine.test
 import com.softteco.template.BaseTest
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
+import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.time.Duration.Companion.seconds
 
 @ExtendWith(MainDispatcherExtension::class)
 class LoginViewModelTest : BaseTest() {
 
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
-
     private lateinit var viewModel: LoginViewModel
 
     @Test
-    fun `when login is clicked with valid email and password, success state is shown`() = runTest {
-        coEvery { repository.login(any()) } returns Result.Success(Unit)
+    fun `when login button is enabled and valid credentials success state is emitted`() = runTest {
+        val credentials = CredentialsDto(email = "test@email.com", password = "password")
+        coEvery { repository.login(credentials) } returns Result.Success(Unit)
         viewModel = LoginViewModel(repository)
-        viewModel.state.value.onEmailChanged("test@example.com")
-        viewModel.state.value.onPasswordChanged("password")
-
-        viewModel.state.value.onLoginClicked()
-
         viewModel.state.test {
+            awaitItem().onEmailChanged("test@email.com")
+            awaitItem().onPasswordChanged("password")
+            delay(1.seconds)
+            expectMostRecentItem().run {
+                isLoginBtnEnabled shouldBe true
+                onLoginClicked()
+            }
             awaitItem().run {
-                loginState shouldBe LoginViewModel.LoginState.Success
+                loginState.shouldBeTypeOf<LoginViewModel.LoginState.Success>()
                 snackBar.show shouldBe true
             }
         }
-
-        coVerify(exactly = 1) { repository.login(any()) }
+        coVerify(exactly = 1) { repository.login(credentials) }
     }
 
     @Test
-    fun `when login is clicked with invalid email, error state is shown`() = runTest {
-        viewModel = LoginViewModel(repository)
-        viewModel.state.value.onEmailChanged("invalid-email")
-        viewModel.state.value.onPasswordChanged("password")
-
-        viewModel.state.value.onLoginClicked()
-
-        viewModel.state.test {
-            awaitItem().run {
-                loginState shouldBe LoginViewModel.LoginState.Default
-                snackBar.show shouldBe true
-            }
-        }
-
-        coVerify(exactly = 0) { repository.login(any()) }
-    }
-
-    @Test
-    fun `when login is clicked with empty password, error state is shown`() = runTest {
-        viewModel = LoginViewModel(repository)
-        viewModel.state.value.onEmailChanged("test@example.com")
-        viewModel.state.value.onPasswordChanged("")
-
-        viewModel.state.value.onLoginClicked()
-
-        viewModel.state.test {
-            awaitItem().run {
-                loginState shouldBe LoginViewModel.LoginState.Default
-                snackBar.show shouldBe true
-            }
-        }
-
-        coVerify(exactly = 0) { repository.login(any()) }
-    }
-
-    @Test
-    fun `when login is clicked with both empty email and password, error state is shown`() =
+    fun `when login button isn't enabled and invalid password then error state is emitted`() =
         runTest {
             viewModel = LoginViewModel(repository)
-            viewModel.state.value.onEmailChanged("")
-            viewModel.state.value.onPasswordChanged("")
-
-            viewModel.state.value.onLoginClicked()
-
             viewModel.state.test {
-                awaitItem().run {
-                    loginState shouldBe LoginViewModel.LoginState.Default
-                    snackBar.show shouldBe true
+                awaitItem().onEmailChanged("test@email.com")
+                awaitItem().onPasswordChanged("")
+                delay(1.seconds)
+                expectMostRecentItem().run {
+                    isLoginBtnEnabled shouldBe false
                 }
             }
-
-            coVerify(exactly = 0) { repository.login(any()) }
         }
+
+    @Test
+    fun `when login button isn't enabled and invalid email then error state is emitted`() =
+        runTest {
+            viewModel = LoginViewModel(repository)
+            viewModel.state.test {
+                awaitItem().onEmailChanged("invalid@email")
+                awaitItem().onPasswordChanged("password")
+                delay(1.seconds)
+                expectMostRecentItem().run {
+                    isLoginBtnEnabled shouldBe false
+                }
+            }
+        }
+
+    @Test
+    fun `when login button isn't enabled with both empty email and password then error state is emitted`() =
+        runTest {
+            viewModel = LoginViewModel(repository)
+            viewModel.state.test {
+                awaitItem().run {
+                    isLoginBtnEnabled shouldBe false
+                }
+            }
+        }
+
+    @Test
+    fun `when login button clicked and request in progress then loading is shown`() = runTest {
+        val credentials = CredentialsDto(email = "test@email.com", password = "password")
+        coEvery { repository.login(credentials) } coAnswers {
+            delay(2000)
+            Result.Success(Unit)
+        }
+        viewModel = LoginViewModel(repository)
+        viewModel.state.test {
+            awaitItem().onEmailChanged("test@email.com")
+            awaitItem().onPasswordChanged("password")
+            delay(1.seconds)
+            expectMostRecentItem().run {
+                isLoginBtnEnabled shouldBe true
+                onLoginClicked()
+            }
+            awaitItem().run {
+                loginState.shouldBeTypeOf<LoginViewModel.LoginState.Loading>()
+            }
+        }
+        coVerify(exactly = 1) { repository.login(credentials) }
+    }
 }
