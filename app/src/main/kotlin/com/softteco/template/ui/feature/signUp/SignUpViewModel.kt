@@ -83,6 +83,7 @@ class SignUpViewModel @Inject constructor(
             registrationState.value = when (result) {
                 is Result.Success -> {
                     snackBarState.value = SnackBarState(R.string.success, true)
+                    userEncryptedDataStore.updateData { createUserDto }
                     SignupState.Success(result.data)
                 }
 
