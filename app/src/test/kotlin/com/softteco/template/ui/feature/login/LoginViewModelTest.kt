@@ -5,6 +5,8 @@ import com.softteco.template.BaseTest
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
+import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -46,21 +48,21 @@ class LoginViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `when login button isn't enabled and invalid password then error state is emitted`() =
+    fun `when invalid password then login button isn't enabled and password field error is shown`() =
         runTest {
             viewModel = LoginViewModel(repository)
             viewModel.state.test {
                 awaitItem().onEmailChanged("test@email.com")
-                awaitItem().onPasswordChanged("")
                 delay(1.seconds)
                 expectMostRecentItem().run {
+                    fieldStatePassword shouldBe PasswordFieldState.Empty
                     isLoginBtnEnabled shouldBe false
                 }
             }
         }
 
     @Test
-    fun `when login button isn't enabled and invalid email then error state is emitted`() =
+    fun `when invalid email then login button isn't enabled and email field error is shown`() =
         runTest {
             viewModel = LoginViewModel(repository)
             viewModel.state.test {
@@ -68,17 +70,20 @@ class LoginViewModelTest : BaseTest() {
                 awaitItem().onPasswordChanged("password")
                 delay(1.seconds)
                 expectMostRecentItem().run {
+                    fieldStateEmail shouldBe EmailFieldState.Error
                     isLoginBtnEnabled shouldBe false
                 }
             }
         }
 
     @Test
-    fun `when login button isn't enabled with both empty email and password then error state is emitted`() =
+    fun `when both empty email and password then button isn't enabled and email, password fields error are shown`() =
         runTest {
             viewModel = LoginViewModel(repository)
             viewModel.state.test {
                 awaitItem().run {
+                    fieldStateEmail shouldBe EmailFieldState.Empty
+                    fieldStatePassword shouldBe PasswordFieldState.Empty
                     isLoginBtnEnabled shouldBe false
                 }
             }
@@ -88,7 +93,7 @@ class LoginViewModelTest : BaseTest() {
     fun `when login button clicked and request in progress then loading is shown`() = runTest {
         val credentials = CredentialsDto(email = "test@email.com", password = "password")
         coEvery { repository.login(credentials) } coAnswers {
-            delay(2000)
+            delay(1.seconds)
             Result.Success(Unit)
         }
         viewModel = LoginViewModel(repository)
