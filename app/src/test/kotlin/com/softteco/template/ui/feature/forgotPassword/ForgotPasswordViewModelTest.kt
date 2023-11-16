@@ -5,6 +5,7 @@ import com.softteco.template.BaseTest
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
+import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -25,7 +26,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
     private lateinit var viewModel: ForgotPasswordViewModel
 
     @Test
-    fun `when reset password button is enabled and valid email success state is emitted`() =
+    fun `when valid email and reset password button is enabled then success state is emitted`() =
         runTest {
             val email = "test@email.com"
             coEvery { repository.resetPassword(ResetPasswordDto(email)) } returns Result.Success(
@@ -52,7 +53,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `when reset password button isn't enabled and invalid email then error state is emitted`() =
+    fun `when invalid email and reset password button isn't enabled then email field error is shown`() =
         runTest {
             viewModel = ForgotPasswordViewModel(repository)
             viewModel.state.test {
@@ -61,17 +62,19 @@ class ForgotPasswordViewModelTest : BaseTest() {
 
                 expectMostRecentItem().run {
                     isResetBtnEnabled shouldBe false
+                    fieldStateEmail shouldBe EmailFieldState.Error
                 }
             }
         }
 
     @Test
-    fun `when reset password button isn't enabled and empty email then error state is emitted`() =
+    fun `when empty email and reset password button isn't enabled then then email field error is shown`() =
         runTest {
             viewModel = ForgotPasswordViewModel(repository)
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
+                    fieldStateEmail shouldBe EmailFieldState.Empty
                 }
             }
         }
@@ -81,7 +84,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
         runTest {
             val email = "test@email.com"
             coEvery { repository.resetPassword(ResetPasswordDto(email)) } coAnswers {
-                delay(2000)
+                delay(1.seconds)
                 Result.Success(Unit)
             }
             viewModel = ForgotPasswordViewModel(repository)
