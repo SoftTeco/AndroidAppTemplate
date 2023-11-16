@@ -111,7 +111,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                     NewPasswordDto(newPassword, newPassword)
                 )
             } coAnswers {
-                delay(2000)
+                delay(1.seconds)
                 Result.Success(Unit)
             }
             viewModel = ResetPasswordViewModel(
