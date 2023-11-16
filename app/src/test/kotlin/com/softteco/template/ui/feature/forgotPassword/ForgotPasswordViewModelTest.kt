@@ -53,7 +53,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `when invalid email and reset password button isn't enabled then email field error is shown`() =
+    fun `when invalid email then reset password button isn't enabled and email field error is shown`() =
         runTest {
             viewModel = ForgotPasswordViewModel(repository)
             viewModel.state.test {
@@ -68,7 +68,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `when empty email and reset password button isn't enabled then then email field error is shown`() =
+    fun `when empty email then reset password button isn't enabled and email field error is shown`() =
         runTest {
             viewModel = ForgotPasswordViewModel(repository)
             viewModel.state.test {
