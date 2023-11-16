@@ -7,6 +7,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -63,7 +64,7 @@ class ResetPasswordViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `when reset password button isn't enabled and invalid password then error state is emitted`() =
+    fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() =
         runTest {
             val token = "testToken"
             val newPassword = "newpassword"
@@ -76,15 +77,38 @@ class ResetPasswordViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().onPasswordChanged(newPassword)
                 delay(1.seconds)
-
                 expectMostRecentItem().run {
+                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
+                    (fieldStatePassword as PasswordFieldState.Error).isUppercase shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
         }
 
     @Test
-    fun `when reset password button isn't enabled and empty password then error state is emitted`() =
+    fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() =
+        runTest {
+            val token = "testToken"
+            val newPassword = "neW"
+            viewModel = ResetPasswordViewModel(
+                repository,
+                SavedStateHandle().apply {
+                    set(AppNavHost.RESET_TOKEN_ARG, token)
+                }
+            )
+            viewModel.state.test {
+                awaitItem().onPasswordChanged(newPassword)
+                delay(1.seconds)
+                expectMostRecentItem().run {
+                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
+                    (fieldStatePassword as PasswordFieldState.Error).isRightLength shouldBe false
+                    isResetBtnEnabled shouldBe false
+                }
+            }
+        }
+
+    @Test
+    fun `when empty password then password field error is shown and button isn't enabled`() =
         runTest {
             val token = "testToken"
             viewModel = ResetPasswordViewModel(
@@ -96,6 +120,7 @@ class ResetPasswordViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
+                    fieldStatePassword shouldBe PasswordFieldState.Empty
                 }
             }
         }
