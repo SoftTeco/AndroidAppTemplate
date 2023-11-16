@@ -88,7 +88,7 @@ class SignUpViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `when sign-up button isn't enabled and invalid password has not enough symbols then error state is emitted`() =
+    fun `when sign-up button isn't enabled and field password has not enough symbols then error state is emitted`() =
         runTest {
             viewModel = SignUpViewModel(repository)
             viewModel.state.test {
@@ -104,7 +104,7 @@ class SignUpViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `when sign-up button isn't enabled and invalid username then error state is emitted`() =
+    fun `when sign-up button isn't enabled and empty username then error state is emitted`() =
         runTest {
             viewModel = SignUpViewModel(repository)
             viewModel.state.test {
@@ -138,7 +138,7 @@ class SignUpViewModelTest : BaseTest() {
                 password = "passwordTest"
             )
             coEvery { repository.registration(createUserDto) } coAnswers {
-                delay(2000)
+                delay(1.seconds)
                 Result.Success("")
             }
             viewModel = SignUpViewModel(repository)
