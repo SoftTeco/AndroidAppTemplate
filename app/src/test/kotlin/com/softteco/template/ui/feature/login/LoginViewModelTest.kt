@@ -27,7 +27,7 @@ class LoginViewModelTest : BaseTest() {
     private lateinit var viewModel: LoginViewModel
 
     @Test
-    fun `when login button is enabled and valid credentials success state is emitted`() = runTest {
+    fun `when valid credentials and login button is enabled then success state is emitted`() = runTest {
         val credentials = CredentialsDto(email = "test@email.com", password = "password")
         coEvery { repository.login(credentials) } returns Result.Success(Unit)
         viewModel = LoginViewModel(repository)
