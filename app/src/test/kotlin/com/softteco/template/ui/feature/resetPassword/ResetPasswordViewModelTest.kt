@@ -28,7 +28,7 @@ class ResetPasswordViewModelTest : BaseTest() {
     private lateinit var viewModel: ResetPasswordViewModel
 
     @Test
-    fun `when reset password button is enabled and valid password then success state is emitted`() =
+    fun `when valid password and reset password button is enabled then success state is emitted`() =
         runTest {
             val token = "testToken"
             val newPassword = "newPassword"
