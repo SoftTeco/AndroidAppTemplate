@@ -27,7 +27,7 @@ class SignUpViewModelTest : BaseTest() {
     private lateinit var viewModel: SignUpViewModel
 
     @Test
-    fun `when sign-up button is enabled and valid credentials then success state is emitted`() =
+    fun `when valid credentials and sign-up button is enabled then success state is emitted`() =
         runTest {
             val createUserDto = CreateUserDto(
                 username = "testuser",
