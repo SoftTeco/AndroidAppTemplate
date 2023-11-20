@@ -39,7 +39,7 @@ internal fun Avatar(
             CircleShape
         ),
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.primary,
+        color = if (imageUri != null) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
     ) {
         val context = LocalContext.current
         val painter = imageUri?.let { avatar ->

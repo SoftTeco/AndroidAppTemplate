@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -70,8 +69,17 @@ fun NavGraphBuilder.bottomBarGraph(
         }
         composable(Screen.Profile.route) {
             ProfileScreen(
+                onBackClicked = {
+                    navController.navigate(Graph.BottomBar.route) {
+                        popUpTo(Graph.BottomBar.route) { inclusive = true }
+                    }
+                },
+                onLogout = {
+                    navController.navigate(Graph.Login.route) {
+                        popUpTo(Graph.BottomBar.route) { inclusive = true }
+                    }
+                },
                 modifier,
-                onSignatureClicked = { navController.navigate(Screen.Signature.route) }
             )
         }
         composable(Screen.Settings.route) {
@@ -89,10 +97,9 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
             LoginScreen(
                 onBackClicked = { navController.navigateUp() },
                 onSuccess = {
-                    navController.navigate(
-                        Screen.Profile.route,
-                        NavOptions.Builder().setPopUpTo(Screen.Home.route, true).build()
-                    )
+                    navController.navigate(Screen.Profile.route) {
+                        popUpTo(Graph.BottomBar.route) { inclusive = true }
+                    }
                 },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
                 onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) }
