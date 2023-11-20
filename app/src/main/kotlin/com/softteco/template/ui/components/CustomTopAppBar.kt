@@ -18,8 +18,8 @@ import com.softteco.template.R
 @Composable
 fun CustomTopAppBar(
     title: String,
-    showBackIcon: Boolean,
     modifier: Modifier = Modifier,
+    showBackIcon: Boolean = false,
     onBackClicked: () -> Unit = {},
 ) {
     TopAppBar(
