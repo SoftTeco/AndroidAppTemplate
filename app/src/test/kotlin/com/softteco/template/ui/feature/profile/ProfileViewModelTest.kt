@@ -67,9 +67,12 @@ class ProfileViewModelTest : BaseTest() {
     companion object {
         private val testProfile = Profile(
             id = 1,
-            username = "nickname",
+            username = "John",
+            firstName = "John",
+            lastName = "Doe",
+            birthDate = "2023-10-30",
             email = "email@gmail.com",
-            createdAt = "2023-10-30 16:54:49.615966"
+            createdAt = "2023-10-30 06:58:31.108922",
         )
     }
 }

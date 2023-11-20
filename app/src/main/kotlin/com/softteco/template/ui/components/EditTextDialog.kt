@@ -42,9 +42,6 @@ internal fun EditTextDialog(
     @StringRes labelRes: Int? = null,
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
-
     Dialog(onDismissRequest = { onDismiss(null) }) {
         ElevatedCard(
             modifier,
@@ -59,6 +56,9 @@ internal fun EditTextDialog(
                 verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault)
             ) {
                 titleRes?.let { Text(stringResource(it), style = titleStyle) }
+
+                val focusRequester = remember { FocusRequester() }
+                LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
                 OutlinedTextField(
                     value = value,

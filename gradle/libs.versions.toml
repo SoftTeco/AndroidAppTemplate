@@ -29,8 +29,8 @@ junit5Plugin = "1.9.3.0"
 kotlinTestCoroutines = "1.7.3"
 testExtJunit = "1.1.5"
 espresso = "3.5.1"
-composeUiTestManifest = "1.5.1"
-mockk = "1.13.7"
+composeUiTestManifest = "1.5.4"
+mockk = "1.13.8"
 turbine = "1.0.0"
 kotest = "5.6.2"
 composeDetektRules = "0.0.26"
@@ -91,6 +91,8 @@ org-jetbrains-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlin
 org-junit-jupiter-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit5" }
 org-junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit5" }
 io-mockk-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+io-mockk-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+io-mockk-mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
 app-cash-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 io-kotest-kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 

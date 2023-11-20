@@ -70,7 +70,7 @@ internal fun CountryPickerDialog(
                 verticalArrangement = Arrangement.spacedBy(PaddingDefault)
             ) {
                 Text(
-                    stringResource(R.string.change_country_dialot_title),
+                    stringResource(R.string.change_country_dialog_title),
                     style = MaterialTheme.typography.titleLarge,
                 )
 
