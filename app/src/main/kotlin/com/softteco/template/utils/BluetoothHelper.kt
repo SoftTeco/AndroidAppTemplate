@@ -19,6 +19,7 @@ import com.softteco.template.MainActivity
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
+import timber.log.Timber
 
 object BluetoothHelper {
     private lateinit var bluetoothReceiver: BroadcastReceiver
@@ -85,8 +86,13 @@ object BluetoothHelper {
         )
     }
 
+    @Suppress("Detekt:TooGenericExceptionCaught")
     fun unregisterReceiver(activity: MainActivity) {
-        activity.unregisterReceiver(bluetoothReceiver)
+        try {
+            activity.unregisterReceiver(bluetoothReceiver)
+        } catch (e: Exception) {
+            Timber.e("Error unregister receiver", e)
+        }
     }
 
     private fun startScan() {
