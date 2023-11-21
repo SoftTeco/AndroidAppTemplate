@@ -14,6 +14,7 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -33,8 +34,7 @@ class SignUpViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: SignUpViewModel
-    private lateinit var userEncryptedDataStore: DataStore<CreateUserDto>
-
+    private var userEncryptedDataStore: DataStore<CreateUserDto> = mockk()
     @Test
     fun `when valid credentials and sign-up button is enabled then success state is emitted`() =
         runTest {
