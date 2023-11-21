@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.signUp
 
 import androidx.compose.runtime.Immutable
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
@@ -19,11 +20,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
+    private val userEncryptedDataStore: DataStore<CreateUserDto>,
 ) : ViewModel() {
     private val registrationState = MutableStateFlow<SignupState>(SignupState.Default)
     private var userNameStateValue = MutableStateFlow("")
@@ -81,6 +85,14 @@ class SignUpViewModel @Inject constructor(
             registrationState.value = when (result) {
                 is Result.Success -> {
                     snackBarState.value = SnackBarState(R.string.success, true)
+                    @Suppress("Detekt:TooGenericExceptionCaught")
+                    try {
+                        userEncryptedDataStore.updateData { createUserDto }
+                    } catch (e: IOException) {
+                        Timber.e("Error writing data to disk", e)
+                    } catch (e: Exception) {
+                        Timber.e("Error updating data in datastore", e)
+                    }
                     SignupState.Success(result.data)
                 }
 
