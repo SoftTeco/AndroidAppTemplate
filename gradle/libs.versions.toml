@@ -46,6 +46,8 @@ iconCompose = "1.5.1"
 dataStore = "1.0.0"
 coil = "2.2.2"
 signaturePad = "0.1.2"
+kotlinxSerializationGson = "1.6.0"
+timber = "5.0.1"
 nordicSemiScanner = "1.6.0"
 
 [libraries]
@@ -80,6 +82,8 @@ preferences-data-store = { module = "androidx.datastore:datastore-preferences", 
 io-coil-kt-coil-svg = { module = "io.coil-kt:coil-svg" , version.ref = "coil" }
 io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose" , version.ref = "coil" }
 signature-pad-compose = { module = "se.warting.signature:signature-pad", version.ref = "signaturePad" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationGson" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 nordicSemiScanner = { module = "no.nordicsemi.android.support.v18:scanner", version.ref = "nordicSemiScanner" }
 
 
@@ -109,3 +113,4 @@ detekt-formatting = { id = "io.gitlab.arturbosch.detekt:detekt-formatting", vers
 compose-rules-detekt = { id = "com.twitter.compose.rules:detekt", version.ref = "composeDetektRules" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinAndroidPlugin" }

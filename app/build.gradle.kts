@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.android.junit5)
+    alias(libs.plugins.kotlin.serialization)
     jacoco
 }
 
@@ -116,6 +117,8 @@ dependencies {
     implementation(libs.io.coil.kt.coil.compose)
 
     implementation(libs.preferences.data.store)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.timber)
 
     implementation(libs.nordicSemiScanner)
 
