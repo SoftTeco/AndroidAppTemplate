@@ -20,6 +20,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.time.Duration.Companion.seconds
 
+private const val TOKEN = "testToken"
+private const val NEW_PASSWORD = "newPassword"
+private const val NEW_PASSWORD_NOT_VALID_1 = "newpassword"
+private const val NEW_PASSWORD_NOT_VALID_2 = "neW"
+
 @ExtendWith(MainDispatcherExtension::class)
 class ResetPasswordViewModelTest : BaseTest() {
 
@@ -30,18 +35,16 @@ class ResetPasswordViewModelTest : BaseTest() {
     @Test
     fun `when valid password and reset password button is enabled then success state is emitted`() =
         runTest {
-            val token = "testToken"
-            val newPassword = "newPassword"
             coEvery {
-                repository.changePassword(token, NewPasswordDto(newPassword, newPassword))
+                repository.changePassword(TOKEN, NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD))
             } returns Result.Success(Unit)
             val savedStateHandle = SavedStateHandle().apply {
-                set(AppNavHost.RESET_TOKEN_ARG, token)
+                set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
             }
             viewModel = ResetPasswordViewModel(repository, savedStateHandle)
 
             viewModel.state.test {
-                awaitItem().onPasswordChanged(newPassword)
+                awaitItem().onPasswordChanged(NEW_PASSWORD)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -57,8 +60,8 @@ class ResetPasswordViewModelTest : BaseTest() {
 
             coVerify(exactly = 1) {
                 repository.changePassword(
-                    token,
-                    NewPasswordDto(newPassword, newPassword)
+                    TOKEN,
+                    NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD)
                 )
             }
         }
@@ -66,16 +69,14 @@ class ResetPasswordViewModelTest : BaseTest() {
     @Test
     fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() =
         runTest {
-            val token = "testToken"
-            val newPassword = "newpassword"
             viewModel = ResetPasswordViewModel(
                 repository,
                 SavedStateHandle().apply {
-                    set(AppNavHost.RESET_TOKEN_ARG, token)
+                    set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 }
             )
             viewModel.state.test {
-                awaitItem().onPasswordChanged(newPassword)
+                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
                 delay(1.seconds)
                 expectMostRecentItem().run {
                     fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
@@ -88,16 +89,14 @@ class ResetPasswordViewModelTest : BaseTest() {
     @Test
     fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() =
         runTest {
-            val token = "testToken"
-            val newPassword = "neW"
             viewModel = ResetPasswordViewModel(
                 repository,
                 SavedStateHandle().apply {
-                    set(AppNavHost.RESET_TOKEN_ARG, token)
+                    set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 }
             )
             viewModel.state.test {
-                awaitItem().onPasswordChanged(newPassword)
+                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
                 delay(1.seconds)
                 expectMostRecentItem().run {
                     fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
@@ -110,11 +109,10 @@ class ResetPasswordViewModelTest : BaseTest() {
     @Test
     fun `when empty password then password field error is shown and button isn't enabled`() =
         runTest {
-            val token = "testToken"
             viewModel = ResetPasswordViewModel(
                 repository,
                 SavedStateHandle().apply {
-                    set(AppNavHost.RESET_TOKEN_ARG, token)
+                    set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 }
             )
             viewModel.state.test {
@@ -128,12 +126,10 @@ class ResetPasswordViewModelTest : BaseTest() {
     @Test
     fun `when reset password button clicked and request in progress then loading is shown`() =
         runTest {
-            val token = "testToken"
-            val newPassword = "newPassword"
             coEvery {
                 repository.changePassword(
-                    token,
-                    NewPasswordDto(newPassword, newPassword)
+                    TOKEN,
+                    NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD)
                 )
             } coAnswers {
                 delay(1.seconds)
@@ -142,12 +138,12 @@ class ResetPasswordViewModelTest : BaseTest() {
             viewModel = ResetPasswordViewModel(
                 repository,
                 SavedStateHandle().apply {
-                    set(AppNavHost.RESET_TOKEN_ARG, token)
+                    set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 }
             )
 
             viewModel.state.test {
-                awaitItem().onPasswordChanged(newPassword)
+                awaitItem().onPasswordChanged(NEW_PASSWORD)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -162,8 +158,8 @@ class ResetPasswordViewModelTest : BaseTest() {
 
             coVerify(exactly = 1) {
                 repository.changePassword(
-                    token,
-                    NewPasswordDto(newPassword, newPassword)
+                    TOKEN,
+                    NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD)
                 )
             }
         }

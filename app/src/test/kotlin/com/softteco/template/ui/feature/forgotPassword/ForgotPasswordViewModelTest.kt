@@ -18,24 +18,26 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.time.Duration.Companion.seconds
 
+private const val EMAIL = "test@email.com"
+private const val INVALID_EMAIL = "invalid@email"
+
 @ExtendWith(MainDispatcherExtension::class)
 class ForgotPasswordViewModelTest : BaseTest() {
 
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: ForgotPasswordViewModel
-    private val email = "test@email.com"
 
     @Test
     fun `when valid email and reset password button is enabled then success state is emitted`() =
         runTest {
-            coEvery { repository.resetPassword(ResetPasswordDto(email)) } returns Result.Success(
+            coEvery { repository.resetPassword(ResetPasswordDto(EMAIL)) } returns Result.Success(
                 Unit
             )
             viewModel = ForgotPasswordViewModel(repository)
 
             viewModel.state.test {
-                awaitItem().onEmailChanged(email)
+                awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -49,7 +51,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
                 }
             }
 
-            coVerify(exactly = 1) { repository.resetPassword(ResetPasswordDto(email)) }
+            coVerify(exactly = 1) { repository.resetPassword(ResetPasswordDto(EMAIL)) }
         }
 
     @Test
@@ -57,7 +59,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
         runTest {
             viewModel = ForgotPasswordViewModel(repository)
             viewModel.state.test {
-                awaitItem().onEmailChanged("invalid@email")
+                awaitItem().onEmailChanged(INVALID_EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -82,14 +84,14 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @Test
     fun `when reset password button clicked and request in progress then loading is shown`() =
         runTest {
-            coEvery { repository.resetPassword(ResetPasswordDto(email)) } coAnswers {
+            coEvery { repository.resetPassword(ResetPasswordDto(EMAIL)) } coAnswers {
                 delay(1.seconds)
                 Result.Success(Unit)
             }
             viewModel = ForgotPasswordViewModel(repository)
 
             viewModel.state.test {
-                awaitItem().onEmailChanged(email)
+                awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -102,6 +104,6 @@ class ForgotPasswordViewModelTest : BaseTest() {
                 }
             }
 
-            coVerify(exactly = 1) { repository.resetPassword(ResetPasswordDto(email)) }
+            coVerify(exactly = 1) { repository.resetPassword(ResetPasswordDto(EMAIL)) }
         }
 }
