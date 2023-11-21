@@ -26,6 +26,7 @@ object BluetoothHelper {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var locationManager: LocationManager
     private var pairedDevices = hashMapOf<String, BluetoothGatt>()
+
     @Volatile var connectedDevices = hashMapOf<String, Boolean>()
     private lateinit var resultBluetoothEnableLauncher: ActivityResultLauncher<Intent>
     private lateinit var resultLocationEnableLauncher: ActivityResultLauncher<Intent>
@@ -85,11 +86,7 @@ object BluetoothHelper {
     }
 
     fun unregisterReceiver(activity: MainActivity) {
-        try {
-            activity.unregisterReceiver(bluetoothReceiver)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        activity.unregisterReceiver(bluetoothReceiver)
     }
 
     private fun startScan() {
@@ -105,10 +102,12 @@ object BluetoothHelper {
         if (BluetoothPermissionChecker.checkBluetoothSupport(bluetoothAdapter, activity) &&
             BluetoothPermissionChecker.hasPermissions(activity)
         ) {
-            when (BluetoothPermissionChecker.checkEnableDeviceModules(
-                bluetoothAdapter,
-                locationManager
-            )) {
+            when (
+                BluetoothPermissionChecker.checkEnableDeviceModules(
+                    bluetoothAdapter,
+                    locationManager
+                )
+            ) {
                 PermissionType.LOCATION_TURNED_OFF -> {
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     resultLocationEnableLauncher.launch(intent)

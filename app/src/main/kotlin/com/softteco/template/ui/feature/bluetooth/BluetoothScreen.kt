@@ -159,8 +159,11 @@ private fun BluetoothDeviceCard(
             }) {
                 Text(
                     stringResource(
-                        id = if (checkDeviceConnection(scanResult.device.address) == true)
-                            R.string.disconnect else R.string.connect
+                        id = if (checkDeviceConnection(scanResult.device.address) == true) {
+                            R.string.disconnect
+                        } else {
+                            R.string.connect
+                        }
                     )
                 )
             }
