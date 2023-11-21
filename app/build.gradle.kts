@@ -120,6 +120,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.timber)
 
+    implementation(libs.nordicSemiScanner)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

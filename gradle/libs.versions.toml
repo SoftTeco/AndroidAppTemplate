@@ -48,6 +48,7 @@ coil = "2.2.2"
 signaturePad = "0.1.2"
 kotlinxSerializationGson = "1.6.0"
 timber = "5.0.1"
+nordicSemiScanner = "1.6.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -83,6 +84,7 @@ io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose" , version.ref = "
 signature-pad-compose = { module = "se.warting.signature:signature-pad", version.ref = "signaturePad" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationGson" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+nordicSemiScanner = { module = "no.nordicsemi.android.support.v18:scanner", version.ref = "nordicSemiScanner" }
 
 
 junit = { module = "junit:junit", version.ref = "junit" }
