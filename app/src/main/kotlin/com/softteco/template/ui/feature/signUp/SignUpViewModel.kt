@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -83,7 +85,14 @@ class SignUpViewModel @Inject constructor(
             registrationState.value = when (result) {
                 is Result.Success -> {
                     snackBarState.value = SnackBarState(R.string.success, true)
-                    userEncryptedDataStore.updateData { createUserDto }
+                    @Suppress("Detekt:TooGenericExceptionCaught")
+                    try {
+                        userEncryptedDataStore.updateData { createUserDto }
+                    } catch (e: IOException) {
+                        Timber.e("Error writing data to disk", e)
+                    } catch (e: Exception) {
+                        Timber.e("Error writing data to disk", e)
+                    }
                     SignupState.Success(result.data)
                 }
 
