@@ -35,6 +35,7 @@ class SignUpViewModelTest : BaseTest() {
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: SignUpViewModel
     private var userEncryptedDataStore: DataStore<CreateUserDto> = mockk()
+
     @Test
     fun `when valid credentials and sign-up button is enabled then success state is emitted`() =
         runTest {
