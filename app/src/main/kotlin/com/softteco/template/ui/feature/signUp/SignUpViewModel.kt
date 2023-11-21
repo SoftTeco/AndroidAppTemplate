@@ -91,7 +91,7 @@ class SignUpViewModel @Inject constructor(
                     } catch (e: IOException) {
                         Timber.e("Error writing data to disk", e)
                     } catch (e: Exception) {
-                        Timber.e("Error writing data to disk", e)
+                        Timber.e("Error updating data in datastore", e)
                     }
                     SignupState.Success(result.data)
                 }
