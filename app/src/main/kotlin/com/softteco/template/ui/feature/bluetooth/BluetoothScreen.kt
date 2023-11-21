@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.bluetooth
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,17 +22,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import com.softteco.template.MainActivity
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
+import com.softteco.template.ui.components.OnLifecycleEvent
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingNormal
+import com.softteco.template.utils.BluetoothHelper
+import com.softteco.template.utils.checkDeviceConnection
+import no.nordicsemi.android.support.v18.scanner.ScanResult
 
 @Composable
 fun BluetoothScreen(
@@ -40,12 +48,33 @@ fun BluetoothScreen(
     onBackClicked: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val activity = LocalContext.current as MainActivity
+
+    BluetoothHelper.onScanResult = {
+        viewModel.addScanResult(it)
+    }
 
     ScreenContent(
         state,
         modifier,
         onBackClicked
     )
+
+    OnLifecycleEvent { owner, event ->
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                BluetoothHelper.registerReceiver(activity)
+                BluetoothHelper.provideBluetoothOperation(activity)
+            }
+
+            Lifecycle.Event.ON_PAUSE -> {
+                BluetoothHelper.disconnectFromAllBluetoothDevices()
+                BluetoothHelper.unregisterReceiver(activity)
+            }
+
+            else -> {}
+        }
+    }
 }
 
 @Composable
@@ -81,21 +110,16 @@ private fun BluetoothDevicesList(
         contentPadding = PaddingValues(PaddingDefault),
         verticalArrangement = Arrangement.spacedBy(PaddingNormal)
     ) {
-        items(state.bluetoothDevices) { bluetoothDevice ->
-            BluetoothDeviceCard(
-                bluetoothDevice.name,
-                bluetoothDevice.macAddress,
-                bluetoothDevice.rssi
-            )
+        items(state.devices) { scanResult ->
+            BluetoothDeviceCard(scanResult)
         }
     }
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 private fun BluetoothDeviceCard(
-    name: String,
-    macAddress: String,
-    rssi: Int
+    scanResult: ScanResult
 ) {
     Card(
         modifier = Modifier
@@ -115,19 +139,30 @@ private fun BluetoothDeviceCard(
             )
             Spacer(Modifier.weight(1f))
             Column {
-                Text(text = name)
-                Text(text = macAddress)
+                Text(text = scanResult.device.name)
+                Text(text = scanResult.device.address)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_signal_level_24),
                         contentDescription = stringResource(id = R.string.signal_level_icon_description)
                     )
-                    Text(text = rssi.toString())
+                    Text(text = scanResult.rssi.toString())
                 }
             }
             Spacer(Modifier.weight(2f))
-            Button(onClick = {}) {
-                Text(stringResource(id = R.string.connect))
+            val context = LocalContext.current
+            Button(onClick = {
+                BluetoothHelper.performBluetoothDeviceConnectOperation(
+                    scanResult,
+                    context
+                )
+            }) {
+                Text(
+                    stringResource(
+                        id = if (checkDeviceConnection(scanResult.device.address) == true)
+                            R.string.disconnect else R.string.connect
+                    )
+                )
             }
         }
     }

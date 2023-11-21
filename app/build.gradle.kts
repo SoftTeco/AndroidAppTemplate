@@ -117,6 +117,8 @@ dependencies {
 
     implementation(libs.preferences.data.store)
 
+    implementation(libs.nordicSemiScanner)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

@@ -21,7 +21,7 @@
     <string name="send">Send</string>
     <string name="receive">Receive</string>
     <string name="connect">Connect</string>
-    <string name="disconnect">disconnect</string>
+    <string name="disconnect">Disconnect</string>
     <string name="visibility">visibility</string>
     <string name="reset_password">Reset password</string>
     <string name="enter_new_password">Please, enter new password</string>

@@ -46,6 +46,7 @@ iconCompose = "1.5.1"
 dataStore = "1.0.0"
 coil = "2.2.2"
 signaturePad = "0.1.2"
+nordicSemiScanner = "1.6.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -79,6 +80,7 @@ preferences-data-store = { module = "androidx.datastore:datastore-preferences", 
 io-coil-kt-coil-svg = { module = "io.coil-kt:coil-svg" , version.ref = "coil" }
 io-coil-kt-coil-compose = { module = "io.coil-kt:coil-compose" , version.ref = "coil" }
 signature-pad-compose = { module = "se.warting.signature:signature-pad", version.ref = "signaturePad" }
+nordicSemiScanner = { module = "no.nordicsemi.android.support.v18:scanner", version.ref = "nordicSemiScanner" }
 
 
 junit = { module = "junit:junit", version.ref = "junit" }
