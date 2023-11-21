@@ -24,11 +24,11 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: ForgotPasswordViewModel
+    private val email = "test@email.com"
 
     @Test
     fun `when valid email and reset password button is enabled then success state is emitted`() =
         runTest {
-            val email = "test@email.com"
             coEvery { repository.resetPassword(ResetPasswordDto(email)) } returns Result.Success(
                 Unit
             )
@@ -82,7 +82,6 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @Test
     fun `when reset password button clicked and request in progress then loading is shown`() =
         runTest {
-            val email = "test@email.com"
             coEvery { repository.resetPassword(ResetPasswordDto(email)) } coAnswers {
                 delay(1.seconds)
                 Result.Success(Unit)
