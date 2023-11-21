@@ -19,6 +19,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.time.Duration.Companion.seconds
 
+private const val EMAIL = "test@email.com"
+private const val PASSWORD = "password"
+private const val INVALID_EMAIL = "invalid@email"
+
 @ExtendWith(MainDispatcherExtension::class)
 class LoginViewModelTest : BaseTest() {
 
@@ -27,32 +31,33 @@ class LoginViewModelTest : BaseTest() {
     private lateinit var viewModel: LoginViewModel
 
     @Test
-    fun `when valid credentials and login button is enabled then success state is emitted`() = runTest {
-        val credentials = CredentialsDto(email = "test@email.com", password = "password")
-        coEvery { repository.login(credentials) } returns Result.Success(Unit)
-        viewModel = LoginViewModel(repository)
-        viewModel.state.test {
-            awaitItem().onEmailChanged("test@email.com")
-            awaitItem().onPasswordChanged("password")
-            delay(1.seconds)
-            expectMostRecentItem().run {
-                isLoginBtnEnabled shouldBe true
-                onLoginClicked()
+    fun `when valid credentials and login button is enabled then success state is emitted`() =
+        runTest {
+            val credentials = CredentialsDto(email = EMAIL, password = PASSWORD)
+            coEvery { repository.login(credentials) } returns Result.Success(Unit)
+            viewModel = LoginViewModel(repository)
+            viewModel.state.test {
+                awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onPasswordChanged(PASSWORD)
+                delay(1.seconds)
+                expectMostRecentItem().run {
+                    isLoginBtnEnabled shouldBe true
+                    onLoginClicked()
+                }
+                awaitItem().run {
+                    loginState.shouldBeTypeOf<LoginViewModel.LoginState.Success>()
+                    snackBar.show shouldBe true
+                }
             }
-            awaitItem().run {
-                loginState.shouldBeTypeOf<LoginViewModel.LoginState.Success>()
-                snackBar.show shouldBe true
-            }
+            coVerify(exactly = 1) { repository.login(credentials) }
         }
-        coVerify(exactly = 1) { repository.login(credentials) }
-    }
 
     @Test
     fun `when invalid password then login button isn't enabled and password field error is shown`() =
         runTest {
             viewModel = LoginViewModel(repository)
             viewModel.state.test {
-                awaitItem().onEmailChanged("test@email.com")
+                awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
                 expectMostRecentItem().run {
                     fieldStatePassword shouldBe PasswordFieldState.Empty
@@ -66,8 +71,8 @@ class LoginViewModelTest : BaseTest() {
         runTest {
             viewModel = LoginViewModel(repository)
             viewModel.state.test {
-                awaitItem().onEmailChanged("invalid@email")
-                awaitItem().onPasswordChanged("password")
+                awaitItem().onEmailChanged(INVALID_EMAIL)
+                awaitItem().onPasswordChanged(PASSWORD)
                 delay(1.seconds)
                 expectMostRecentItem().run {
                     fieldStateEmail shouldBe EmailFieldState.Error
@@ -91,15 +96,15 @@ class LoginViewModelTest : BaseTest() {
 
     @Test
     fun `when login button clicked and request in progress then loading is shown`() = runTest {
-        val credentials = CredentialsDto(email = "test@email.com", password = "password")
+        val credentials = CredentialsDto(email = EMAIL, password = PASSWORD)
         coEvery { repository.login(credentials) } coAnswers {
             delay(1.seconds)
             Result.Success(Unit)
         }
         viewModel = LoginViewModel(repository)
         viewModel.state.test {
-            awaitItem().onEmailChanged("test@email.com")
-            awaitItem().onPasswordChanged("password")
+            awaitItem().onEmailChanged(EMAIL)
+            awaitItem().onPasswordChanged(PASSWORD)
             delay(1.seconds)
             expectMostRecentItem().run {
                 isLoginBtnEnabled shouldBe true

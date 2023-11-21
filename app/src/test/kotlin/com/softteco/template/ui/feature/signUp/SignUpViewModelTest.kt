@@ -19,6 +19,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.time.Duration.Companion.seconds
 
+private const val USERNAME = "testuser"
+private const val EMAIL = "test@email.com"
+private const val PASSWORD = "passwordTest"
+private const val INVALID_EMAIL = "invalid@email"
+private const val NEW_PASSWORD_NOT_VALID_1 = "newpassword"
+private const val NEW_PASSWORD_NOT_VALID_2 = "pswD"
+
 @ExtendWith(MainDispatcherExtension::class)
 class SignUpViewModelTest : BaseTest() {
 
@@ -30,17 +37,17 @@ class SignUpViewModelTest : BaseTest() {
     fun `when valid credentials and sign-up button is enabled then success state is emitted`() =
         runTest {
             val createUserDto = CreateUserDto(
-                username = "testuser",
-                email = "test@email.com",
-                password = "passwordTest"
+                username = USERNAME,
+                email = EMAIL,
+                password = PASSWORD
             )
             coEvery { repository.registration(createUserDto) } returns Result.Success("")
             viewModel = SignUpViewModel(repository)
 
             viewModel.state.test {
-                awaitItem().onUserNameChanged("testuser")
-                awaitItem().onEmailChanged("test@email.com")
-                awaitItem().onPasswordChanged("passwordTest")
+                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onPasswordChanged(PASSWORD)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -62,9 +69,9 @@ class SignUpViewModelTest : BaseTest() {
         runTest {
             viewModel = SignUpViewModel(repository)
             viewModel.state.test {
-                awaitItem().onEmailChanged("invalid@email")
-                awaitItem().onUserNameChanged("testuser")
-                awaitItem().onPasswordChanged("passwordTest")
+                awaitItem().onEmailChanged(INVALID_EMAIL)
+                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onPasswordChanged(PASSWORD)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -79,9 +86,9 @@ class SignUpViewModelTest : BaseTest() {
         runTest {
             viewModel = SignUpViewModel(repository)
             viewModel.state.test {
-                awaitItem().onPasswordChanged("password")
-                awaitItem().onUserNameChanged("testuser")
-                awaitItem().onEmailChanged("test@email.com")
+                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
+                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -97,9 +104,9 @@ class SignUpViewModelTest : BaseTest() {
         runTest {
             viewModel = SignUpViewModel(repository)
             viewModel.state.test {
-                awaitItem().onPasswordChanged("pswD")
-                awaitItem().onUserNameChanged("testuser")
-                awaitItem().onEmailChanged("test@email.com")
+                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
+                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -115,8 +122,8 @@ class SignUpViewModelTest : BaseTest() {
         runTest {
             viewModel = SignUpViewModel(repository)
             viewModel.state.test {
-                awaitItem().onPasswordChanged("passwordTest")
-                awaitItem().onEmailChanged("test@email.com")
+                awaitItem().onPasswordChanged(PASSWORD)
+                awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -142,9 +149,9 @@ class SignUpViewModelTest : BaseTest() {
     fun `when registration button clicked and request in progress then loading is shown`() =
         runTest {
             val createUserDto = CreateUserDto(
-                username = "testuser",
-                email = "test@email.com",
-                password = "passwordTest"
+                username = USERNAME,
+                email = EMAIL,
+                password = PASSWORD
             )
             coEvery { repository.registration(createUserDto) } coAnswers {
                 delay(1.seconds)
@@ -153,9 +160,9 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository)
 
             viewModel.state.test {
-                awaitItem().onUserNameChanged("testuser")
-                awaitItem().onEmailChanged("test@email.com")
-                awaitItem().onPasswordChanged("passwordTest")
+                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onPasswordChanged(PASSWORD)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
