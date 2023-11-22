@@ -23,8 +23,6 @@ import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ForgotPasswordScreen(
@@ -37,7 +35,6 @@ fun ForgotPasswordScreen(
 
     LaunchedEffect(state.forgotPasswordState) {
         if (state.forgotPasswordState is ForgotPasswordViewModel.ForgotPasswordState.Success) {
-            delay(2.seconds)
             onSuccess()
         }
     }

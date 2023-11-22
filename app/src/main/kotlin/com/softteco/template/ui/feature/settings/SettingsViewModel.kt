@@ -1,18 +1,35 @@
 package com.softteco.template.ui.feature.settings
 
 import androidx.compose.runtime.Immutable
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.softteco.template.ui.theme.ThemeMode
+import com.softteco.template.utils.saveToDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    @Named("themeMode") private val themeModeDataStore: DataStore<Preferences>
+) : ViewModel() {
 
-    val state = MutableStateFlow(State())
+    fun setThemeMode(themeMode: ThemeMode) {
+        viewModelScope.launch {
+            themeModeDataStore.saveToDataStore(PreferencesKeys.THEME_MODE, themeMode.value)
+        }
+    }
 
     @Immutable
     data class State(
-        val data: String = "Settings",
+        val data: String = "Settings"
     )
+}
+
+object PreferencesKeys {
+    val THEME_MODE = stringPreferencesKey("theme_mode")
 }

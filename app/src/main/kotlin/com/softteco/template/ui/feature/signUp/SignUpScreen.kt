@@ -33,8 +33,6 @@ import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SignUpScreen(
@@ -47,7 +45,6 @@ fun SignUpScreen(
 
     LaunchedEffect(state.registrationState) {
         if (state.registrationState is SignUpViewModel.SignupState.Success) {
-            delay(2.seconds)
             onSuccess()
         }
     }

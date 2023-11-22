@@ -28,6 +28,14 @@
     <string name="success">Success</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="restore_password">Restore password</string>
+    <string name="check_email">Check your email</string>
+    <string name="error_access_denied">"Check permissions to access this resource"</string>
+    <string name="error_network">"Check your internet connection and try again"</string>
+    <string name="error_not_found">"Make sure you've entered the correct information"</string>
+    <string name="error_service_unavailable">"Our services are temporarily unavailable"</string>
+    <string name="error_unknown">"An unexpected error occurred"</string>
 
     <!-- Home screen -->
     <string name="ble">BLE</string>
@@ -45,10 +53,6 @@
     <string name="empty_here">Empty here</string>
     <string name="delete_file">Delete file</string>
 
-    <string name="forgot_password">Forgot password</string>
-    <string name="restore_password">Restore password</string>
-    <string name="check_email">Check your email</string>
-
     <!-- Profile screen -->
     <string name="full_name_title">Full name</string>
     <string name="birth_date_title">Birth date</string>
@@ -58,13 +62,11 @@
     <string name="edit_name_dialog_title">Change full name</string>
     <string name="change_country_dialog_title">Change country</string>
 
-    <string name="error_access_denied">"Check permissions to access this resource"</string>
-    <string name="error_network">"Check your internet connection and try again"</string>
-    <string name="error_not_found">"Make sure you've entered the correct information"</string>
-    <string name="error_service_unavailable">"Our services are temporarily unavailable"</string>
-    <string name="error_unknown">"An unexpected error occurred"</string>
+    <!-- Settings screen -->
+    <string name="about">About</string>
+    <string name="theme">Theme</string>
+    <string name="system">System</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
 
-    <!-- Bluetooth screen -->
-    <string name="bluetooth_icon_description">Baseline_bluetooth_24</string>
-    <string name="signal_level_icon_description">Baseline_signal_level_24</string>
 </resources>

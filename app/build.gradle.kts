@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.browser)
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
 

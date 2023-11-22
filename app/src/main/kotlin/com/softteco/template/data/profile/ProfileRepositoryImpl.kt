@@ -40,10 +40,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
             val authTokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
             val token: String = dataStore.getFromDataStore(authTokenKey, "").first()
             if (token.isEmpty()) return Result.Error(ErrorEntity.Unknown)
-
             val authToken = AuthToken(token)
             var profile = templateApi.getUser(authHeader = authToken.composeHeader()).toModel()
-
             val cachedProfile = getCachedProfile()
             if (cachedProfile is Result.Success) {
                 if (cachedProfile.data.username == profile.username) {
@@ -96,6 +94,18 @@ internal class ProfileRepositoryImpl @Inject constructor(
         return try {
             templateApi.resetPassword(email)
             Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(errorHandler.getError(e))
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun isUserLogin(): Result<Boolean> {
+        return try {
+            Result.Success(
+                dataStore.getFromDataStore(stringPreferencesKey(AUTH_TOKEN_KEY), "").first()
+                    .isNotEmpty()
+            )
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))
         }

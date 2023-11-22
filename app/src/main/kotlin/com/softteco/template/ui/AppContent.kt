@@ -8,10 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.softteco.template.navigation.AppBottomBar
 import com.softteco.template.navigation.AppNavHost
-import com.softteco.template.navigation.Graph
 
 @Composable
-fun AppContent(modifier: Modifier = Modifier) {
+fun AppContent(
+    startDestination: String,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -23,7 +25,7 @@ fun AppContent(modifier: Modifier = Modifier) {
     ) { paddingValues ->
         AppNavHost(
             navController = navController,
-            startDestination = Graph.BottomBar.route,
+            startDestination = startDestination,
             paddingValues = paddingValues
         )
     }

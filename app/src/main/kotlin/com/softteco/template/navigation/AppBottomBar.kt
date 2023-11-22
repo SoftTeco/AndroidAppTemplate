@@ -29,7 +29,7 @@ fun AppBottomBar(
     val currentDestination: NavDestination? = navBackStackEntry?.destination
 
     when (navBackStackEntry?.destination?.route) {
-        Screen.Home.route, Screen.Profile.route, Screen.Settings.route -> {
+        Screen.Profile.route, Screen.Home.route, Screen.Settings.route -> {
             bottomBarState.value = true
         }
 
@@ -43,7 +43,7 @@ fun AppBottomBar(
         content = {
             NavigationBar {
                 BottomNavigationItem::class.sealedSubclasses.mapNotNull { it.objectInstance }
-                    .forEachIndexed { index, navigationItem ->
+                    .forEachIndexed { _, navigationItem ->
                         val isSelected =
                             currentDestination?.hierarchy?.any { it.route == navigationItem.route } == true
                         NavigationBarItem(

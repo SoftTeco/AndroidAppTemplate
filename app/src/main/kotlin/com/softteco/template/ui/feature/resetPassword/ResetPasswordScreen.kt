@@ -23,8 +23,6 @@ import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ResetPasswordScreen(
@@ -36,7 +34,6 @@ fun ResetPasswordScreen(
 
     LaunchedEffect(state.resetPasswordState) {
         if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
-            delay(2.seconds)
             onSuccess()
         }
     }

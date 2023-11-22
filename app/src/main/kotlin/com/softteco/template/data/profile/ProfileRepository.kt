@@ -19,6 +19,8 @@ interface ProfileRepository {
 
     suspend fun resetPassword(email: ResetPasswordDto): Result<Unit>
 
+    suspend fun isUserLogin(): Result<Boolean>
+
     suspend fun cacheProfile(profile: Profile): Result<Unit>
 
     suspend fun getCachedProfile(): Result<Profile>

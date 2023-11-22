@@ -81,7 +81,7 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: String = ThemeMode.SystemDefault.value,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
@@ -89,10 +89,18 @@ fun AppTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (themeMode == ThemeMode.Dark.value) {
+                dynamicDarkColorScheme(context)
+            } else if (themeMode == ThemeMode.Light.value) {
+                dynamicLightColorScheme(context)
+            } else if (isSystemInDarkTheme()) {
+                DarkColorScheme
+            } else {
+                LightColorScheme
+            }
         }
 
-        darkTheme -> DarkColorScheme
+        themeMode == ThemeMode.Dark.value -> DarkColorScheme
         else -> LightColorScheme
     }
     val view = LocalView.current
@@ -100,13 +108,19 @@ fun AppTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+                themeMode == ThemeMode.Light.value
         }
     }
-
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = content
     )
+}
+
+sealed class ThemeMode(var value: String) {
+    object SystemDefault : ThemeMode("System")
+    object Dark : ThemeMode("Dark")
+    object Light : ThemeMode("Light")
 }

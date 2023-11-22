@@ -21,10 +21,12 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Named
 import javax.inject.Singleton
 
 private const val USER_PREFERENCES = "user_data_preferences"
 private const val USER_ENCRYPTED = "user_encrypted_data"
+private const val APP_THEME_PREFERENCES = "theme_mode"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -52,6 +54,19 @@ object DataStoreModule {
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
             produceFile = { appContext.dataStoreFile(USER_ENCRYPTED) },
             serializer = UserSettingsSerializer(CryptoManager())
+        )
+    }
+
+    @Provides
+    @Singleton
+    @Named("themeMode")
+    fun provideThemeModeDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = { emptyPreferences() }
+            ),
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            produceFile = { appContext.preferencesDataStoreFile(APP_THEME_PREFERENCES) }
         )
     }
 }
