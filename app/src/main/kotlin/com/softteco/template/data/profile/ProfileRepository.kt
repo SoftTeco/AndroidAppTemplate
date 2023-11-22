@@ -18,4 +18,12 @@ interface ProfileRepository {
     suspend fun changePassword(resetToken: String, newPasswordDto: NewPasswordDto): Result<Unit>
 
     suspend fun resetPassword(email: ResetPasswordDto): Result<Unit>
+
+    suspend fun cacheProfile(profile: Profile): Result<Unit>
+
+    suspend fun getCachedProfile(): Result<Profile>
+
+    suspend fun logout(): Result<Unit>
+
+    suspend fun getCountryList(name: String): Result<List<String>>
 }

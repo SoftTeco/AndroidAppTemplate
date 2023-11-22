@@ -15,9 +15,9 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,7 +72,6 @@ fun PasswordField(
                             Icons.Filled.Visibility
                         },
                         contentDescription = stringResource(id = R.string.visibility),
-                        tint = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
                     )
                 }
             },
@@ -87,6 +86,9 @@ fun PasswordField(
             ),
             keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
             singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+            )
         )
     }
 }

@@ -2,6 +2,7 @@ package com.softteco.template.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.softteco.template.BuildConfig
+import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -42,6 +43,13 @@ object NetworkModule {
     fun provideTemplateApi(okHttpClient: OkHttpClient): TemplateApi {
         val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
         return retrofit.create(TemplateApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRestCountriesApi(okHttpClient: OkHttpClient): RestCountriesApi {
+        val retrofit = buildRetrofit(okHttpClient, RestCountriesApi.BASE_URL)
+        return retrofit.create(RestCountriesApi::class.java)
     }
 
     @Suppress("SameParameterValue")

@@ -53,6 +53,7 @@ android {
         debug {
             isDebuggable = true
             buildConfigField("String", "BASE_URL", baseUrl)
+            enableAndroidTestCoverage = true
         }
     }
     compileOptions {
@@ -71,6 +72,11 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    testOptions {
+        packaging {
+            jniLibs { useLegacyPackaging = true }
         }
     }
 }
@@ -125,6 +131,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.io.mockk.mockk.android)
+    androidTestImplementation(libs.io.mockk.mockk.agent)
+    androidTestImplementation(libs.org.junit.jupiter.jupiter)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.org.jetbrains.kotlinx.coroutines.test)

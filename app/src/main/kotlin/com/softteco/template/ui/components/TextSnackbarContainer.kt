@@ -46,7 +46,7 @@ fun TextSnackbarContainer(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable () -> Unit
 ) {
-    Box {
+    Box(modifier) {
         content()
 
         val onDismissState by rememberUpdatedState(onDismissSnackbar)
@@ -67,7 +67,7 @@ fun TextSnackbarContainer(
         MaterialTheme(shapes = Shapes()) {
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = modifier
+                modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .systemBarsPadding()
                     .padding(all = 8.dp),

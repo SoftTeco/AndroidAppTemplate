@@ -26,6 +26,8 @@
     <string name="reset_password">Reset password</string>
     <string name="enter_new_password">Please, enter new password</string>
     <string name="success">Success</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Home screen -->
     <string name="ble">BLE</string>
@@ -48,12 +50,13 @@
     <string name="check_email">Check your email</string>
 
     <!-- Profile screen -->
-    <string name="username_title">Username:</string>
-    <string name="email_title">Email:</string>
-    <string name="first_name_title">First name:</string>
-    <string name="last_name_title">Last name:</string>
-    <string name="birth_data_title">Birth data:</string>
-    <string name="country_title">Country/Region:</string>
+    <string name="full_name_title">Full name</string>
+    <string name="birth_date_title">Birth date</string>
+    <string name="country_title">Country</string>
+    <string name="logout">Log Out</string>
+    <string name="avatar">Avatar</string>
+    <string name="edit_name_dialog_title">Change full name</string>
+    <string name="change_country_dialog_title">Change country</string>
 
     <string name="error_access_denied">"Check permissions to access this resource"</string>
     <string name="error_network">"Check your internet connection and try again"</string>
