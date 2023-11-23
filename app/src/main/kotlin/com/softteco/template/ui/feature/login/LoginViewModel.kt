@@ -3,7 +3,6 @@ package com.softteco.template.ui.feature.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
@@ -13,6 +12,7 @@ import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -64,7 +64,7 @@ class LoginViewModel @Inject constructor(
     )
 
     private fun onLogin() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             loginState.value = LoginState.Loading
 
             val credentials = CredentialsDto(
@@ -74,11 +74,7 @@ class LoginViewModel @Inject constructor(
 
             val result = repository.login(credentials)
             loginState.value = when (result) {
-                is Result.Success -> {
-                    snackBarState.value = SnackBarState(R.string.success, true)
-                    LoginState.Success
-                }
-
+                is Result.Success -> LoginState.Success
                 is Result.Error -> {
                     handleApiError(result, snackBarState)
                     LoginState.Default

@@ -33,8 +33,6 @@ import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun LoginScreen(
@@ -49,7 +47,6 @@ fun LoginScreen(
 
     LaunchedEffect(state.loginState) {
         if (state.loginState is LoginViewModel.LoginState.Success) {
-            delay(2.seconds)
             onSuccess()
         }
     }
@@ -91,7 +88,6 @@ private fun ScreenContent(
         ) {
             CustomTopAppBar(
                 stringResource(id = R.string.login),
-                showBackIcon = true,
                 modifier = Modifier.fillMaxWidth(),
                 onBackClicked = onBackClicked
             )
