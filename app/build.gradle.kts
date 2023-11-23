@@ -53,7 +53,9 @@ android {
         debug {
             isDebuggable = true
             buildConfigField("String", "BASE_URL", baseUrl)
-            enableAndroidTestCoverage = true
+            // disabled because of unit tests errors,
+            // could be restored after running instrumentation tests on CI, and fixing unit tests errors
+            // enableAndroidTestCoverage = true
         }
     }
     compileOptions {
