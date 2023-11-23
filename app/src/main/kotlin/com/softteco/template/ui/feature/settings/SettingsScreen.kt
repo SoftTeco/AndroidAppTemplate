@@ -34,6 +34,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
+import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
 
@@ -92,6 +93,19 @@ private fun ScreenContent(
                     intent.launchUrl(context, Uri.parse(ABOUT_URL))
                 },
                 headlineContent = { Text(text = stringResource(id = R.string.about)) },
+                trailingContent = {
+                    Icon(
+                        Icons.Sharp.ArrowForwardIos,
+                        contentDescription = "Settings description"
+                    )
+                },
+            )
+            Divider()
+            ListItem(
+                modifier = Modifier.clickable {
+                    context.sendMail(recipient = "softteco.os.dev@gmail.com", subject = "User Inquiry or Feedback")
+                },
+                headlineContent = { Text(text = stringResource(id = R.string.contact_us)) },
                 trailingContent = {
                     Icon(
                         Icons.Sharp.ArrowForwardIos,
