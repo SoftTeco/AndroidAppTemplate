@@ -30,14 +30,12 @@ class LoginViewModelTest : BaseTest() {
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: LoginViewModel
 
-    // The test doesn't work because of using Dispatchers.IO in onLogin method  in LoginViewModel
-    // Need to investigate it and probably use a wrapper for Dispatchers to mock them in tests.
-/*    @Test
+    @Test
     fun `when valid credentials and login button is enabled then success state is emitted`() =
         runTest {
             val credentials = CredentialsDto(email = EMAIL, password = PASSWORD)
             coEvery { repository.login(credentials) } returns Result.Success(Unit)
-            viewModel = LoginViewModel(repository)
+            viewModel = LoginViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
@@ -49,12 +47,12 @@ class LoginViewModelTest : BaseTest() {
                 awaitItem().loginState.shouldBeTypeOf<LoginViewModel.LoginState.Success>()
             }
             coVerify(exactly = 1) { repository.login(credentials) }
-        }*/
+        }
 
     @Test
     fun `when invalid password then login button isn't enabled and password field error is shown`() =
         runTest {
-            viewModel = LoginViewModel(repository)
+            viewModel = LoginViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
@@ -68,7 +66,7 @@ class LoginViewModelTest : BaseTest() {
     @Test
     fun `when invalid email then login button isn't enabled and email field error is shown`() =
         runTest {
-            viewModel = LoginViewModel(repository)
+            viewModel = LoginViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
@@ -83,7 +81,7 @@ class LoginViewModelTest : BaseTest() {
     @Test
     fun `when both empty email and password then button isn't enabled and email, password fields error are shown`() =
         runTest {
-            viewModel = LoginViewModel(repository)
+            viewModel = LoginViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().run {
                     fieldStateEmail shouldBe EmailFieldState.Empty
@@ -100,7 +98,7 @@ class LoginViewModelTest : BaseTest() {
             delay(1.seconds)
             Result.Success(Unit)
         }
-        viewModel = LoginViewModel(repository)
+        viewModel = LoginViewModel(repository, appDispatchers)
         viewModel.state.test {
             awaitItem().onEmailChanged(EMAIL)
             awaitItem().onPasswordChanged(PASSWORD)
