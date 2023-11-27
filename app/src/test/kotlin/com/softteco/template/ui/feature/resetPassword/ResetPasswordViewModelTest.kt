@@ -41,7 +41,7 @@ class ResetPasswordViewModelTest : BaseTest() {
             val savedStateHandle = SavedStateHandle().apply {
                 set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
             }
-            viewModel = ResetPasswordViewModel(repository, savedStateHandle)
+            viewModel = ResetPasswordViewModel(repository, savedStateHandle, appDispatchers)
 
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD)
@@ -73,7 +73,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                 repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
-                }
+                },
+                appDispatchers
             )
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
@@ -93,7 +94,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                 repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
-                }
+                },
+                appDispatchers
             )
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
@@ -113,7 +115,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                 repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
-                }
+                },
+                appDispatchers
             )
             viewModel.state.test {
                 awaitItem().run {
@@ -139,7 +142,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                 repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
-                }
+                },
+                appDispatchers
             )
 
             viewModel.state.test {

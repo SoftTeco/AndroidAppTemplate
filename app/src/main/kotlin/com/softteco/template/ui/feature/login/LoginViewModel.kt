@@ -52,7 +52,7 @@ class LoginViewModel @Inject constructor(
             },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
-                validateEmail(emailStateValue, emailFieldState, viewModelScope)
+                validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
             },
             onPasswordChanged = { passwordStateValue.value = it },
             onLoginClicked = ::onLogin,

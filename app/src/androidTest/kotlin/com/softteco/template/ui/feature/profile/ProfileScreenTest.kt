@@ -20,12 +20,10 @@ import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.ui.theme.AppTheme
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ProfileScreenTest : BaseTest() {
 
     @get:Rule
@@ -41,7 +39,7 @@ class ProfileScreenTest : BaseTest() {
     @Test
     fun when_name_filed_clicked_then_edit_name_dialog_is_shown() = runTest {
         coEvery { profileRepository.getUser() } coAnswers { Result.Success(testProfile) }
-        viewModel = ProfileViewModel(profileRepository)
+        viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
         composeTestRule.run {
             setContent {
@@ -66,7 +64,7 @@ class ProfileScreenTest : BaseTest() {
     @Test
     fun when_birth_date_field_clicked_then_edit_birth_date_dialog_is_shown() = runTest {
         coEvery { profileRepository.getUser() } coAnswers { Result.Success(testProfile) }
-        viewModel = ProfileViewModel(profileRepository)
+        viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
         composeTestRule.run {
             setContent {
@@ -89,7 +87,7 @@ class ProfileScreenTest : BaseTest() {
     @Test
     fun when_country_field_clicked_then_edit_country_dialog_is_shown() = runTest {
         coEvery { profileRepository.getUser() } coAnswers { Result.Success(testProfile) }
-        viewModel = ProfileViewModel(profileRepository)
+        viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
         composeTestRule.run {
             setContent {
@@ -116,7 +114,7 @@ class ProfileScreenTest : BaseTest() {
     fun when_entering_characters_other_than_letters_text_field_value_does_not_change() {
         runTest {
             coEvery { profileRepository.getUser() } coAnswers { Result.Success(testProfile) }
-            viewModel = ProfileViewModel(profileRepository)
+            viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
             composeTestRule.run {
                 setContent {
@@ -144,7 +142,7 @@ class ProfileScreenTest : BaseTest() {
     fun when_entering_values_with_lowercase_letters_and_confirm_then_capitalized_values_will_be_saved() {
         runTest {
             coEvery { profileRepository.getUser() } coAnswers { Result.Success(testProfile) }
-            viewModel = ProfileViewModel(profileRepository)
+            viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
             composeTestRule.run {
                 setContent {
@@ -175,7 +173,7 @@ class ProfileScreenTest : BaseTest() {
     fun when_entering_more_than_two_values_and_confirm_then_first_two_values_will_be_saved() {
         runTest {
             coEvery { profileRepository.getUser() } coAnswers { Result.Success(testProfile) }
-            viewModel = ProfileViewModel(profileRepository)
+            viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
             composeTestRule.run {
                 setContent {

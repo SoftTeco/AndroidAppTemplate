@@ -12,6 +12,7 @@ import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validatePassword
+import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     private val resetPasswordState =
@@ -56,7 +58,7 @@ class ResetPasswordViewModel @Inject constructor(
     )
 
     private fun onResetPassword() {
-        viewModelScope.launch {
+        viewModelScope.launch(appDispatchers.ui) {
             resetPasswordState.value = ResetPasswordState.Loading
 
             val newPassword = NewPasswordDto(

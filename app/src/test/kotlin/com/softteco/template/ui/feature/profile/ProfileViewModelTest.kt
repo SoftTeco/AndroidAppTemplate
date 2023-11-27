@@ -32,7 +32,7 @@ class ProfileViewModelTest : BaseTest() {
             delay(1.seconds) // emulation a delay in receiving data
             Result.Success(testProfile)
         }
-        viewModel = ProfileViewModel(profileRepository)
+        viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
         viewModel.state.test {
             awaitItem().profileState shouldBe ProfileViewModel.GetProfileState.Loading
@@ -42,7 +42,7 @@ class ProfileViewModelTest : BaseTest() {
     @Test
     fun `when screen is open and data received then profile data is shown`() = runTest {
         coEvery { profileRepository.getUser() } returns Result.Success(testProfile)
-        viewModel = ProfileViewModel(profileRepository)
+        viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
         viewModel.state.test {
             awaitItem().run {
@@ -56,7 +56,7 @@ class ProfileViewModelTest : BaseTest() {
     @Test
     fun `when screen is open and network error happened then snackbar is shown`() = runTest {
         coEvery { profileRepository.getUser() } returns Result.Error(ErrorEntity.Network)
-        viewModel = ProfileViewModel(profileRepository)
+        viewModel = ProfileViewModel(profileRepository, appDispatchers)
 
         viewModel.state.test {
             awaitItem().snackbar.show shouldBe true

@@ -45,7 +45,7 @@ class SignUpViewModelTest : BaseTest() {
                 password = PASSWORD
             )
             coEvery { repository.registration(createUserDto) } returns Result.Success("")
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
 
             viewModel.state.test {
                 awaitItem().onUserNameChanged(USERNAME)
@@ -70,7 +70,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when invalid email then email field error is shown and sign-up button isn't enabled`() =
         runTest {
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 awaitItem().onUserNameChanged(USERNAME)
@@ -87,7 +87,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when password hasn't capital letter then password field error is shown and sign-up button isn't enabled`() =
         runTest {
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
                 awaitItem().onUserNameChanged(USERNAME)
@@ -105,7 +105,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when password hasn't enough symbols then password field error is shown and sign-up button isn't enabled`() =
         runTest {
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
                 awaitItem().onUserNameChanged(USERNAME)
@@ -123,7 +123,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when empty username then sign-up button isn't enabled`() =
         runTest {
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
             viewModel.state.test {
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onEmailChanged(EMAIL)
@@ -138,7 +138,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when empty username, email, password then password, email fields error are shown and button isn't enabled`() =
         runTest {
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
             viewModel.state.test {
                 awaitItem().run {
                     fieldStatePassword shouldBe PasswordFieldState.Empty
@@ -160,7 +160,7 @@ class SignUpViewModelTest : BaseTest() {
                 delay(1.seconds)
                 Result.Success("")
             }
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore)
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
 
             viewModel.state.test {
                 awaitItem().onUserNameChanged(USERNAME)

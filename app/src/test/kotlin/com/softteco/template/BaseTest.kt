@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 open class BaseTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     private val dispatcher = UnconfinedTestDispatcher()
-    protected val appDispatchers = AppDispatchers(dispatcher)
+    protected val appDispatchers = AppDispatchers(dispatcher, dispatcher, dispatcher, dispatcher)
     init {
         MockKAnnotations.init(this)
     }

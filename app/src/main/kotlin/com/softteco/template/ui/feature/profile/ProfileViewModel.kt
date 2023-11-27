@@ -7,9 +7,9 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,6 +28,7 @@ private const val COUNTRY_DEBOUNCE = 600
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     private val profileState = MutableStateFlow<GetProfileState>(GetProfileState.Loading)
@@ -48,7 +49,7 @@ class ProfileViewModel @Inject constructor(
             countries = countries,
             onCountryChanged = { country -> countryState.value = country },
             onLogoutClicked = {
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch(appDispatchers.io) {
                     profileRepository.logout()
                     profileState.value = GetProfileState.Logout
                 }
@@ -61,7 +62,7 @@ class ProfileViewModel @Inject constructor(
     )
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(appDispatchers.io) {
             profileRepository.getUser().let { result ->
                 profileState.value = when (result) {
                     is Result.Success -> GetProfileState.Success(result.data)
@@ -73,7 +74,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(appDispatchers.io) {
             countryState
                 .drop(1)
                 .debounce(COUNTRY_DEBOUNCE.milliseconds)
@@ -92,7 +93,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun onProfileChanged(profile: Profile) {
-        viewModelScope.launch { profileRepository.cacheProfile(profile) }
+        viewModelScope.launch(appDispatchers.ui) { profileRepository.cacheProfile(profile) }
         profileState.value.run {
             if (this is GetProfileState.Success) {
                 profileState.value = GetProfileState.Success(profile)
