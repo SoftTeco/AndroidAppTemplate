@@ -13,6 +13,7 @@ import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.ui.feature.validatePassword
+import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.combine
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
     private val userEncryptedDataStore: DataStore<CreateUserDto>,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
     private val registrationState = MutableStateFlow<SignupState>(SignupState.Default)
     private var userNameStateValue = MutableStateFlow("")
@@ -60,7 +62,7 @@ class SignUpViewModel @Inject constructor(
             onUserNameChanged = { userNameStateValue.value = it.trim() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
-                validateEmail(emailStateValue, emailFieldState, viewModelScope)
+                validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
             },
             onPasswordChanged = { passwordStateValue.value = it.trim() },
             onRegisterClicked = ::onRegister,
@@ -72,7 +74,7 @@ class SignUpViewModel @Inject constructor(
     )
 
     private fun onRegister() {
-        viewModelScope.launch {
+        viewModelScope.launch(appDispatchers.ui) {
             registrationState.value = SignupState.Loading
 
             val createUserDto = CreateUserDto(

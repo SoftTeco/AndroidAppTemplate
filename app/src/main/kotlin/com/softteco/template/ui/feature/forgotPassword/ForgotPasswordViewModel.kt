@@ -10,6 +10,7 @@ import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.validateEmail
+import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     private val repository: ProfileRepository,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
     private val forgotPasswordState =
         MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Default)
@@ -45,7 +47,7 @@ class ForgotPasswordViewModel @Inject constructor(
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
-                validateEmail(emailStateValue, emailFieldState, viewModelScope)
+                validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
             },
             onRestorePasswordClicked = ::onForgotPassword,
         )
@@ -64,7 +66,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
     private fun onForgotPassword() {
         if (state.value.fieldStateEmail is EmailFieldState.Success) {
-            viewModelScope.launch {
+            viewModelScope.launch(appDispatchers.ui) {
                 forgotPasswordState.value = ForgotPasswordState.Loading
 
                 val email = ResetPasswordDto(email = emailStateValue.value)

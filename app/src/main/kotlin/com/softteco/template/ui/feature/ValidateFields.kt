@@ -4,6 +4,7 @@ import com.softteco.template.Constants
 import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
 import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
 import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
+import com.softteco.template.utils.AppDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,8 +48,9 @@ internal fun validateEmail(
     fieldValue: MutableStateFlow<String>,
     fieldState: MutableStateFlow<EmailFieldState>,
     coroutineScope: CoroutineScope,
+    appDispatchers: AppDispatchers
 ) {
-    coroutineScope.launch {
+    coroutineScope.launch(appDispatchers.ui) {
         fieldValue
             .onEach { fieldState.value = EmailFieldState.Waiting }
             .debounce(INPUT_DELAY.milliseconds).collect { value ->

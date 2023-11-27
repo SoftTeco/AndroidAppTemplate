@@ -34,7 +34,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
             coEvery { repository.resetPassword(ResetPasswordDto(EMAIL)) } returns Result.Success(
                 Unit
             )
-            viewModel = ForgotPasswordViewModel(repository)
+            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
 
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
@@ -57,7 +57,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @Test
     fun `when invalid email then reset password button isn't enabled and email field error is shown`() =
         runTest {
-            viewModel = ForgotPasswordViewModel(repository)
+            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 delay(1.seconds)
@@ -72,7 +72,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @Test
     fun `when empty email then reset password button isn't enabled and email field error is shown`() =
         runTest {
-            viewModel = ForgotPasswordViewModel(repository)
+            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
@@ -88,7 +88,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
                 delay(1.seconds)
                 Result.Success(Unit)
             }
-            viewModel = ForgotPasswordViewModel(repository)
+            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
 
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)

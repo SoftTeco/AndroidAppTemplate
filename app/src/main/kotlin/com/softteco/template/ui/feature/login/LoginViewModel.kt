@@ -10,9 +10,9 @@ import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validateEmail
+import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -23,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: ProfileRepository,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     private val loginState = MutableStateFlow<LoginState>(LoginState.Default)
@@ -51,7 +52,7 @@ class LoginViewModel @Inject constructor(
             },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
-                validateEmail(emailStateValue, emailFieldState, viewModelScope)
+                validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
             },
             onPasswordChanged = { passwordStateValue.value = it },
             onLoginClicked = ::onLogin,
@@ -64,7 +65,7 @@ class LoginViewModel @Inject constructor(
     )
 
     private fun onLogin() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(appDispatchers.io) {
             loginState.value = LoginState.Loading
 
             val credentials = CredentialsDto(
