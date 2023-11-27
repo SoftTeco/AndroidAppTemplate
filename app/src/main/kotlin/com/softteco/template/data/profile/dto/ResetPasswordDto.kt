@@ -1,5 +1,10 @@
 package com.softteco.template.data.profile.dto
 
-import com.squareup.moshi.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class ResetPasswordDto(@field:Json(name = "email") val email: String)
+@Serializable
+data class ResetPasswordDto(
+    @SerialName("email")
+    val email: String
+)

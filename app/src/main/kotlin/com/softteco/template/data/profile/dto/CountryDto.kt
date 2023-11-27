@@ -1,15 +1,18 @@
 package com.softteco.template.data.profile.dto
 
-import com.squareup.moshi.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CountryDto(
-    @Json(name = "name")
+    @SerialName("name")
     val name: Name,
 ) {
+    @Serializable
     data class Name(
-        @Json(name = "common")
+        @SerialName("common")
         val common: String,
-        @Json(name = "official")
+        @SerialName("official")
         val official: String,
     )
 }

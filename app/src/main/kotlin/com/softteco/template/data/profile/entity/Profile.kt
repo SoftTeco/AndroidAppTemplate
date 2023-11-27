@@ -2,8 +2,8 @@ package com.softteco.template.data.profile.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Entity
 data class Profile(
@@ -19,13 +19,10 @@ data class Profile(
     val avatar: String? = null,
 ) {
     companion object {
-        private val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
 
-        fun Profile.toJson(): String = moshi.adapter(Profile::class.java).toJson(this)
+        fun Profile.toJson(): String = Json.encodeToString(this)
 
-        fun fromJson(json: String): Profile {
-            return moshi.adapter(Profile::class.java).fromJson(json)!!
-        }
+        fun fromJson(json: String): Profile = Json.decodeFromString(json)
     }
 
     fun fullName(): String {
