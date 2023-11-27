@@ -71,6 +71,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAppDispatchers(): AppDispatchers = AppDispatchers(
-        io = Dispatchers.IO
+        ui = Dispatchers.Main,
+        default = Dispatchers.Default,
+        io = Dispatchers.IO,
+        unconfined = Dispatchers.Unconfined
     )
 }
