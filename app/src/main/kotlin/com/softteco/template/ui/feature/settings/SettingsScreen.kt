@@ -35,6 +35,7 @@ import com.softteco.template.ui.theme.ThemeMode
 import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
+private const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
 
 @Composable
 fun SettingsScreen(
@@ -107,6 +108,17 @@ private fun ScreenContent(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Divider()
+            AppListItem(
+                onClick = {
+                    val intent = CustomTabsIntent.Builder().build()
+                    intent.launchUrl(context, Uri.parse(TERMS_OF_SERVICES_URL))
+                },
+                title = stringResource(id = R.string.terms_of_services),
+                imageIcon = Icons.Sharp.ArrowForwardIos,
+                iconDescription = stringResource(id = R.string.terms_of_services),
+                modifier = Modifier.fillMaxWidth()
+            )
             Divider()
             CustomBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
