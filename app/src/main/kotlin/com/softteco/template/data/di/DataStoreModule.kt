@@ -11,7 +11,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.data.profile.dto.ProfileDto
 import com.softteco.template.utils.CryptoManager
+import com.softteco.template.utils.UserProfileSerializer
 import com.softteco.template.utils.UserSettingsSerializer
 import dagger.Module
 import dagger.Provides
@@ -27,6 +29,7 @@ import javax.inject.Singleton
 private const val USER_PREFERENCES = "user_data_preferences"
 private const val USER_ENCRYPTED = "user_encrypted_data"
 private const val APP_THEME_PREFERENCES = "theme_mode"
+private const val USER_PROFILE_ENCRYPTED = "user_profile_encrypted_data"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -54,6 +57,19 @@ object DataStoreModule {
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
             produceFile = { appContext.dataStoreFile(USER_ENCRYPTED) },
             serializer = UserSettingsSerializer(CryptoManager())
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserProfileEncryptedDataStore(@ApplicationContext appContext: Context): DataStore<ProfileDto> {
+        return DataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = { ProfileDto(0, "", "", "", "") }
+            ),
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            produceFile = { appContext.dataStoreFile(USER_PROFILE_ENCRYPTED) },
+            serializer = UserProfileSerializer(CryptoManager())
         )
     }
 
