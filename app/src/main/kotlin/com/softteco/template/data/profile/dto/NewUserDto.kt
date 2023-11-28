@@ -1,10 +1,12 @@
 package com.softteco.template.data.profile.dto
 
-import com.squareup.moshi.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class NewUserDto(
-    @field:Json(name = "username")
+    @SerialName("username")
     val username: String,
-    @field:Json(name = "email")
+    @SerialName("email")
     val email: String,
 )
