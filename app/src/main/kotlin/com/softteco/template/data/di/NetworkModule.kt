@@ -1,22 +1,21 @@
 package com.softteco.template.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.softteco.template.BuildConfig
 import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
 import com.softteco.template.utils.AppDispatchers
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 
@@ -56,8 +55,7 @@ object NetworkModule {
 
     @Suppress("SameParameterValue")
     private fun buildRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
-        val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-        val converterFactory: Converter.Factory = MoshiConverterFactory.create(moshi)
+        val converterFactory = Json.asConverterFactory("application/json".toMediaType())
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)

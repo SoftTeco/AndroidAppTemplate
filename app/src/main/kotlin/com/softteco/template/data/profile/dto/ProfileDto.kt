@@ -1,24 +1,26 @@
 package com.softteco.template.data.profile.dto
 
 import com.softteco.template.data.profile.entity.Profile
-import com.squareup.moshi.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ProfileDto(
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int,
-    @Json(name = "username")
+    @SerialName("username")
     val username: String,
-    @Json(name = "email")
+    @SerialName("email")
     val email: String,
-    @Json(name = "created_at")
+    @SerialName("created_at")
     val createdAt: String,
-    @Json(name = "first_name")
+    @SerialName("first_name")
     val firstName: String? = null,
-    @Json(name = "last_name")
+    @SerialName("last_name")
     val lastName: String? = null,
-    @Json(name = "birth_date")
+    @SerialName("birth_date")
     val birthDate: String? = null,
-    @Json(name = "country")
+    @SerialName("country")
     val country: String? = null,
 )
 

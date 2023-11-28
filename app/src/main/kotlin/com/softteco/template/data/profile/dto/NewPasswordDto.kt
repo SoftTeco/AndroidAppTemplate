@@ -1,10 +1,12 @@
 package com.softteco.template.data.profile.dto
 
-import com.squareup.moshi.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class NewPasswordDto(
-    @Json(name = "password")
+    @SerialName("password")
     val password: String,
-    @Json(name = "confirmation")
+    @SerialName("confirmation")
     val confirmation: String
 )

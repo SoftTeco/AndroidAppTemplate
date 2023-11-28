@@ -110,11 +110,8 @@ dependencies {
     implementation(libs.androidx.compose.icons)
 
     implementation(libs.retrofit)
-    implementation(libs.retrofit.moshi.onverter)
     implementation(libs.retrofit.coroutines.adapter)
     implementation(libs.retrofit.converter.scalars)
-    implementation(libs.moshi)
-    ksp(libs.moshi.codegen)
     implementation(libs.okhttp)
     implementation(libs.okhttpLoggingInterceptor)
 
@@ -128,6 +125,8 @@ dependencies {
     implementation(libs.preferences.data.store)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.timber)
+    implementation(libs.kotlinx.serialization.converter)
+    implementation(libs.kotlin.reflect)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

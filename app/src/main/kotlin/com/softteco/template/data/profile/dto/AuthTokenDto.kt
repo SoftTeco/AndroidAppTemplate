@@ -1,10 +1,12 @@
 package com.softteco.template.data.profile.dto
 
 import com.softteco.template.data.profile.entity.AuthToken
-import com.squareup.moshi.Json
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AuthTokenDto(
-    @Json(name = "token")
+    @SerialName("token")
     val token: String,
 )
 
