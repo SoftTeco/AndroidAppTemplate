@@ -66,7 +66,9 @@
     <string name="about">About</string>
     <string name="theme">Theme</string>
     <string name="system">System</string>
+    <string name="contact_us">Contact Us</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
+    <string name="mail_error">No email app is available on your device</string>
 
 </resources>

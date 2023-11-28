@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.ArrowForwardIos
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,12 +24,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softteco.template.Constants
 import com.softteco.template.R
+import com.softteco.template.ui.components.AppListItem
 import com.softteco.template.ui.components.CustomBottomSheet
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
+import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
 
@@ -75,30 +74,39 @@ private fun ScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 onBackClicked = onBackClicked
             )
-            ListItem(
-                modifier = Modifier.clickable { isSheetOpen = true },
-                headlineContent = { Text(text = stringResource(id = R.string.theme)) },
-                trailingContent = {
-                    Icon(
-                        Icons.Sharp.ArrowForwardIos,
-                        contentDescription = "Settings description"
-                    )
-                },
+            AppListItem(
+                onClick = { isSheetOpen = true },
+                title = stringResource(id = R.string.theme),
+                imageIcon = Icons.Sharp.ArrowForwardIos,
+                iconDescription = stringResource(id = R.string.theme),
+                modifier = Modifier.fillMaxWidth()
             )
             Divider()
-            ListItem(
-                modifier = Modifier.clickable {
+            AppListItem(
+                onClick = {
                     val intent = CustomTabsIntent.Builder().build()
                     intent.launchUrl(context, Uri.parse(ABOUT_URL))
                 },
-                headlineContent = { Text(text = stringResource(id = R.string.about)) },
-                trailingContent = {
-                    Icon(
-                        Icons.Sharp.ArrowForwardIos,
-                        contentDescription = "Settings description"
+                title = stringResource(id = R.string.about),
+                imageIcon = Icons.Sharp.ArrowForwardIos,
+                iconDescription = stringResource(id = R.string.about),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Divider()
+            AppListItem(
+                onClick = {
+                    context.sendMail(
+                        recipient = Constants.CONTACT_EMAIL,
+                        subject = Constants.CONTACT_SUBJECT
                     )
                 },
+                title = stringResource(id = R.string.contact_us),
+                imageIcon = Icons.Sharp.ArrowForwardIos,
+                iconDescription = stringResource(id = R.string.contact_us),
+                modifier = Modifier.fillMaxWidth()
             )
+
             Divider()
             CustomBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
