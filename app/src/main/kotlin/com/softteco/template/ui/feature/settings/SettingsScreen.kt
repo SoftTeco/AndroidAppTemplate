@@ -2,6 +2,7 @@ package com.softteco.template.ui.feature.settings
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +38,7 @@ import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
 
 private const val ABOUT_URL = "https://softteco.com"
+private const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
 
 @Composable
 fun SettingsScreen(
@@ -61,6 +64,13 @@ private fun ScreenContent(
         mutableStateOf(false)
     }
     val context = LocalContext.current
+    val customIntent = CustomTabsIntent.Builder()
+        .setDefaultColorSchemeParams(
+            CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(MaterialTheme.colorScheme.primary.toArgb())
+                .build()
+        )
+        .build()
 
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column(
@@ -96,6 +106,19 @@ private fun ScreenContent(
                     Icon(
                         Icons.Sharp.ArrowForwardIos,
                         contentDescription = "Settings description"
+                    )
+                },
+            )
+            Divider()
+            ListItem(
+                modifier = Modifier.clickable {
+                    customIntent.launchUrl(context, Uri.parse(TERMS_OF_SERVICES_URL))
+                },
+                headlineContent = { Text(text = stringResource(id = R.string.terms_of_services)) },
+                trailingContent = {
+                    Icon(
+                        Icons.Sharp.ArrowForwardIos,
+                        contentDescription = stringResource(id = R.string.terms_of_services)
                     )
                 },
             )
