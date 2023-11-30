@@ -7,6 +7,7 @@
     <string name="back_description">back</string>
     <string name="login">Log in</string>
     <string name="bluetooth">Bluetooth</string>
+    <string name="chart">Chart</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="loading">Loading…</string>
@@ -71,5 +72,20 @@
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="mail_error">No email app is available on your device</string>
+
+    <!-- Bluetooth screen -->
+    <string name="bluetooth_icon_description">Baseline_bluetooth_24</string>
+    <string name="signal_level_icon_description">Baseline_signal_level_24</string>
+    <string name="device_name">LYWSD03MMC</string>
+
+    <!-- Chart screen -->
+    <string name="temperature">Temperature:</string>
+    <string name="humidity">Humidity:</string>
+    <string name="battery">Battery:</string>
+    <string name="temperature_point_label">T</string>
+    <string name="humidity_point_label">H</string>
+    <string name="temperature_degrees">°C</string>
+    <string name="humidity_percent">%</string>
+    <string name="battery_voltage">mV</string>
 
 </resources>

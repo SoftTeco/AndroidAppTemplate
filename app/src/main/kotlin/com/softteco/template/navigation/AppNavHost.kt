@@ -14,6 +14,8 @@ import androidx.navigation.navigation
 import com.softteco.template.navigation.AppNavHost.DEEP_LINK_URI
 import com.softteco.template.navigation.AppNavHost.RESET_PASSWORD_PATH
 import com.softteco.template.navigation.AppNavHost.RESET_TOKEN_ARG
+import com.softteco.template.ui.feature.bluetooth.BluetoothScreen
+import com.softteco.template.ui.feature.chart.ChartScreen
 import com.softteco.template.ui.feature.forgotPassword.ForgotPasswordScreen
 import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.login.LoginScreen
@@ -42,6 +44,7 @@ fun AppNavHost(
     ) {
         bottomBarGraph(navController, Modifier.padding(paddingValues = paddingValues))
         loginGraph(navController)
+        bluetoothGraph(navController)
     }
 }
 
@@ -116,6 +119,26 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 onBackClicked = { navController.navigateUp() },
                 onSuccess = { navController.navigate(Screen.Login.route) }
             )
+        }
+    }
+}
+
+fun NavGraphBuilder.bluetoothGraph(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    navigation(
+        startDestination = Screen.Bluetooth.route,
+        route = Graph.Bluetooth.route
+    ) {
+        composable(Screen.Bluetooth.route) {
+            BluetoothScreen(
+                modifier = modifier,
+                onConnect = { navController.navigate(Screen.Chart.route) }
+            )
+        }
+        composable(Screen.Chart.route) {
+            ChartScreen(onBackClicked = { navController.navigateUp() })
         }
     }
 }

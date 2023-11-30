@@ -49,6 +49,8 @@ timber = "5.0.1"
 browser = "1.7.0"
 kotlinxSerializationConverter = "1.0.0"
 kotlinReflect = "1.9.21"
+nordicSemiScanner = "1.6.0"
+hellocharts = "1.5.8"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -84,6 +86,8 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "kotlinxSerializationConverter" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
+nordicSemiScanner = { module = "no.nordicsemi.android.support.v18:scanner", version.ref = "nordicSemiScanner" }
+hellocharts = { module = "com.github.lecho:hellocharts-android", version.ref = "hellocharts" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "testExtJunit" }
