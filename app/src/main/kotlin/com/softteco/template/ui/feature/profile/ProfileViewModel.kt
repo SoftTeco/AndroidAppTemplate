@@ -1,12 +1,10 @@
 package com.softteco.template.ui.feature.profile
 
 import androidx.compose.runtime.Immutable
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.ProfileDto
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.SnackBarState
 import com.softteco.template.utils.AppDispatchers
@@ -21,8 +19,6 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -32,8 +28,7 @@ private const val COUNTRY_DEBOUNCE = 600
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val appDispatchers: AppDispatchers,
-    private val provideUserProfileEncryptedDataStore: DataStore<ProfileDto>,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     private val profileState = MutableStateFlow<GetProfileState>(GetProfileState.Loading)
@@ -71,7 +66,6 @@ class ProfileViewModel @Inject constructor(
             profileRepository.getUser().let { result ->
                 profileState.value = when (result) {
                     is Result.Success -> {
-                        saveProfileToDataStore(result.data)
                         GetProfileState.Success(result.data)
                     }
 
@@ -103,31 +97,11 @@ class ProfileViewModel @Inject constructor(
     private fun onProfileChanged(profile: Profile) {
         viewModelScope.launch(appDispatchers.ui) {
             profileRepository.cacheProfile(profile)
-            saveProfileToDataStore(profile)
             profileState.value.run {
                 if (this is GetProfileState.Success) {
                     profileState.value = GetProfileState.Success(profile)
                 }
             }
-        }
-    }
-
-    private suspend fun saveProfileToDataStore(profile: Profile) {
-        try {
-            provideUserProfileEncryptedDataStore.updateData { profileDto ->
-                profileDto.copy(
-                    id = profile.id,
-                    username = profile.username,
-                    email = profile.email,
-                    createdAt = profile.createdAt,
-                    firstName = profile.firstName,
-                    lastName = profile.lastName,
-                    birthDate = profile.birthDate,
-                    country = profile.country
-                )
-            }
-        } catch (e: IOException) {
-            Timber.e("Error writing data to disk", e)
         }
     }
 

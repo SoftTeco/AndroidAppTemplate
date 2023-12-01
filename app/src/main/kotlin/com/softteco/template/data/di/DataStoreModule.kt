@@ -10,11 +10,11 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.data.profile.dto.AuthTokenDto
 import com.softteco.template.data.profile.dto.ProfileDto
+import com.softteco.template.utils.AuthTokenSerializer
 import com.softteco.template.utils.CryptoManager
 import com.softteco.template.utils.UserProfileSerializer
-import com.softteco.template.utils.UserSettingsSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,37 +26,24 @@ import kotlinx.coroutines.SupervisorJob
 import javax.inject.Named
 import javax.inject.Singleton
 
-private const val USER_PREFERENCES = "user_data_preferences"
-private const val USER_ENCRYPTED = "user_encrypted_data"
 private const val APP_THEME_PREFERENCES = "theme_mode"
 private const val USER_PROFILE_ENCRYPTED = "user_profile_encrypted_data"
+private const val AUTH_TOKEN_ENCRYPTED = "auth_token_encrypted"
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
     @Provides
     @Singleton
-    fun providePreferencesDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create(
-            corruptionHandler = ReplaceFileCorruptionHandler(
-                produceNewData = { emptyPreferences() }
-            ),
-            migrations = listOf(SharedPreferencesMigration(appContext, USER_PREFERENCES)),
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.preferencesDataStoreFile(USER_PREFERENCES) }
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideEncryptedDataStore(@ApplicationContext appContext: Context): DataStore<CreateUserDto> {
+    @Named("AUTH_TOKEN")
+    fun providePreferencesDataStore(@ApplicationContext appContext: Context): DataStore<AuthTokenDto> {
         return DataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
-                produceNewData = { CreateUserDto("", "", "") }
+                produceNewData = { AuthTokenDto("") }
             ),
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.dataStoreFile(USER_ENCRYPTED) },
-            serializer = UserSettingsSerializer(CryptoManager())
+            produceFile = { appContext.dataStoreFile(AUTH_TOKEN_ENCRYPTED) },
+            serializer = AuthTokenSerializer(CryptoManager())
         )
     }
 
@@ -75,14 +62,24 @@ object DataStoreModule {
 
     @Provides
     @Singleton
-    @Named("themeMode")
-    fun provideThemeModeDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
+    fun provideDataStore(
+        @ApplicationContext appContext: Context,
+        preferencesFileName: String
+    ): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
+            migrations = listOf(SharedPreferencesMigration(appContext, preferencesFileName)),
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.preferencesDataStoreFile(APP_THEME_PREFERENCES) }
+            produceFile = { appContext.preferencesDataStoreFile(preferencesFileName) }
         )
+    }
+
+    @Provides
+    @Singleton
+    @Named("themeMode")
+    fun provideThemeModeDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
+        return provideDataStore(appContext, APP_THEME_PREFERENCES)
     }
 }

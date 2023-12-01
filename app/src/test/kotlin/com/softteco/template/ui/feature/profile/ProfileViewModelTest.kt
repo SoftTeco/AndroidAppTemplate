@@ -1,12 +1,10 @@
 package com.softteco.template.ui.feature.profile
 
-import androidx.datastore.core.DataStore
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
 import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.ProfileDto
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
@@ -14,7 +12,6 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -29,8 +26,6 @@ class ProfileViewModelTest : BaseTest() {
 
     private lateinit var viewModel: ProfileViewModel
 
-    private val provideUserProfileEncryptedDataStore: DataStore<ProfileDto> = mockk(relaxed = true)
-
     @Test
     fun `when screen is open and data isn't received then loading is shown`() = runTest {
         coEvery { profileRepository.getUser() } coAnswers {
@@ -39,8 +34,7 @@ class ProfileViewModelTest : BaseTest() {
         }
         viewModel = ProfileViewModel(
             profileRepository,
-            appDispatchers,
-            provideUserProfileEncryptedDataStore
+            appDispatchers
         )
 
         viewModel.state.test {
@@ -53,8 +47,7 @@ class ProfileViewModelTest : BaseTest() {
         coEvery { profileRepository.getUser() } returns Result.Success(testProfile)
         viewModel = ProfileViewModel(
             profileRepository,
-            appDispatchers,
-            provideUserProfileEncryptedDataStore
+            appDispatchers
         )
 
         viewModel.state.test {
@@ -71,8 +64,7 @@ class ProfileViewModelTest : BaseTest() {
         coEvery { profileRepository.getUser() } returns Result.Error(ErrorEntity.Network)
         viewModel = ProfileViewModel(
             profileRepository,
-            appDispatchers,
-            provideUserProfileEncryptedDataStore
+            appDispatchers
         )
 
         viewModel.state.test {
