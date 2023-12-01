@@ -2,6 +2,7 @@ package com.softteco.template.utils
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.KeyStore
@@ -14,16 +15,6 @@ class CryptoManager {
 
     private val keyStore = KeyStore.getInstance(KEY_STORE_TYPE).apply {
         load(null)
-    }
-
-    private val encryptCipher get() = Cipher.getInstance(TRANSFORMATION).apply {
-        init(Cipher.ENCRYPT_MODE, getKey())
-    }
-
-    private fun getDecryptCipherForIv(iv: ByteArray): Cipher {
-        return Cipher.getInstance(TRANSFORMATION).apply {
-            init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
-        }
     }
 
     private fun getKey(): SecretKey {
@@ -47,28 +38,57 @@ class CryptoManager {
         }.generateKey()
     }
 
-    fun encrypt(bytes: ByteArray, outputStream: OutputStream): ByteArray {
-        val encryptedBytes = encryptCipher.doFinal(bytes)
+    fun encrypt(bytes: ByteArray, outputStream: OutputStream) {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.ENCRYPT_MODE, getKey())
+
+        val blockSize = cipher.blockSize
+        val iv = cipher.iv
+
         outputStream.use {
-            it.write(encryptCipher.iv.size)
-            it.write(encryptCipher.iv)
-            it.write(encryptedBytes.size)
-            it.write(encryptedBytes)
+            it.write(iv.size)
+            it.write(iv)
+
+            var offset = 0
+            while (offset < bytes.size) {
+                val blockSizeToWrite = Math.min(blockSize, bytes.size - offset)
+                val encryptedBytes = cipher.update(bytes, offset, blockSizeToWrite)
+                if (encryptedBytes != null) {
+                    it.write(encryptedBytes)
+                }
+                offset += blockSizeToWrite
+            }
+
+            val finalEncryptedBytes = cipher.doFinal()
+            it.write(finalEncryptedBytes)
         }
-        return encryptedBytes
     }
 
     fun decrypt(inputStream: InputStream): ByteArray {
-        return inputStream.use {
-            val ivSize = it.read()
+        inputStream.use {
+            val ivSize = inputStream.read()
             val iv = ByteArray(ivSize)
-            it.read(iv)
+            inputStream.read(iv)
 
-            val encryptedBytesSize = it.read()
-            val encryptedBytes = ByteArray(encryptedBytesSize)
-            it.read(encryptedBytes)
+            val cipher = Cipher.getInstance(TRANSFORMATION)
+            cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
 
-            getDecryptCipherForIv(iv).doFinal(encryptedBytes)
+            val blockSize = cipher.blockSize
+            val buffer = ByteArray(blockSize)
+            val byteArrayOutputStream = ByteArrayOutputStream()
+
+            var bytesRead = inputStream.read(buffer)
+            while (bytesRead != -1) {
+                val decryptedBytes = cipher.update(buffer, 0, bytesRead)
+                if (decryptedBytes != null) {
+                    byteArrayOutputStream.write(decryptedBytes)
+                }
+                bytesRead = inputStream.read(buffer)
+            }
+
+            val finalDecryptedBytes = cipher.doFinal()
+            byteArrayOutputStream.write(finalDecryptedBytes)
+            return byteArrayOutputStream.toByteArray()
         }
     }
 

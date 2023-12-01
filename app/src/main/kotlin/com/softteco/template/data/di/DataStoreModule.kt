@@ -35,7 +35,7 @@ private const val AUTH_TOKEN_ENCRYPTED = "auth_token_encrypted"
 object DataStoreModule {
     @Provides
     @Singleton
-    @Named("AUTH_TOKEN")
+    @Named("authToken")
     fun providePreferencesDataStore(@ApplicationContext appContext: Context): DataStore<AuthTokenDto> {
         return DataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(

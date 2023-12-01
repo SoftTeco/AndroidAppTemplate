@@ -25,7 +25,7 @@ import javax.inject.Singleton
 internal class ProfileRepositoryImpl @Inject constructor(
     private val templateApi: TemplateApi,
     private val errorHandler: ErrorHandler,
-    @Named("AUTH_TOKEN") private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>,
+    @Named("authToken") private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>,
     private val userProfileEncryptedDataStore: DataStore<ProfileDto>,
     private val countriesApi: RestCountriesApi,
 ) : ProfileRepository {

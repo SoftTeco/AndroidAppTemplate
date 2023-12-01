@@ -16,7 +16,6 @@ class AuthTokenSerializer(
 
     override suspend fun readFrom(input: InputStream): AuthTokenDto {
         val decryptedBytes = cryptoManager.decrypt(input)
-        Timber.d("Decrypted bytes: ${decryptedBytes.decodeToString()}")
         return try {
             Json.decodeFromString(
                 deserializer = AuthTokenDto.serializer(),
@@ -27,6 +26,7 @@ class AuthTokenSerializer(
             defaultValue
         }
     }
+
     override suspend fun writeTo(t: AuthTokenDto, output: OutputStream) {
         cryptoManager.encrypt(
             bytes = Json.encodeToString(
