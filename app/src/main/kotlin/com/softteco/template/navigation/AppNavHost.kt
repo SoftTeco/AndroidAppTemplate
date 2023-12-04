@@ -57,7 +57,13 @@ fun NavGraphBuilder.bottomBarGraph(
         route = Graph.BottomBar.route
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(modifier = modifier)
+            BluetoothScreen(
+                modifier = modifier,
+                onConnect = { navController.navigate(Screen.Chart.route) }
+            )
+        }
+        composable(Screen.Chart.route) {
+            ChartScreen(onBackClicked = { navController.navigateUp() })
         }
         composable(Screen.Profile.route) {
             ProfileScreen(

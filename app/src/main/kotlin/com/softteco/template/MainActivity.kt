@@ -19,6 +19,7 @@ import com.softteco.template.ui.AppContent
 import com.softteco.template.ui.feature.settings.PreferencesKeys
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.ThemeMode
+import com.softteco.template.utils.BluetoothHelper
 import com.softteco.template.utils.getFromDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        BluetoothHelper.initBluetoothHelper(this)
         setContent {
             val theme = dataStore.getFromDataStore(
                 PreferencesKeys.THEME_MODE,
