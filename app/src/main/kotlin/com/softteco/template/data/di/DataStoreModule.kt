@@ -23,10 +23,9 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import javax.inject.Named
 import javax.inject.Singleton
 
-private const val APP_THEME_PREFERENCES = "theme_mode"
+private const val PREFERENCES = "preferences"
 private const val USER_PROFILE_ENCRYPTED = "user_profile_encrypted_data"
 private const val AUTH_TOKEN_ENCRYPTED = "auth_token_encrypted"
 
@@ -35,7 +34,6 @@ private const val AUTH_TOKEN_ENCRYPTED = "auth_token_encrypted"
 object DataStoreModule {
     @Provides
     @Singleton
-    @Named("authToken")
     fun providePreferencesDataStore(@ApplicationContext appContext: Context): DataStore<AuthTokenDto> {
         return DataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
@@ -63,23 +61,15 @@ object DataStoreModule {
     @Provides
     @Singleton
     fun provideDataStore(
-        @ApplicationContext appContext: Context,
-        preferencesFileName: String
+        @ApplicationContext appContext: Context
     ): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            migrations = listOf(SharedPreferencesMigration(appContext, preferencesFileName)),
+            migrations = listOf(SharedPreferencesMigration(appContext, PREFERENCES)),
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.preferencesDataStoreFile(preferencesFileName) }
+            produceFile = { appContext.preferencesDataStoreFile(PREFERENCES) }
         )
-    }
-
-    @Provides
-    @Singleton
-    @Named("themeMode")
-    fun provideThemeModeDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
-        return provideDataStore(appContext, APP_THEME_PREFERENCES)
     }
 }

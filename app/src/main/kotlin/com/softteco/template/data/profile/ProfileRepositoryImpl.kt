@@ -18,14 +18,13 @@ import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 internal class ProfileRepositoryImpl @Inject constructor(
     private val templateApi: TemplateApi,
     private val errorHandler: ErrorHandler,
-    @Named("authToken") private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>,
+    private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>,
     private val userProfileEncryptedDataStore: DataStore<ProfileDto>,
     private val countriesApi: RestCountriesApi,
 ) : ProfileRepository {

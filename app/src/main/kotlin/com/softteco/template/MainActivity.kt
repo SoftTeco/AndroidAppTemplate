@@ -24,7 +24,6 @@ import com.softteco.template.ui.theme.ThemeMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,7 +32,6 @@ class MainActivity : ComponentActivity() {
     lateinit var profileRepository: ProfileRepository
 
     @Inject
-    @Named("themeMode")
     lateinit var dataStore: DataStore<Preferences>
 
     @SuppressLint("FlowOperatorInvokedInComposition")
@@ -44,7 +42,6 @@ class MainActivity : ComponentActivity() {
             val theme = dataStore.data.map {
                 it[PreferencesKeys.THEME_MODE]
             }.collectAsState(initial = ThemeMode.SystemDefault.value)
-
             val appThemeContent: @Composable () -> Unit = {
                 var isUserLoggedIn by rememberSaveable { mutableStateOf<Boolean?>(null) }
                 LaunchedEffect(Unit) {

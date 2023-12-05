@@ -12,17 +12,16 @@ import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    @Named("themeMode") private val themeModeDataStore: DataStore<Preferences>,
+    private val dataStore: DataStore<Preferences>,
     private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
     fun setThemeMode(themeMode: ThemeMode) {
         viewModelScope.launch(appDispatchers.ui) {
-            themeModeDataStore.edit { it[PreferencesKeys.THEME_MODE] = themeMode.value }
+            dataStore.edit { it[PreferencesKeys.THEME_MODE] = themeMode.value }
         }
     }
 
