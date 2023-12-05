@@ -27,6 +27,8 @@ private const val PASSWORD = "passwordTest"
 private const val INVALID_EMAIL = "invalid@email"
 private const val NEW_PASSWORD_NOT_VALID_1 = "newpassword"
 private const val NEW_PASSWORD_NOT_VALID_2 = "pswD"
+private const val SELECTED_TERMS_CHECKBOX = true
+private const val UNSELECTED_TERMS_CHECKBOX = false
 
 @ExtendWith(MainDispatcherExtension::class)
 class SignUpViewModelTest : BaseTest() {
@@ -51,6 +53,7 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().onUserNameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
+                awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -75,6 +78,7 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 awaitItem().onUserNameChanged(USERNAME)
                 awaitItem().onPasswordChanged(PASSWORD)
+                awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -92,6 +96,7 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
                 awaitItem().onUserNameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -110,6 +115,7 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
                 awaitItem().onUserNameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -127,6 +133,7 @@ class SignUpViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
@@ -143,6 +150,23 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().run {
                     fieldStatePassword shouldBe PasswordFieldState.Empty
                     fieldStateEmail shouldBe EmailFieldState.Empty
+                    isSignupBtnEnabled shouldBe false
+                }
+            }
+        }
+
+    @Test
+    fun `when checkbox isn't selected and sign-up button isn't enabled`() =
+        runTest {
+            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
+            viewModel.state.test {
+                awaitItem().onEmailChanged(EMAIL)
+                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onPasswordChanged(PASSWORD)
+                awaitItem().onCheckTermsChange(UNSELECTED_TERMS_CHECKBOX)
+                delay(1.seconds)
+
+                expectMostRecentItem().run {
                     isSignupBtnEnabled shouldBe false
                 }
             }
@@ -166,6 +190,7 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().onUserNameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
+                awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
