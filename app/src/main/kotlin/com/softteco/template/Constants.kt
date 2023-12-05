@@ -6,4 +6,5 @@ object Constants {
     const val PASSWORD_PATTERN_MIN = ".{6,}"
     const val CONTACT_EMAIL = "softteco.os.dev@gmail.com"
     const val CONTACT_SUBJECT = "User Inquiry or Feedback"
+    const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
 }

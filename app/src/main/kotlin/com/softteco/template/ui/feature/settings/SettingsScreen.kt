@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.Constants
+import com.softteco.template.Constants.TERMS_OF_SERVICES_URL
 import com.softteco.template.R
 import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.AppListItem
@@ -38,7 +39,6 @@ import com.softteco.template.ui.theme.ThemeMode
 import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
-private const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
 private const val PRIVACY_POLICY = "https://softteco.com/privacy-policy"
 
 @Composable

@@ -37,6 +37,7 @@ class SignUpViewModel @Inject constructor(
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
     private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
+    private var termsCheckedStateValue = MutableStateFlow(false)
 
     val state = combine(
         registrationState,
@@ -44,8 +45,9 @@ class SignUpViewModel @Inject constructor(
         emailStateValue,
         passwordStateValue,
         snackBarState,
-        emailFieldState
-    ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState ->
+        emailFieldState,
+        termsCheckedStateValue,
+    ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState, termsCheckedState ->
         val passwordState = validatePassword(passwordValue)
         State(
             registrationState = registrationState,
@@ -54,10 +56,12 @@ class SignUpViewModel @Inject constructor(
             passwordValue = passwordValue,
             fieldStateEmail = emailState,
             fieldStatePassword = passwordState,
+            termsCheckedStateValue = termsCheckedState,
             snackBar = snackBar,
             isSignupBtnEnabled = emailState is EmailFieldState.Success &&
                 passwordState is PasswordFieldState.Success &&
-                userName.isNotEmpty(),
+                userName.isNotEmpty() &&
+                termsCheckedState,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onUserNameChanged = { userNameStateValue.value = it.trim() },
             onEmailChanged = {
@@ -65,6 +69,7 @@ class SignUpViewModel @Inject constructor(
                 validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
             },
             onPasswordChanged = { passwordStateValue.value = it.trim() },
+            onCheckTermsChange = { termsCheckedStateValue.value = it },
             onRegisterClicked = ::onRegister,
         )
     }.stateIn(
@@ -113,6 +118,7 @@ class SignUpViewModel @Inject constructor(
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",
+        val termsCheckedStateValue: Boolean = false,
         val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
         val isSignupBtnEnabled: Boolean = false,
@@ -120,6 +126,7 @@ class SignUpViewModel @Inject constructor(
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onRegisterClicked: () -> Unit = {},
+        val onCheckTermsChange: (Boolean) -> Unit = {},
         val dismissSnackBar: () -> Unit = {},
     )
 
