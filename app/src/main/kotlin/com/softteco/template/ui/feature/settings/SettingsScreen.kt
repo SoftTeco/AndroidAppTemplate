@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.ArrowForwardIos
 import androidx.compose.material3.Divider
@@ -23,9 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.Constants
 import com.softteco.template.R
+import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.AppListItem
 import com.softteco.template.ui.components.CustomBottomSheet
 import com.softteco.template.ui.components.CustomTopAppBar
@@ -36,6 +39,7 @@ import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
 private const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
+private const val PRIVACY_POLICY = "https://softteco.com/privacy-policy"
 
 @Composable
 fun SettingsScreen(
@@ -70,56 +74,73 @@ private fun ScreenContent(
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTopAppBar(
-                stringResource(id = R.string.settings),
-                modifier = Modifier.fillMaxWidth(),
-                onBackClicked = onBackClicked
-            )
-            AppListItem(
-                onClick = { isSheetOpen = true },
-                title = stringResource(id = R.string.theme),
-                imageIcon = Icons.Sharp.ArrowForwardIos,
-                iconDescription = stringResource(id = R.string.theme),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Divider()
-            AppListItem(
-                onClick = {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                CustomTopAppBar(
+                    stringResource(id = R.string.settings),
+                    modifier = Modifier.fillMaxWidth(),
+                    onBackClicked = onBackClicked
+                )
+                AppListItem(
+                    onClick = { isSheetOpen = true },
+                    title = stringResource(id = R.string.theme),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.theme),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Divider()
+                AppListItem(
+                    onClick = {
+                        val intent = CustomTabsIntent.Builder().build()
+                        intent.launchUrl(context, Uri.parse(ABOUT_URL))
+                    },
+                    title = stringResource(id = R.string.about),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.about),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Divider()
+                AppListItem(
+                    onClick = {
+                        context.sendMail(
+                            recipient = Constants.CONTACT_EMAIL,
+                            subject = Constants.CONTACT_SUBJECT
+                        )
+                    },
+                    title = stringResource(id = R.string.contact_us),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.contact_us),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Divider()
+                AppListItem(
+                    onClick = {
+                        val intent = CustomTabsIntent.Builder().build()
+                        intent.launchUrl(context, Uri.parse(TERMS_OF_SERVICES_URL))
+                    },
+                    title = stringResource(id = R.string.terms_of_services),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.terms_of_services),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Divider()
+            }
+
+            AppLinkText(
+                text = stringResource(id = R.string.title_privacy_policy),
+                linkText = stringResource(id = R.string.privacy_policy),
+                linkUrl = PRIVACY_POLICY,
+                openLink = {
                     val intent = CustomTabsIntent.Builder().build()
-                    intent.launchUrl(context, Uri.parse(ABOUT_URL))
+                    intent.launchUrl(context, Uri.parse(it))
                 },
-                title = stringResource(id = R.string.about),
-                imageIcon = Icons.Sharp.ArrowForwardIos,
-                iconDescription = stringResource(id = R.string.about),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.padding(16.dp)
             )
 
-            Divider()
-            AppListItem(
-                onClick = {
-                    context.sendMail(
-                        recipient = Constants.CONTACT_EMAIL,
-                        subject = Constants.CONTACT_SUBJECT
-                    )
-                },
-                title = stringResource(id = R.string.contact_us),
-                imageIcon = Icons.Sharp.ArrowForwardIos,
-                iconDescription = stringResource(id = R.string.contact_us),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Divider()
-            AppListItem(
-                onClick = {
-                    val intent = CustomTabsIntent.Builder().build()
-                    intent.launchUrl(context, Uri.parse(TERMS_OF_SERVICES_URL))
-                },
-                title = stringResource(id = R.string.terms_of_services),
-                imageIcon = Icons.Sharp.ArrowForwardIos,
-                iconDescription = stringResource(id = R.string.terms_of_services),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Divider()
             CustomBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 isSheetOpen = isSheetOpen,
