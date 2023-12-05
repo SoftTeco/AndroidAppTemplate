@@ -77,6 +77,7 @@
     <string name="bluetooth_icon_description">Baseline_bluetooth_24</string>
     <string name="signal_level_icon_description">Baseline_signal_level_24</string>
     <string name="device_name">LYWSD03MMC</string>
+    <string name="show_only_thermometers">Show only thermometers</string>
 
     <!-- Chart screen -->
     <string name="temperature">Temperature:</string>

@@ -25,10 +25,12 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
     private var _bluetoothDevices = hashMapOf<String, ScanResult>()
     private val _devices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
     private val mutex = Mutex()
+    private var filtered: Boolean = true
+    var filteredName: String = ""
 
     val state = combine(
         _snackBarState,
-        _devices,
+        _devices
     ) { snackBar, devices ->
         State(
             devices = devices,
@@ -42,20 +44,31 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
     )
 
     @SuppressLint("MissingPermission")
-    fun addScanResult(scanResult: ScanResult, deviceName: String) {
-        if (scanResult.device.name.equals(deviceName)) {
-            viewModelScope.launch(Dispatchers.IO) {
-                mutex.withLock {
-                    addDevice(scanResult)
-                }
+    fun addScanResult(scanResult: ScanResult) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                addDevice(scanResult)
             }
         }
     }
 
+    fun setFiltered(filtered: Boolean) {
+        this.filtered = filtered
+        emitDevices()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun emitDevices() {
+        _devices.value =
+            _bluetoothDevices.toList().asReversed().map { it.second.device }.let { devices ->
+                if (filtered) devices.filter { it.name == filteredName } else devices
+            }
+    }
+
+    @SuppressLint("MissingPermission")
     private fun addDevice(scanResult: ScanResult) {
         _bluetoothDevices[scanResult.device.address] = scanResult
-        val list = _bluetoothDevices.toList().asReversed()
-        _devices.value = list.map { it.second.device }
+        emitDevices()
     }
 
     @Immutable

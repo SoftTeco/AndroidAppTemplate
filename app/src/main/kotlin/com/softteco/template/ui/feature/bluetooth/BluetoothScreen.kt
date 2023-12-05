@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,6 +35,7 @@ import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.utils.BluetoothHelper
 import kotlinx.coroutines.launch
 
+@SuppressLint("MissingPermission")
 @Composable
 fun BluetoothScreen(
     onConnect: () -> Unit,
@@ -38,21 +43,26 @@ fun BluetoothScreen(
     viewModel: BluetoothViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
+    val state by viewModel.state.collectAsState()
     val deviceName = stringResource(R.string.device_name)
+    viewModel.filteredName = deviceName
     BluetoothHelper.onScanResult = {
-        viewModel.addScanResult(it, deviceName)
+        viewModel.addScanResult(it)
     }
     BluetoothHelper.onConnect = {
         scope.launch {
             onConnect.invoke()
         }
     }
-    val state by viewModel.state.collectAsState()
+    val onFilter: (checked: Boolean) -> Unit = {
+        viewModel.setFiltered(it)
+    }
     ScreenContent(
         state = state,
         onItemClicked = { bluetoothDevice ->
             BluetoothHelper.connectToBluetoothDevice(bluetoothDevice)
         },
+        onFilter,
         modifier = modifier
     )
     OnLifecycleEvent { owner, event ->
@@ -76,6 +86,7 @@ fun BluetoothScreen(
 private fun ScreenContent(
     state: BluetoothViewModel.State,
     onItemClicked: (BluetoothDevice) -> Unit,
+    onFilter: (checked: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -83,9 +94,38 @@ private fun ScreenContent(
             stringResource(id = R.string.bluetooth),
             modifier = Modifier.fillMaxWidth()
         )
+        BluetoothDevicesSwitch(onFilter)
         BluetoothDevicesList(
             devices = state.devices,
             onItemClicked = onItemClicked,
+        )
+    }
+}
+
+@Composable
+fun BluetoothDevicesSwitch(
+    onFilter: (checked: Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var checked by remember { mutableStateOf(true) }
+
+    Row(
+        modifier = modifier.padding(start = Dimens.PaddingDefault)
+    ) {
+        Text(
+            modifier = Modifier
+                .align(alignment = Alignment.CenterVertically)
+                .padding(end = Dimens.PaddingSmall),
+            text = stringResource(id = R.string.show_only_thermometers),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = {
+                checked = it
+                onFilter.invoke(checked)
+            }
         )
     }
 }
@@ -117,6 +157,8 @@ fun BluetoothDeviceCard(
 ) {
     Card(
         modifier = modifier
+            .padding(vertical = Dimens.PaddingSmall, horizontal = Dimens.PaddingDefault)
+            .fillMaxWidth()
     ) {
         Row(
             modifier = Modifier

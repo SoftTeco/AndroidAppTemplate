@@ -21,6 +21,7 @@ import com.softteco.template.Constants.SPACE_STRING
 import com.softteco.template.MainActivity
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
+import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
 import com.softteco.template.utils.BluetoothHelper
@@ -83,7 +84,7 @@ fun Charts(
     val humColor by remember { mutableIntStateOf(generateRandomColor()) }
 
     Column(
-        modifier = modifier
+        modifier = modifier.padding(start = Dimens.PaddingDefault)
     ) {
         Text(
             text = stringResource(R.string.temperature).plus(SPACE_STRING)
