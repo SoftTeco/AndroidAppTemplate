@@ -49,11 +49,11 @@ fun BluetoothScreen(
     }
     val state by viewModel.state.collectAsState()
     ScreenContent(
-        modifier = modifier,
         state = state,
         onItemClicked = { bluetoothDevice ->
             BluetoothHelper.connectToBluetoothDevice(bluetoothDevice)
-        }
+        },
+        modifier = modifier
     )
     OnLifecycleEvent { owner, event ->
         when (event) {
@@ -76,7 +76,7 @@ fun BluetoothScreen(
 private fun ScreenContent(
     state: BluetoothViewModel.State,
     onItemClicked: (BluetoothDevice) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         CustomTopAppBar(
@@ -94,8 +94,9 @@ private fun ScreenContent(
 fun BluetoothDevicesList(
     devices: List<BluetoothDevice>,
     onItemClicked: (BluetoothDevice) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
         devices.forEach { device ->
             item {
                 BluetoothDeviceCard(
@@ -112,11 +113,10 @@ fun BluetoothDevicesList(
 fun BluetoothDeviceCard(
     bluetoothDevice: BluetoothDevice,
     onItemClicked: (BluetoothDevice) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
-            .padding(vertical = Dimens.PaddingSmall, horizontal = Dimens.PaddingDefault)
-            .fillMaxWidth(),
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier
@@ -142,11 +142,6 @@ fun BluetoothDeviceCard(
                     maxLines = 1
                 )
             }
-            // TODO: to show it after item clicked, before chart screen opened
-            /*            CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(24.dp)
-                        )*/
         }
     }
 }

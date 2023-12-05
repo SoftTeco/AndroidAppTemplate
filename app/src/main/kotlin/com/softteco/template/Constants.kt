@@ -16,4 +16,5 @@ object Constants {
     const val START_INDEX_OF_BATTERY = 3
     const val END_INDEX_OF_BATTERY = 5
     const val DIVISION_VALUE_OF_VALUES = 100
+    const val BIT_SHIFT_VALUE = 8
 }

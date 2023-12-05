@@ -17,7 +17,6 @@ import com.softteco.template.navigation.AppNavHost.RESET_TOKEN_ARG
 import com.softteco.template.ui.feature.bluetooth.BluetoothScreen
 import com.softteco.template.ui.feature.chart.ChartScreen
 import com.softteco.template.ui.feature.forgotPassword.ForgotPasswordScreen
-import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.login.LoginScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
 import com.softteco.template.ui.feature.resetPassword.ResetPasswordScreen

@@ -43,7 +43,7 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
 
     @SuppressLint("MissingPermission")
     fun addScanResult(scanResult: ScanResult, deviceName: String) {
-        if(scanResult.device.name.equals(deviceName)) {
+        if (scanResult.device.name.equals(deviceName)) {
             viewModelScope.launch(Dispatchers.IO) {
                 mutex.withLock {
                     addDevice(scanResult)

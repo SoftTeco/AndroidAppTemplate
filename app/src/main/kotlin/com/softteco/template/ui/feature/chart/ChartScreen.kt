@@ -41,8 +41,8 @@ val data = LineChartData()
 
 @Composable
 fun ChartScreen(
-    viewModel: ChartViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit,
+    viewModel: ChartViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     activity = LocalContext.current as MainActivity
@@ -51,14 +51,14 @@ fun ChartScreen(
         viewModel.provideDataLYWSD03MMC(it)
     }
 
-    ScreenContent(state, LocalContext.current as MainActivity, onBackClicked)
+    ScreenContent(onBackClicked, LocalContext.current as MainActivity, state)
 }
 
 @Composable
 private fun ScreenContent(
-    state: ChartViewModel.State,
+    onBackClicked: () -> Unit,
     activity: MainActivity,
-    onBackClicked: () -> Unit = {}
+    state: ChartViewModel.State,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         CustomTopAppBar(
@@ -75,16 +75,15 @@ private fun ScreenContent(
 @Composable
 fun Charts(
     state: ChartViewModel.State,
-    activity: MainActivity
+    activity: MainActivity,
+    modifier: Modifier = Modifier
 ) {
     val lineChartView by remember { mutableStateOf(LineChartView(activity)) }
     val tmpColor by remember { mutableIntStateOf(generateRandomColor()) }
     val humColor by remember { mutableIntStateOf(generateRandomColor()) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = PaddingDefault)
+        modifier = modifier
     ) {
         Text(
             text = stringResource(R.string.temperature).plus(SPACE_STRING)

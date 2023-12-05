@@ -29,11 +29,11 @@ import com.softteco.template.data.bluetooth.DataLYWSD03MMC
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
+import timber.log.Timber
 import java.util.UUID
 
 object BluetoothHelper {
 
-    // TODO: potential memory leak
     private lateinit var activity: MainActivity
 
     private lateinit var bluetoothReceiver: BroadcastReceiver
@@ -100,11 +100,12 @@ object BluetoothHelper {
         )
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun unregisterReceiver() {
         try {
             activity.unregisterReceiver(bluetoothReceiver)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e("Error unregister receiver", e)
         }
     }
 
@@ -121,7 +122,12 @@ object BluetoothHelper {
         if (BluetoothPermissionChecker.checkBluetoothSupport(bluetoothAdapter, activity) &&
             BluetoothPermissionChecker.hasPermissions(activity)
         ) {
-            when (BluetoothPermissionChecker.checkEnableDeviceModules(bluetoothAdapter, locationManager)) {
+            when (
+                BluetoothPermissionChecker.checkEnableDeviceModules(
+                    bluetoothAdapter,
+                    locationManager
+                )
+            ) {
                 PermissionType.LOCATION_TURNED_OFF -> {
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     resultLocationEnableLauncher.launch(intent)
@@ -223,12 +229,9 @@ object BluetoothHelper {
     }
 
     @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
     fun disconnectFromBluetoothDevice() {
-        try {
-            localGatt?.disconnect()
-            localGatt?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        localGatt?.disconnect()
+        localGatt?.close()
     }
 }
