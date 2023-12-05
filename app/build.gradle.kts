@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     id("com.android.application")
+    id("com.google.android.gms.oss-licenses-plugin")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.kapt)
@@ -127,6 +128,9 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.converter)
     implementation(libs.kotlin.reflect)
+
+    implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.oss.licenses)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

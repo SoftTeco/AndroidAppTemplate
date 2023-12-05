@@ -73,5 +73,6 @@
     <string name="mail_error">No email app is available on your device</string>
     <string name="title_privacy_policy">For further details on how your data is used and stored, please see our\u0020</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="open_source_licenses">Open Source Licenses</string>
 
 </resources>
