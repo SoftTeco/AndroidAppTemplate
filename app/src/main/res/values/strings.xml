@@ -74,4 +74,7 @@
     <string name="title_privacy_policy">For further details on how your data is used and stored, please see our\u0020</string>
     <string name="privacy_policy">Privacy Policy</string>
 
+    <!-- Sign up screen -->
+    <string name="accept_terms_conditions">I have read and accept the\u0020</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
 </resources>

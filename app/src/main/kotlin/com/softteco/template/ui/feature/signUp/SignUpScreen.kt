@@ -1,14 +1,18 @@
 package com.softteco.template.ui.feature.signUp
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -18,12 +22,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.softteco.template.Constants.TERMS_OF_SERVICES_URL
 import com.softteco.template.R
+import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
@@ -63,6 +70,7 @@ private fun ScreenContent(
     onBackClicked: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     TextSnackbarContainer(
         modifier = modifier,
@@ -110,6 +118,24 @@ private fun ScreenContent(
                         .padding(top = PaddingDefault)
                         .fillMaxWidth()
                 )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Checkbox(
+                        checked = state.termsCheckedStateValue,
+                        onCheckedChange = state.onCheckTermsChange,
+                    )
+                    AppLinkText(
+                        text = stringResource(id = R.string.accept_terms_conditions),
+                        linkText = stringResource(id = R.string.terms_conditions),
+                        linkUrl = TERMS_OF_SERVICES_URL,
+                        openLink = {
+                            val intent = CustomTabsIntent.Builder().build()
+                            intent.launchUrl(context, Uri.parse(it))
+                        }
+                    )
+                }
                 PrimaryButton(
                     buttonText = stringResource(id = R.string.sign_up),
                     loading = state.registrationState == SignUpViewModel.SignupState.Loading,
