@@ -1,25 +1,24 @@
 package com.softteco.template.utils
 
 import androidx.datastore.core.Serializer
-import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.data.profile.dto.AuthTokenDto
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.io.InputStream
 import java.io.OutputStream
 
-class UserSettingsSerializer(
+class AuthTokenSerializer(
     private val cryptoManager: CryptoManager
-) : Serializer<CreateUserDto> {
+) : Serializer<AuthTokenDto> {
+    override val defaultValue: AuthTokenDto
+        get() = AuthTokenDto("")
 
-    override val defaultValue: CreateUserDto
-        get() = CreateUserDto("", "", "")
-
-    override suspend fun readFrom(input: InputStream): CreateUserDto {
+    override suspend fun readFrom(input: InputStream): AuthTokenDto {
         val decryptedBytes = cryptoManager.decrypt(input)
         return try {
             Json.decodeFromString(
-                deserializer = CreateUserDto.serializer(),
+                deserializer = AuthTokenDto.serializer(),
                 string = decryptedBytes.decodeToString()
             )
         } catch (e: SerializationException) {
@@ -28,10 +27,10 @@ class UserSettingsSerializer(
         }
     }
 
-    override suspend fun writeTo(t: CreateUserDto, output: OutputStream) {
+    override suspend fun writeTo(t: AuthTokenDto, output: OutputStream) {
         cryptoManager.encrypt(
             bytes = Json.encodeToString(
-                serializer = CreateUserDto.serializer(),
+                serializer = AuthTokenDto.serializer(),
                 value = t
             ).encodeToByteArray(),
             outputStream = output

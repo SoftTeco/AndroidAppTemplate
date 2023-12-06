@@ -1,44 +1,38 @@
 package com.softteco.template.data.profile
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
 import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.ErrorHandler
 import com.softteco.template.data.base.error.Result
+import com.softteco.template.data.profile.dto.AuthTokenDto
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.data.profile.dto.NewPasswordDto
+import com.softteco.template.data.profile.dto.ProfileDto
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.data.profile.dto.toModel
 import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
-import com.softteco.template.utils.getFromDataStore
-import com.softteco.template.utils.saveToDataStore
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
-
-private const val AUTH_TOKEN_KEY = "auth_token"
-private const val PROFILE_KEY = "profile"
 
 @Singleton
 internal class ProfileRepositoryImpl @Inject constructor(
     private val templateApi: TemplateApi,
     private val errorHandler: ErrorHandler,
-    private val dataStore: DataStore<Preferences>,
+    private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>,
+    private val userProfileEncryptedDataStore: DataStore<ProfileDto>,
     private val countriesApi: RestCountriesApi,
 ) : ProfileRepository {
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun getUser(): Result<Profile> {
         return try {
-            val authTokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
-            val token: String = dataStore.getFromDataStore(authTokenKey, "").first()
+            val token: String = authTokenEncryptedDataStore.data.first().toModel().token
             if (token.isEmpty()) return Result.Error(ErrorEntity.Unknown)
             val authToken = AuthToken(token)
             var profile = templateApi.getUser(authHeader = authToken.composeHeader()).toModel()
@@ -58,8 +52,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
     override suspend fun login(credentials: CredentialsDto): Result<Unit> {
         return try {
             val authToken = templateApi.login(credentials).toModel()
-            val authTokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
-            dataStore.saveToDataStore(authTokenKey, authToken.token)
+            authTokenEncryptedDataStore.updateData { token -> token.copy(token = authToken.token) }
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))
@@ -103,8 +96,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
     override suspend fun isUserLogin(): Result<Boolean> {
         return try {
             Result.Success(
-                dataStore.getFromDataStore(stringPreferencesKey(AUTH_TOKEN_KEY), "").first()
-                    .isNotEmpty()
+                authTokenEncryptedDataStore.data.first().token.isNotEmpty()
             )
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))
@@ -114,8 +106,18 @@ internal class ProfileRepositoryImpl @Inject constructor(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun cacheProfile(profile: Profile): Result<Unit> {
         return try {
-            val profileKey = stringPreferencesKey(PROFILE_KEY)
-            dataStore.saveToDataStore(profileKey, profile.toJson())
+            userProfileEncryptedDataStore.updateData { profileDto ->
+                profileDto.copy(
+                    id = profile.id,
+                    username = profile.username,
+                    email = profile.email,
+                    createdAt = profile.createdAt,
+                    firstName = profile.firstName,
+                    lastName = profile.lastName,
+                    birthDate = profile.birthDate,
+                    country = profile.country
+                )
+            }
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))
@@ -125,8 +127,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun getCachedProfile(): Result<Profile> {
         return try {
-            val profileKey = stringPreferencesKey(PROFILE_KEY)
-            val profileJson = dataStore.getFromDataStore(profileKey, "").first()
+            val profileJson = userProfileEncryptedDataStore.data.first().toModel().toJson()
             if (profileJson.isEmpty()) return Result.Error(ErrorEntity.Unknown)
             val profile = Profile.fromJson(profileJson)
             Result.Success(profile)
@@ -138,8 +139,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun logout(): Result<Unit> {
         return try {
-            val authTokenKey = stringPreferencesKey(AUTH_TOKEN_KEY)
-            dataStore.edit { it.remove(authTokenKey) }
+            authTokenEncryptedDataStore.updateData { token -> token.copy(token = "") }
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))
