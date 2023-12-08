@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.softteco.template.R
+import timber.log.Timber
 import kotlin.random.Random
 
 class AppFirebaseMessagingService : FirebaseMessagingService() {
@@ -20,6 +21,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
             sendNotification(message)
         }
     }
+
     private fun sendNotification(message: RemoteMessage.Notification) {
         val intent = Intent(this, AppFirebaseMessagingService::class.java).apply {
             addFlags(FLAG_ACTIVITY_CLEAR_TOP)
@@ -47,6 +49,11 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
         manager.createNotificationChannel(channel)
 
         manager.notify(random.nextInt(), notificationBuilder.build())
+    }
+
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Timber.tag("FCM new token:").d(token)
     }
 
     companion object {

@@ -155,7 +155,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when checkbox isn't selected and sign-up button isn't enabled`() =
         runTest {
-            viewModel = SignUpViewModel(repository, userEncryptedDataStore, appDispatchers)
+            viewModel = SignUpViewModel(repository, appDispatchers)
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onUserNameChanged(USERNAME)

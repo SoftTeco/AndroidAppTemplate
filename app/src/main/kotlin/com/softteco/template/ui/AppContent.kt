@@ -1,7 +1,6 @@
 package com.softteco.template.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +16,7 @@ import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.ui.components.RequestNotificationPermissionDialog
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -28,7 +28,7 @@ fun AppContent(
     LaunchedEffect(Unit) {
         launch {
             val token = Firebase.messaging.token.await()
-            Log.d("FCM token:", token)
+            Timber.tag("FCM token:").d(token)
         }
     }
     RequestNotificationPermissionDialog()
