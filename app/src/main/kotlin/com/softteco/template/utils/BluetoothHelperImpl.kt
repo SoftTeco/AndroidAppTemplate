@@ -28,6 +28,7 @@ import com.softteco.template.MainActivity
 import com.softteco.template.data.bluetooth.entity.BluetoothState
 import com.softteco.template.data.bluetooth.entity.DataLYWSD03MMC
 import com.softteco.template.data.bluetooth.BluetoothHelper
+import com.softteco.template.data.bluetooth.BluetoothPermissionChecker
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
@@ -37,7 +38,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class BluetoothHelperImpl @Inject constructor(): BluetoothHelper {
+internal class BluetoothHelperImpl @Inject constructor(
+    private val bluetoothPermissionChecker: BluetoothPermissionChecker
+): BluetoothHelper {
 
     private lateinit var activity: MainActivity
 
@@ -121,7 +124,7 @@ internal class BluetoothHelperImpl @Inject constructor(): BluetoothHelper {
     }
 
     private fun makeBluetoothOperation() {
-        if (BluetoothPermissionCheckerImpl.hasPermissions(activity)) {
+        if (bluetoothPermissionChecker.hasPermissions(activity)) {
             startScan()
         }
     }
@@ -210,11 +213,11 @@ internal class BluetoothHelperImpl @Inject constructor(): BluetoothHelper {
     }
 
     override fun provideOperation() {
-        if (BluetoothPermissionCheckerImpl.checkBluetoothSupport(bluetoothAdapter, activity) &&
-            BluetoothPermissionCheckerImpl.hasPermissions(activity)
+        if (bluetoothPermissionChecker.checkBluetoothSupport(bluetoothAdapter, activity) &&
+            bluetoothPermissionChecker.hasPermissions(activity)
         ) {
             when (
-                BluetoothPermissionCheckerImpl.checkEnableDeviceModules(
+                bluetoothPermissionChecker.checkEnableDeviceModules(
                     bluetoothAdapter,
                     locationManager
                 )

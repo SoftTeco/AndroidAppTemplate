@@ -7,6 +7,9 @@ import android.location.LocationManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.softteco.template.MainActivity
+import com.softteco.template.data.bluetooth.BluetoothPermissionChecker
+import javax.inject.Inject
+import javax.inject.Singleton
 
 const val REQUEST_ALLOW_BT = 1
 
@@ -26,8 +29,9 @@ enum class PermissionType {
     BLUETOOTH_TURNED_OFF, LOCATION_TURNED_OFF, BLUETOOTH_AND_LOCATION_TURNED_ON
 }
 
-object BluetoothPermissionChecker {
-    fun checkBluetoothSupport(
+@Singleton
+internal class BluetoothPermissionCheckerImpl @Inject constructor(): BluetoothPermissionChecker {
+    override fun checkBluetoothSupport(
         bluetoothAdapter: BluetoothAdapter?,
         activity: MainActivity
     ): Boolean {
@@ -38,7 +42,7 @@ object BluetoothPermissionChecker {
         }
     }
 
-    fun checkEnableDeviceModules(
+    override fun checkEnableDeviceModules(
         bluetoothAdapter: BluetoothAdapter?,
         locationManager: LocationManager?
     ): PermissionType {
@@ -55,7 +59,7 @@ object BluetoothPermissionChecker {
         return permissionType
     }
 
-    fun hasPermissions(activity: MainActivity): Boolean {
+    override fun hasPermissions(activity: MainActivity): Boolean {
         var hasPermission = true
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
