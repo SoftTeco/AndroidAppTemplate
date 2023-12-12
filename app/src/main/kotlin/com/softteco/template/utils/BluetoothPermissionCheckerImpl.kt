@@ -30,7 +30,7 @@ enum class PermissionType {
 }
 
 @Singleton
-internal class BluetoothPermissionCheckerImpl @Inject constructor(): BluetoothPermissionChecker {
+internal class BluetoothPermissionCheckerImpl @Inject constructor() : BluetoothPermissionChecker {
     override fun checkBluetoothSupport(
         bluetoothAdapter: BluetoothAdapter?,
         activity: MainActivity

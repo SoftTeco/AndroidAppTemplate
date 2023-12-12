@@ -17,5 +17,6 @@ internal interface BluetoothModule {
     fun bindBluetoothHelper(bluetoothHelper: BluetoothHelperImpl): BluetoothHelper
 
     @Binds
-    fun bindBluetoothPermissionChecker(bluetoothPermissionChecker: BluetoothPermissionCheckerImpl): BluetoothPermissionChecker
+    fun bindBluetoothPermissionChecker(bluetoothPermissionChecker: BluetoothPermissionCheckerImpl):
+        BluetoothPermissionChecker
 }

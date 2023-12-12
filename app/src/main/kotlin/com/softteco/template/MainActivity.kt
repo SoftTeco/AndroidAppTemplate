@@ -13,10 +13,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.softteco.template.data.base.error.Result
+import com.softteco.template.data.bluetooth.BluetoothHelper
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.navigation.Graph
 import com.softteco.template.ui.AppContent
-import com.softteco.template.data.bluetooth.BluetoothHelper
 import com.softteco.template.ui.feature.settings.PreferencesKeys
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.ThemeMode

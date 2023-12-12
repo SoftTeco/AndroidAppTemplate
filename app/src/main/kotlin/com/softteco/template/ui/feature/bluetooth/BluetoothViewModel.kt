@@ -31,7 +31,6 @@ class BluetoothViewModel @Inject constructor(
     private var filtered: Boolean = true
     var filteredName: String = ""
 
-
     val state = combine(
         _snackBarState,
         _devices

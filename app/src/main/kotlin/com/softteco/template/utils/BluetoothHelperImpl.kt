@@ -25,10 +25,10 @@ import com.softteco.template.Constants.INDEX_OF_HUMIDITY
 import com.softteco.template.Constants.START_INDEX_OF_BATTERY
 import com.softteco.template.Constants.START_INDEX_OF_TEMPERATURE
 import com.softteco.template.MainActivity
-import com.softteco.template.data.bluetooth.entity.BluetoothState
-import com.softteco.template.data.bluetooth.entity.DataLYWSD03MMC
 import com.softteco.template.data.bluetooth.BluetoothHelper
 import com.softteco.template.data.bluetooth.BluetoothPermissionChecker
+import com.softteco.template.data.bluetooth.entity.BluetoothState
+import com.softteco.template.data.bluetooth.entity.DataLYWSD03MMC
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
@@ -40,7 +40,7 @@ import javax.inject.Singleton
 @Singleton
 internal class BluetoothHelperImpl @Inject constructor(
     private val bluetoothPermissionChecker: BluetoothPermissionChecker
-): BluetoothHelper {
+) : BluetoothHelper {
 
     private lateinit var activity: MainActivity
 
