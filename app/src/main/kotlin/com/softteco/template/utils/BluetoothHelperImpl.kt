@@ -25,14 +25,19 @@ import com.softteco.template.Constants.INDEX_OF_HUMIDITY
 import com.softteco.template.Constants.START_INDEX_OF_BATTERY
 import com.softteco.template.Constants.START_INDEX_OF_TEMPERATURE
 import com.softteco.template.MainActivity
+import com.softteco.template.data.bluetooth.BluetoothState
 import com.softteco.template.data.bluetooth.DataLYWSD03MMC
+import com.softteco.template.ui.feature.bluetooth.BluetoothHelper
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
 import timber.log.Timber
 import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object BluetoothHelper {
+@Singleton
+internal class BluetoothHelperImpl @Inject constructor(): BluetoothHelper {
 
     private lateinit var activity: MainActivity
 
@@ -43,10 +48,7 @@ object BluetoothHelper {
     private var localGatt: BluetoothGatt? = null
     private lateinit var resultBluetoothEnableLauncher: ActivityResultLauncher<Intent>
     private lateinit var resultLocationEnableLauncher: ActivityResultLauncher<Intent>
-    var onConnect: (() -> Unit)? = null
-    var onDisconnect: (() -> Unit)? = null
-    var onScanResult: ((scanResult: ScanResult) -> Unit)? = null
-    var onDeviceResult: ((dataLYWSD03MMC: DataLYWSD03MMC) -> Unit)? = null
+    var bluetoothState = BluetoothState()
 
     private val scanCallback: ScanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
@@ -56,13 +58,13 @@ object BluetoothHelper {
         ) {
             super.onScanResult(callbackType, scanResult)
             scanResult.device.name?.let {
-                onScanResult?.invoke(scanResult)
+                bluetoothState.onScanResult?.invoke(scanResult)
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    fun initBluetoothHelper(activity: MainActivity) {
+    override fun init(activity: MainActivity) {
         this.activity = activity
         resultBluetoothEnableLauncher =
             this.activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
@@ -77,7 +79,7 @@ object BluetoothHelper {
                     )
                 ) {
                     BluetoothAdapter.STATE_ON -> {
-                        provideBluetoothOperation()
+                        provideOperation()
                     }
 
                     BluetoothAdapter.STATE_OFF -> {
@@ -93,7 +95,7 @@ object BluetoothHelper {
             this.activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
-    fun registerReceiver() {
+    override fun registerReceiver() {
         activity.registerReceiver(
             bluetoothReceiver,
             IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
@@ -101,7 +103,7 @@ object BluetoothHelper {
     }
 
     @Suppress("TooGenericExceptionCaught")
-    fun unregisterReceiver() {
+    override fun unregisterReceiver() {
         try {
             activity.unregisterReceiver(bluetoothReceiver)
         } catch (e: Exception) {
@@ -114,35 +116,8 @@ object BluetoothHelper {
         BluetoothLeScannerCompat.getScanner().startScan(scanCallback)
     }
 
-    fun stopScan() {
+    private fun stopScan() {
         BluetoothLeScannerCompat.getScanner().stopScan(scanCallback)
-    }
-
-    fun provideBluetoothOperation() {
-        if (BluetoothPermissionChecker.checkBluetoothSupport(bluetoothAdapter, activity) &&
-            BluetoothPermissionChecker.hasPermissions(activity)
-        ) {
-            when (
-                BluetoothPermissionChecker.checkEnableDeviceModules(
-                    bluetoothAdapter,
-                    locationManager
-                )
-            ) {
-                PermissionType.LOCATION_TURNED_OFF -> {
-                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    resultLocationEnableLauncher.launch(intent)
-                }
-
-                PermissionType.BLUETOOTH_TURNED_OFF -> {
-                    val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                    resultBluetoothEnableLauncher.launch(intent)
-                }
-
-                PermissionType.BLUETOOTH_AND_LOCATION_TURNED_ON -> {
-                    makeBluetoothOperation()
-                }
-            }
-        }
     }
 
     private fun makeBluetoothOperation() {
@@ -157,7 +132,7 @@ object BluetoothHelper {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 localGatt = gatt
                 gatt.discoverServices()
-                onConnect?.invoke()
+                bluetoothState.onConnect?.invoke()
             }
         }
 
@@ -213,13 +188,13 @@ object BluetoothHelper {
                     END_INDEX_OF_BATTERY
                 )
 
-                onDeviceResult?.invoke(DataLYWSD03MMC(temp, hum, bat))
+                bluetoothState.onDeviceResult?.invoke(DataLYWSD03MMC(temp, hum, bat))
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    fun connectToBluetoothDevice(bluetoothDevice: BluetoothDevice) {
+    override fun connectToDevice(bluetoothDevice: BluetoothDevice) {
         bluetoothDevice.connectGatt(
             activity.applicationContext,
             false,
@@ -229,9 +204,51 @@ object BluetoothHelper {
     }
 
     @SuppressLint("MissingPermission")
-    @Suppress("TooGenericExceptionCaught")
-    fun disconnectFromBluetoothDevice() {
+    override fun disconnectFromDevice() {
         localGatt?.disconnect()
         localGatt?.close()
+    }
+
+    override fun provideOperation() {
+        if (BluetoothPermissionChecker.checkBluetoothSupport(bluetoothAdapter, activity) &&
+            BluetoothPermissionChecker.hasPermissions(activity)
+        ) {
+            when (
+                BluetoothPermissionChecker.checkEnableDeviceModules(
+                    bluetoothAdapter,
+                    locationManager
+                )
+            ) {
+                PermissionType.LOCATION_TURNED_OFF -> {
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    resultLocationEnableLauncher.launch(intent)
+                }
+
+                PermissionType.BLUETOOTH_TURNED_OFF -> {
+                    val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                    resultBluetoothEnableLauncher.launch(intent)
+                }
+
+                PermissionType.BLUETOOTH_AND_LOCATION_TURNED_ON -> {
+                    makeBluetoothOperation()
+                }
+            }
+        }
+    }
+
+    override fun provideOnScanCallback(onScanResult: (scanResult: ScanResult) -> Unit) {
+        bluetoothState.onScanResult = onScanResult
+    }
+
+    override fun provideOnConnectCallback(onConnect: () -> Unit) {
+        bluetoothState.onConnect = onConnect
+    }
+
+    override fun provideOnDisconnectCallback(onDisconnect: () -> Unit) {
+        bluetoothState.onDisconnect = onDisconnect
+    }
+
+    override fun provideOnDeviceResultCallback(onDeviceResult: (dataLYWSD03MMC: DataLYWSD03MMC) -> Unit) {
+        bluetoothState.onDeviceResult = onDeviceResult
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.data.bluetooth.DataLYWSD03MMC
 import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.ui.feature.bluetooth.BluetoothHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +16,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ChartViewModel @Inject constructor() : ViewModel() {
+class ChartViewModel @Inject constructor(
+    private val bluetoothHelper: BluetoothHelper
+) : ViewModel() {
 
     private var snackBarState = MutableStateFlow(SnackBarState())
     private var dataFromLYWSD03MMC = MutableStateFlow(DataLYWSD03MMC())
@@ -34,6 +37,10 @@ class ChartViewModel @Inject constructor() : ViewModel() {
         SharingStarted.Lazily,
         State()
     )
+
+    fun provideOnDeviceResultCallback(onDeviceResult: (dataLYWSD03MMC: DataLYWSD03MMC) -> Unit) {
+        bluetoothHelper.provideOnDeviceResultCallback(onDeviceResult)
+    }
 
     @SuppressLint("MissingPermission")
     fun provideDataLYWSD03MMC(dataLYWSD03MMC: DataLYWSD03MMC) {

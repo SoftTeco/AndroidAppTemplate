@@ -19,7 +19,9 @@ import no.nordicsemi.android.support.v18.scanner.ScanResult
 import javax.inject.Inject
 
 @HiltViewModel
-class BluetoothViewModel @Inject constructor() : ViewModel() {
+class BluetoothViewModel @Inject constructor(
+    private val bluetoothHelper: BluetoothHelper
+) : ViewModel() {
 
     private val _snackBarState = MutableStateFlow(SnackBarState())
     private var _bluetoothDevices = hashMapOf<String, ScanResult>()
@@ -27,6 +29,7 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
     private val mutex = Mutex()
     private var filtered: Boolean = true
     var filteredName: String = ""
+
 
     val state = combine(
         _snackBarState,
@@ -50,6 +53,34 @@ class BluetoothViewModel @Inject constructor() : ViewModel() {
                 addDevice(scanResult)
             }
         }
+    }
+
+    fun disconnectFromDevice() {
+        bluetoothHelper.disconnectFromDevice()
+    }
+
+    fun registerReceiver() {
+        bluetoothHelper.registerReceiver()
+    }
+
+    fun unregisterReceiver() {
+        bluetoothHelper.unregisterReceiver()
+    }
+
+    fun provideOperation() {
+        bluetoothHelper.provideOperation()
+    }
+
+    fun connectToDevice(bluetoothDevice: BluetoothDevice) {
+        bluetoothHelper.connectToDevice(bluetoothDevice)
+    }
+
+    fun provideOnScanCallback(onScanResult: (scanResult: ScanResult) -> Unit) {
+        bluetoothHelper.provideOnScanCallback(onScanResult)
+    }
+
+    fun provideOnConnectCallback(onConnect: () -> Unit) {
+        bluetoothHelper.provideOnConnectCallback(onConnect)
     }
 
     fun setFiltered(filtered: Boolean) {

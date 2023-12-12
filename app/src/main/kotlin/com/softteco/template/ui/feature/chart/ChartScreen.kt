@@ -24,7 +24,6 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
-import com.softteco.template.utils.BluetoothHelper
 import com.softteco.template.utils.generateRandomColor
 import lecho.lib.hellocharts.model.Axis
 import lecho.lib.hellocharts.model.Line
@@ -48,7 +47,7 @@ fun ChartScreen(
     val state by viewModel.state.collectAsState()
     activity = LocalContext.current as MainActivity
 
-    BluetoothHelper.onDeviceResult = {
+    viewModel.provideOnDeviceResultCallback {
         viewModel.provideDataLYWSD03MMC(it)
     }
 

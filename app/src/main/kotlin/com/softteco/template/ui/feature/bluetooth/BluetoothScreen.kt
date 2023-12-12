@@ -32,7 +32,6 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.OnLifecycleEvent
 import com.softteco.template.ui.theme.Dimens
-import com.softteco.template.utils.BluetoothHelper
 import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
@@ -46,21 +45,25 @@ fun BluetoothScreen(
     val state by viewModel.state.collectAsState()
     val deviceName = stringResource(R.string.device_name)
     viewModel.filteredName = deviceName
-    BluetoothHelper.onScanResult = {
+
+    viewModel.provideOnScanCallback {
         viewModel.addScanResult(it)
     }
-    BluetoothHelper.onConnect = {
+
+    viewModel.provideOnConnectCallback {
         scope.launch {
             onConnect.invoke()
         }
     }
+
     val onFilter: (checked: Boolean) -> Unit = {
         viewModel.setFiltered(it)
     }
     ScreenContent(
         state = state,
         onItemClicked = { bluetoothDevice ->
-            BluetoothHelper.connectToBluetoothDevice(bluetoothDevice)
+
+            viewModel.connectToDevice(bluetoothDevice)
         },
         onFilter,
         modifier = modifier
@@ -68,13 +71,13 @@ fun BluetoothScreen(
     OnLifecycleEvent { owner, event ->
         when (event) {
             Lifecycle.Event.ON_RESUME -> {
-                BluetoothHelper.disconnectFromBluetoothDevice()
-                BluetoothHelper.registerReceiver()
-                BluetoothHelper.provideBluetoothOperation()
+                viewModel.disconnectFromDevice()
+                viewModel.registerReceiver()
+                viewModel.provideOperation()
             }
 
             Lifecycle.Event.ON_PAUSE -> {
-                BluetoothHelper.unregisterReceiver()
+                viewModel.unregisterReceiver()
             }
 
             else -> {}
