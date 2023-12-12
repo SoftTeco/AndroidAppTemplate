@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 
 plugins {
     id("com.android.application")
@@ -50,6 +51,7 @@ android {
             )
             isDebuggable = false
             buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "GOOGLE_SERVICES_JSON", "\"{}\"")
         }
         debug {
             isDebuggable = true
@@ -168,3 +170,53 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         html.required.set(true)
     }
 }
+
+tasks.register("generateGoogleServicesJson") {
+    doLast {
+        // Check if running in a CI environment
+        val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
+        if (isCiBuild) {
+            val googleServicesJsonContent = """
+            {
+              "project_info": {
+                "project_number": "FCM_PROJECT_NUMBER",
+                "project_id": "FCM_PROJECT_ID",
+                "storage_bucket": "FCM_STORAGE_BUCKET"
+              },
+              "client": [
+                {
+                  "client_info": {
+                    "mobilesdk_app_id": "1:FCM_MOBILESDK_APP_ID:android:FCM_ANDROID_CLIENT_INFO",
+                    "android_client_info": {
+                      "package_name": "FCM_PACKAGE_NAME"
+                    }
+                  },
+                  "oauth_client": [],
+                  "api_key": [
+                    {
+                      "current_key": "FCM_API_KEY"
+                    }
+                  ],
+                  "services": {
+                    "appinvite_service": {
+                      "other_platform_oauth_client": []
+                    }
+                  }
+                }
+              ],
+              "configuration_version": "1"
+            }
+            """.trimIndent()
+
+            val outputDir = project.file("app/google-services")
+            outputDir.mkdirs()
+            val outputFile = outputDir.resolve("google-services.json")
+            outputFile.writeText(googleServicesJsonContent)
+        } else {
+            println("Skipping google-services.json generation as this is not a CI build")
+        }
+    }
+}
+
+tasks.preBuild.dependsOn("generateGoogleServicesJson")
+
