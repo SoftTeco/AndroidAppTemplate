@@ -25,9 +25,9 @@ import com.softteco.template.Constants.INDEX_OF_HUMIDITY
 import com.softteco.template.Constants.START_INDEX_OF_BATTERY
 import com.softteco.template.Constants.START_INDEX_OF_TEMPERATURE
 import com.softteco.template.MainActivity
-import com.softteco.template.data.bluetooth.BluetoothState
-import com.softteco.template.data.bluetooth.DataLYWSD03MMC
-import com.softteco.template.ui.feature.bluetooth.BluetoothHelper
+import com.softteco.template.data.bluetooth.entity.BluetoothState
+import com.softteco.template.data.bluetooth.entity.DataLYWSD03MMC
+import com.softteco.template.data.bluetooth.BluetoothHelper
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat
 import no.nordicsemi.android.support.v18.scanner.ScanCallback
 import no.nordicsemi.android.support.v18.scanner.ScanResult
@@ -121,7 +121,7 @@ internal class BluetoothHelperImpl @Inject constructor(): BluetoothHelper {
     }
 
     private fun makeBluetoothOperation() {
-        if (BluetoothPermissionChecker.hasPermissions(activity)) {
+        if (BluetoothPermissionCheckerImpl.hasPermissions(activity)) {
             startScan()
         }
     }
@@ -210,11 +210,11 @@ internal class BluetoothHelperImpl @Inject constructor(): BluetoothHelper {
     }
 
     override fun provideOperation() {
-        if (BluetoothPermissionChecker.checkBluetoothSupport(bluetoothAdapter, activity) &&
-            BluetoothPermissionChecker.hasPermissions(activity)
+        if (BluetoothPermissionCheckerImpl.checkBluetoothSupport(bluetoothAdapter, activity) &&
+            BluetoothPermissionCheckerImpl.hasPermissions(activity)
         ) {
             when (
-                BluetoothPermissionChecker.checkEnableDeviceModules(
+                BluetoothPermissionCheckerImpl.checkEnableDeviceModules(
                     bluetoothAdapter,
                     locationManager
                 )

@@ -1,6 +1,6 @@
 package com.softteco.template.data.di
 
-import com.softteco.template.ui.feature.bluetooth.BluetoothHelper
+import com.softteco.template.data.bluetooth.BluetoothHelper
 import com.softteco.template.utils.BluetoothHelperImpl
 import dagger.Binds
 import dagger.Module

@@ -1,4 +1,4 @@
-package com.softteco.template.data.bluetooth
+package com.softteco.template.data.bluetooth.entity
 
 data class BluetoothDevice(
     val name: String,

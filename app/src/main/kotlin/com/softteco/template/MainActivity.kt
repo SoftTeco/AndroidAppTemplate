@@ -13,15 +13,13 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.bluetooth.BluetoothState
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.navigation.Graph
 import com.softteco.template.ui.AppContent
-import com.softteco.template.ui.feature.bluetooth.BluetoothHelper
+import com.softteco.template.data.bluetooth.BluetoothHelper
 import com.softteco.template.ui.feature.settings.PreferencesKeys
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.ThemeMode
-import com.softteco.template.utils.BluetoothHelperImpl
 import com.softteco.template.utils.getFromDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
