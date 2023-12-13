@@ -1,6 +1,5 @@
 package com.softteco.template.ui.components
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -54,7 +53,7 @@ fun RationaleDialog(modifier: Modifier = Modifier) {
 
     if (showWarningDialog) {
         AlertDialog(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier.fillMaxWidth(),
             title = {
                 Text(
                     text = stringResource(id = R.string.notification_permission_title)
@@ -64,7 +63,7 @@ fun RationaleDialog(modifier: Modifier = Modifier) {
             confirmButton = {
                 Button(
                     onClick = { showWarningDialog = false },
-                    modifier = modifier.fillMaxSize(),
+                    modifier = modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.White
                     )
