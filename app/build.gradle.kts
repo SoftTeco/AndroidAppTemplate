@@ -3,7 +3,7 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services") version "4.4.0"
+    id("com.google.gms.google-services") version "4.3.15"
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.kapt)
@@ -79,6 +79,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    @Suppress("UnstableApiUsage")
     testOptions {
         packaging {
             jniLibs { useLegacyPackaging = true }
@@ -170,48 +171,15 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         html.required.set(true)
     }
 }
-
 tasks.register("generateGoogleServicesJson") {
     doLast {
         // Check if running in a CI environment
         val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
         if (isCiBuild) {
-            val googleServicesJsonContent = """
-            {
-              "project_info": {
-                "project_number": "FCM_PROJECT_NUMBER",
-                "project_id": "FCM_PROJECT_ID",
-                "storage_bucket": "FCM_STORAGE_BUCKET"
-              },
-              "client": [
-                {
-                  "client_info": {
-                    "mobilesdk_app_id": "1:FCM_MOBILESDK_APP_ID:android:FCM_ANDROID_CLIENT_INFO",
-                    "android_client_info": {
-                      "package_name": "FCM_PACKAGE_NAME"
-                    }
-                  },
-                  "oauth_client": [],
-                  "api_key": [
-                    {
-                      "current_key": "FCM_API_KEY"
-                    }
-                  ],
-                  "services": {
-                    "appinvite_service": {
-                      "other_platform_oauth_client": []
-                    }
-                  }
-                }
-              ],
-              "configuration_version": "1"
-            }
-            """.trimIndent()
-
             val outputDir = project.file("app/google-services")
             outputDir.mkdirs()
             val outputFile = outputDir.resolve("google-services.json")
-            outputFile.writeText(googleServicesJsonContent)
+            outputFile.writeText(project.properties["GOOGLE_SERVICES_JSON"] as String)
         } else {
             println("Skipping google-services.json generation as this is not a CI build")
         }
@@ -219,4 +187,3 @@ tasks.register("generateGoogleServicesJson") {
 }
 
 tasks.preBuild.dependsOn("generateGoogleServicesJson")
-
