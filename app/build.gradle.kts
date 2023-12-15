@@ -171,19 +171,15 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         html.required.set(true)
     }
 }
-tasks.register("generateGoogleServicesJson") {
+
+tasks.register("createGoogleServicesJson") {
     doLast {
-        // Check if running in a CI environment
+        val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
         val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
+        val outputFile = project.file("app/google-services.json")
+        outputFile.parentFile.mkdirs()
         if (isCiBuild) {
-            val outputDir = project.file("app/google-services")
-            outputDir.mkdirs()
-            val outputFile = outputDir.resolve("google-services.json")
-            outputFile.writeText(project.properties["GOOGLE_SERVICES_JSON"] as String)
-        } else {
-            println("Skipping google-services.json generation as this is not a CI build")
+            outputFile.writeText(jsonString)
         }
     }
 }
-
-tasks.preBuild.dependsOn("generateGoogleServicesJson")
