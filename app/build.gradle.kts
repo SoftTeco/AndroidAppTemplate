@@ -172,13 +172,16 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
 }
 
 tasks.register("createGoogleServicesJson") {
-    val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
     val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
-    val outputFile = project.file("app/google-services.json")
+    println("isCiBuild: $isCiBuild")
     if (isCiBuild) {
-        outputFile.writeText(jsonString)
+        val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
+        if (jsonString != null) {
+            val outputFile = project.file("app/google-services.json")
+            outputFile.writeText(jsonString)
+        }
     }
 }
-tasks.build {
+tasks.preBuild {
     dependsOn("createGoogleServicesJson")
 }
