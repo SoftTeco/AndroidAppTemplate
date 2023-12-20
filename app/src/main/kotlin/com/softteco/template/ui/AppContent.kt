@@ -1,7 +1,6 @@
 package com.softteco.template.ui
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -18,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun AppContent(
     startDestination: String,
@@ -31,7 +29,9 @@ fun AppContent(
             Timber.tag("FCM token:").d(token)
         }
     }
-    RequestNotificationPermissionDialog()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RequestNotificationPermissionDialog()
+    }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
