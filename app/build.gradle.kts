@@ -175,9 +175,11 @@ tasks.register("createGoogleServicesJson") {
     val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
     println("isCiBuild: $isCiBuild")
     if (isCiBuild) {
-        val outputFile = project.file("app/google-services.json")
         val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
-        outputFile.writeText(jsonString)
+        if (jsonString != null) {
+            val outputFile = project.file("app/google-services.json")
+            outputFile.writeText(jsonString)
+        }
     }
 }
 tasks.preBuild {
