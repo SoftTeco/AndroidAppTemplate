@@ -50,6 +50,7 @@ android {
             )
             isDebuggable = false
             buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "GOOGLE_SERVICES_JSON", "\"{}\"")
         }
         debug {
             isDebuggable = true
@@ -77,6 +78,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    @Suppress("UnstableApiUsage")
     testOptions {
         packaging {
             jniLibs { useLegacyPackaging = true }
@@ -167,4 +169,16 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         xml.required.set(true)
         html.required.set(true)
     }
+}
+
+tasks.register("createGoogleServicesJson") {
+    val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
+    val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
+    val outputFile = project.file("app/google-services.json")
+    if (isCiBuild) {
+        outputFile.writeText(jsonString)
+    }
+}
+tasks.build {
+    dependsOn("createGoogleServicesJson")
 }
