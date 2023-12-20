@@ -1,9 +1,8 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services") version "4.3.15"
+    id("com.google.gms.google-services") version "4.4.0"
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.kapt)
@@ -173,13 +172,13 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
 }
 
 tasks.register("createGoogleServicesJson") {
-    doLast {
-        val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
-        val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
-        val outputFile = project.file("app/google-services.json")
-        outputFile.parentFile.mkdirs()
-        if (isCiBuild) {
-            outputFile.writeText(jsonString)
-        }
+    val jsonString = System.getenv("GOOGLE_SERVICES_JSON")
+    val isCiBuild = System.getenv("CI")?.toBoolean() ?: false
+    val outputFile = project.file("app/google-services.json")
+    if (isCiBuild) {
+        outputFile.writeText(jsonString)
     }
+}
+tasks.build {
+    dependsOn("createGoogleServicesJson")
 }
