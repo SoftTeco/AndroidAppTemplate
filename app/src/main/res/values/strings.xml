@@ -75,4 +75,13 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="open_source_licenses">Open Source Licenses</string>
 
+    <!-- FCM -->
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="notification_permission_title">Notification permission</string>
+    <string name="notification_permission_description">The notification permission is important for this app. Please grant the permission.</string>
+    <string name="request_notification_permission">Request permission</string>
+
+    <!-- Sign up screen -->
+    <string name="accept_terms_conditions">I have read and accept the\u0020</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
 </resources>

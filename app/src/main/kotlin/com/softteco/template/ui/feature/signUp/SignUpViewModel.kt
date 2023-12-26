@@ -1,7 +1,6 @@
 package com.softteco.template.ui.feature.signUp
 
 import androidx.compose.runtime.Immutable
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
@@ -21,14 +20,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val userEncryptedDataStore: DataStore<CreateUserDto>,
     private val appDispatchers: AppDispatchers
 ) : ViewModel() {
     private val registrationState = MutableStateFlow<SignupState>(SignupState.Default)
@@ -37,6 +33,7 @@ class SignUpViewModel @Inject constructor(
     private var passwordStateValue = MutableStateFlow("")
     private var snackBarState = MutableStateFlow(SnackBarState())
     private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
+    private var termsCheckedStateValue = MutableStateFlow(false)
 
     val state = combine(
         registrationState,
@@ -44,8 +41,9 @@ class SignUpViewModel @Inject constructor(
         emailStateValue,
         passwordStateValue,
         snackBarState,
-        emailFieldState
-    ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState ->
+        emailFieldState,
+        termsCheckedStateValue,
+    ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState, termsCheckedState ->
         val passwordState = validatePassword(passwordValue)
         State(
             registrationState = registrationState,
@@ -54,10 +52,12 @@ class SignUpViewModel @Inject constructor(
             passwordValue = passwordValue,
             fieldStateEmail = emailState,
             fieldStatePassword = passwordState,
+            termsCheckedStateValue = termsCheckedState,
             snackBar = snackBar,
             isSignupBtnEnabled = emailState is EmailFieldState.Success &&
                 passwordState is PasswordFieldState.Success &&
-                userName.isNotEmpty(),
+                userName.isNotEmpty() &&
+                termsCheckedState,
             dismissSnackBar = { snackBarState.value = SnackBarState() },
             onUserNameChanged = { userNameStateValue.value = it.trim() },
             onEmailChanged = {
@@ -65,6 +65,7 @@ class SignUpViewModel @Inject constructor(
                 validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
             },
             onPasswordChanged = { passwordStateValue.value = it.trim() },
+            onCheckTermsChange = { termsCheckedStateValue.value = it },
             onRegisterClicked = ::onRegister,
         )
     }.stateIn(
@@ -87,14 +88,6 @@ class SignUpViewModel @Inject constructor(
             registrationState.value = when (result) {
                 is Result.Success -> {
                     snackBarState.value = SnackBarState(R.string.success, true)
-                    @Suppress("Detekt:TooGenericExceptionCaught")
-                    try {
-                        userEncryptedDataStore.updateData { createUserDto }
-                    } catch (e: IOException) {
-                        Timber.e("Error writing data to disk", e)
-                    } catch (e: Exception) {
-                        Timber.e("Error updating data in datastore", e)
-                    }
                     SignupState.Success(result.data)
                 }
 
@@ -113,6 +106,7 @@ class SignUpViewModel @Inject constructor(
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",
+        val termsCheckedStateValue: Boolean = false,
         val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
         val isSignupBtnEnabled: Boolean = false,
@@ -120,6 +114,7 @@ class SignUpViewModel @Inject constructor(
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onRegisterClicked: () -> Unit = {},
+        val onCheckTermsChange: (Boolean) -> Unit = {},
         val dismissSnackBar: () -> Unit = {},
     )
 

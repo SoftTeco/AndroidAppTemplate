@@ -65,7 +65,10 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(appDispatchers.io) {
             profileRepository.getUser().let { result ->
                 profileState.value = when (result) {
-                    is Result.Success -> GetProfileState.Success(result.data)
+                    is Result.Success -> {
+                        GetProfileState.Success(result.data)
+                    }
+
                     is Result.Error -> {
                         handleApiError(result, snackbarState)
                         GetProfileState.Error
@@ -73,7 +76,6 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
-
         viewModelScope.launch(appDispatchers.io) {
             countryState
                 .drop(1)
@@ -93,10 +95,12 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun onProfileChanged(profile: Profile) {
-        viewModelScope.launch(appDispatchers.ui) { profileRepository.cacheProfile(profile) }
-        profileState.value.run {
-            if (this is GetProfileState.Success) {
-                profileState.value = GetProfileState.Success(profile)
+        viewModelScope.launch(appDispatchers.ui) {
+            profileRepository.cacheProfile(profile)
+            profileState.value.run {
+                if (this is GetProfileState.Success) {
+                    profileState.value = GetProfileState.Success(profile)
+                }
             }
         }
     }
