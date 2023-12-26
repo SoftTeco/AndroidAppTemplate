@@ -5,6 +5,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,11 +53,11 @@ fun OpenSourceLicensesScreen(
     modifier: Modifier = Modifier,
     viewModel: OpenSourceLicensesViewModel = hiltViewModel(),
 ) {
-    val license by viewModel.licensesList.collectAsState()
+    val licenses by viewModel.licensesList.collectAsState()
 
     ScreenContent(
         onBackClicked = onBackClicked,
-        licenses = license,
+        licenses = licenses,
         modifier = modifier
     )
 }
@@ -79,6 +80,17 @@ private fun ScreenContent(
             modifier = Modifier.fillMaxWidth(),
             onBackClicked = onBackClicked
         )
+        if (licenses.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    stringResource(id = R.string.no_open_source_licenses),
+                )
+            }
+        }
         LazyColumn {
             items(licenses) { license ->
                 ItemView(license, modifier)
