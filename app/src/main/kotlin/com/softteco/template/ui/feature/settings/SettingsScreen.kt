@@ -44,12 +44,14 @@ private const val PRIVACY_POLICY = "https://softteco.com/privacy-policy"
 @Composable
 fun SettingsScreen(
     onBackClicked: () -> Unit,
+    onLicensesClicked: () -> Unit,
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     ScreenContent(
         modifier = modifier,
         onBackClicked = onBackClicked,
+        onLicensesClicked = onLicensesClicked,
         setThemeMode = settingsViewModel::setThemeMode,
     )
 }
@@ -58,6 +60,7 @@ fun SettingsScreen(
 @Composable
 private fun ScreenContent(
     onBackClicked: () -> Unit,
+    onLicensesClicked: () -> Unit,
     setThemeMode: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -128,6 +131,14 @@ private fun ScreenContent(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider()
+                AppListItem(
+                    onClick = onLicensesClicked,
+                    title = stringResource(id = R.string.open_source_licenses),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.open_source_licenses),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Divider()
             }
 
             AppLinkText(
@@ -158,6 +169,6 @@ private fun ScreenContent(
 @Composable
 private fun Preview() {
     AppTheme {
-        ScreenContent(onBackClicked = {}, setThemeMode = {})
+        ScreenContent(onBackClicked = {}, onLicensesClicked = {}, setThemeMode = {})
     }
 }
