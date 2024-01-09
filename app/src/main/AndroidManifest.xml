@@ -33,12 +33,13 @@
             </intent-filter>
         </activity>
         <service
-            android:name="com.softteco.template.utils.AppFirebaseMessagingService"
+            android:name="com.softteco.template.ui.feature.notifications.AppFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <receiver android:name=".ui.feature.notifications.MyBroadcastReceiver" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />

@@ -7,4 +7,6 @@ object Constants {
     const val CONTACT_EMAIL = "softteco.os.dev@gmail.com"
     const val CONTACT_SUBJECT = "User Inquiry or Feedback"
     const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
+    const val ACTION_NOTIFICATION_REPLY = "ACTION_NOTIFICATION_REPLY"
+    const val NOTIFICATION_REPLY = "NOTIFICATION_REPLY"
 }

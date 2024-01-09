@@ -85,4 +85,7 @@
     <!-- Sign up screen -->
     <string name="accept_terms_conditions">I have read and accept the\u0020</string>
     <string name="terms_conditions">Terms &amp; Conditions</string>
+
+    <string name="enter_text">Enter message</string>
+    <string name="reply">Reply Now…</string>
 </resources>
