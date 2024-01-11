@@ -20,7 +20,7 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
@@ -39,6 +39,11 @@ fun ForgotPasswordScreen(
         }
     }
 
+    SnackbarHandler(
+        snackbarState = state.snackBar,
+        onDismissSnackbar = state.dismissSnackBar
+    )
+
     ScreenContent(
         modifier = modifier,
         state = state,
@@ -52,46 +57,39 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit,
 ) {
-    TextSnackbarContainer(
-        modifier = modifier,
-        snackbarText = stringResource(state.snackBar.textId),
-        showSnackbar = state.snackBar.show,
-        onDismissSnackbar = state.dismissSnackBar,
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        CustomTopAppBar(
+            stringResource(id = R.string.forgot_password),
+            showBackIcon = true,
+            modifier = Modifier.fillMaxWidth(),
+            onBackClicked = onBackClicked
+        )
         Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+            modifier = Modifier.padding(Dimens.PaddingNormal),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTopAppBar(
-                stringResource(id = R.string.forgot_password),
-                showBackIcon = true,
-                modifier = Modifier.fillMaxWidth(),
-                onBackClicked = onBackClicked
+            EmailField(
+                emailValue = state.emailValue,
+                onEmailChanged = state.onEmailChanged,
+                fieldStateEmail = state.fieldStateEmail,
+                modifier = Modifier.fillMaxWidth()
             )
-            Column(
-                modifier = Modifier.padding(Dimens.PaddingNormal),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                EmailField(
-                    emailValue = state.emailValue,
-                    onEmailChanged = state.onEmailChanged,
-                    fieldStateEmail = state.fieldStateEmail,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                PrimaryButton(
-                    buttonText = stringResource(id = R.string.restore_password),
-                    loading = state.forgotPasswordState == ForgotPasswordViewModel.ForgotPasswordState.Loading,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.PaddingLarge),
-                    enabled = state.isResetBtnEnabled,
-                    onClick = { state.onRestorePasswordClicked() }
-                )
-            }
+            PrimaryButton(
+                buttonText = stringResource(id = R.string.restore_password),
+                loading = state.forgotPasswordState == ForgotPasswordViewModel.ForgotPasswordState.Loading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Dimens.PaddingLarge),
+                enabled = state.isResetBtnEnabled,
+                onClick = { state.onRestorePasswordClicked() }
+            )
         }
     }
 }

@@ -3,7 +3,7 @@ package com.softteco.template.utils
 import com.softteco.template.R
 import com.softteco.template.data.base.error.ErrorEntity
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.ui.components.snackBar.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 fun <T> handleApiError(

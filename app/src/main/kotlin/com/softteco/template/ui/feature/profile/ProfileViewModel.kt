@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
-import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.ui.components.snackBar.SnackBarState
 import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -35,7 +35,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
@@ -56,6 +56,11 @@ fun SignUpScreen(
         }
     }
 
+    SnackbarHandler(
+        snackbarState = state.snackBar,
+        onDismissSnackbar = state.dismissSnackBar
+    )
+
     ScreenContent(
         state = state,
         modifier = modifier,
@@ -72,80 +77,73 @@ private fun ScreenContent(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    TextSnackbarContainer(
-        modifier = modifier,
-        snackbarText = stringResource(state.snackBar.textId),
-        showSnackbar = state.snackBar.show,
-        onDismissSnackbar = state.dismissSnackBar,
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        CustomTopAppBar(
+            stringResource(id = R.string.sign_up),
+            showBackIcon = true,
+            modifier = Modifier.fillMaxWidth(),
+            onBackClicked = onBackClicked
+        )
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+                .padding(Dimens.PaddingNormal)
+                .verticalScroll(scrollState),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTopAppBar(
-                stringResource(id = R.string.sign_up),
-                showBackIcon = true,
+            UserNameField(
+                state = state,
                 modifier = Modifier.fillMaxWidth(),
-                onBackClicked = onBackClicked
             )
-            Column(
+            EmailField(
+                emailValue = state.emailValue,
+                onEmailChanged = state.onEmailChanged,
+                fieldStateEmail = state.fieldStateEmail,
                 modifier = Modifier
-                    .padding(Dimens.PaddingNormal)
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(top = PaddingDefault)
+                    .fillMaxWidth()
+            )
+            PasswordField(
+                passwordValue = state.passwordValue,
+                onPasswordChanged = state.onPasswordChanged,
+                fieldStatePassword = state.fieldStatePassword,
+                modifier = Modifier
+                    .padding(top = PaddingDefault)
+                    .fillMaxWidth()
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                UserNameField(
-                    state = state,
-                    modifier = Modifier.fillMaxWidth(),
+                Checkbox(
+                    checked = state.termsCheckedStateValue,
+                    onCheckedChange = state.onCheckTermsChange,
                 )
-                EmailField(
-                    emailValue = state.emailValue,
-                    onEmailChanged = state.onEmailChanged,
-                    fieldStateEmail = state.fieldStateEmail,
-                    modifier = Modifier
-                        .padding(top = PaddingDefault)
-                        .fillMaxWidth()
-                )
-                PasswordField(
-                    passwordValue = state.passwordValue,
-                    onPasswordChanged = state.onPasswordChanged,
-                    fieldStatePassword = state.fieldStatePassword,
-                    modifier = Modifier
-                        .padding(top = PaddingDefault)
-                        .fillMaxWidth()
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Checkbox(
-                        checked = state.termsCheckedStateValue,
-                        onCheckedChange = state.onCheckTermsChange,
-                    )
-                    AppLinkText(
-                        text = stringResource(id = R.string.accept_terms_conditions),
-                        linkText = stringResource(id = R.string.terms_conditions),
-                        linkUrl = TERMS_OF_SERVICES_URL,
-                        openLink = {
-                            val intent = CustomTabsIntent.Builder().build()
-                            intent.launchUrl(context, Uri.parse(it))
-                        }
-                    )
-                }
-                PrimaryButton(
-                    buttonText = stringResource(id = R.string.sign_up),
-                    loading = state.registrationState == SignUpViewModel.SignupState.Loading,
-                    modifier = Modifier
-                        .padding(top = PaddingDefault)
-                        .fillMaxWidth(),
-                    enabled = state.isSignupBtnEnabled,
-                    onClick = { state.onRegisterClicked() }
+                AppLinkText(
+                    text = stringResource(id = R.string.accept_terms_conditions),
+                    linkText = stringResource(id = R.string.terms_conditions),
+                    linkUrl = TERMS_OF_SERVICES_URL,
+                    openLink = {
+                        val intent = CustomTabsIntent.Builder().build()
+                        intent.launchUrl(context, Uri.parse(it))
+                    }
                 )
             }
+            PrimaryButton(
+                buttonText = stringResource(id = R.string.sign_up),
+                loading = state.registrationState == SignUpViewModel.SignupState.Loading,
+                modifier = Modifier
+                    .padding(top = PaddingDefault)
+                    .fillMaxWidth(),
+                enabled = state.isSignupBtnEnabled,
+                onClick = { state.onRegisterClicked() }
+            )
         }
     }
 }
