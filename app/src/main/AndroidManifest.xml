@@ -25,20 +25,23 @@
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="https" />
                 <data android:scheme="http" />
-                <data android:host="template.softteco.com.deep_link"/>
+                <data android:host="template.softteco.com.deep_link" />
             </intent-filter>
         </activity>
         <service
-            android:name="com.softteco.template.utils.AppFirebaseMessagingService"
+            android:name="com.softteco.template.ui.feature.notifications.AppFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
@@ -48,6 +51,13 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/common_google_signin_btn_text_dark" />
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="smart_reply" />
+
+        <receiver
+            android:name=".ui.feature.notifications.SmartReplyBroadcastReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

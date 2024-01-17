@@ -7,4 +7,13 @@ object Constants {
     const val CONTACT_EMAIL = "softteco.os.dev@gmail.com"
     const val CONTACT_SUBJECT = "User Inquiry or Feedback"
     const val TERMS_OF_SERVICES_URL = "https://softteco.com/terms-of-services"
+    const val ACTION_NOTIFICATION_REPLY = "ACTION_NOTIFICATION_REPLY"
+    const val ACTION_NOTIFICATION = "ACTION_NOTIFICATION"
+    const val NOTIFICATION_REPLY = "NOTIFICATION_REPLY"
+    const val NOTIFICATION_ID = 1
+    const val CHANNEL_NAME = "FCM notification channel"
+    const val NOTIFICATION_SMART_REPLY_FIRST = "NOTIFICATION_SMART_REPLY_FIRST"
+    const val NOTIFICATION_SMART_REPLY_SECOND = "NOTIFICATION_SMART_REPLY_SECOND"
+    const val NOTIFICATION_SMART_REPLY_THIRD = "NOTIFICATION_SMART_REPLY_THIRD"
+    const val REPLY = "REPLY"
 }

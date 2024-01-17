@@ -104,6 +104,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.smart.reply)
 
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.messaging)
