@@ -6,7 +6,7 @@ minSdk = "26"
 # @keep
 targetSdk = "34"
 
-applicationPlugin = "8.1.0"
+applicationPlugin = "8.1.1"
 ossLicensesPlugin = "0.10.6"
 kotlinAndroidPlugin = "1.9.20"
 ktlinPlugin = "10.2.1"
