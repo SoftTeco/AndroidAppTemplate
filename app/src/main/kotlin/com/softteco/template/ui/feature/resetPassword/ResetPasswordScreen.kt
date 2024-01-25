@@ -23,6 +23,7 @@ import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
+import com.softteco.template.utils.Analytics
 
 @Composable
 fun ResetPasswordScreen(
@@ -32,8 +33,10 @@ fun ResetPasswordScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    Analytics.resetPasswordOpened()
     LaunchedEffect(state.resetPasswordState) {
         if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
+            Analytics.resetPasswordSuccess()
             onSuccess()
         }
     }

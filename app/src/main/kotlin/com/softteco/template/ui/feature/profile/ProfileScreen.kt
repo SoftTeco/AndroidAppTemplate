@@ -67,6 +67,7 @@ import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingLarge
 import com.softteco.template.ui.theme.Dimens.PaddingNormal
 import com.softteco.template.ui.theme.Dimens.PaddingSmall
+import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.DateUtils
 import java.util.Locale
 
@@ -79,6 +80,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    Analytics.profileOpened()
 
     LaunchedEffect(state.profileState) {
         if (state.profileState is ProfileViewModel.GetProfileState.Logout) {

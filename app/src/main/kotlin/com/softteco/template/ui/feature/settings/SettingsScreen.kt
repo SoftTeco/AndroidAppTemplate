@@ -36,6 +36,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
+import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
@@ -48,6 +49,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
+    Analytics.settingsOpened()
     ScreenContent(
         modifier = modifier,
         onBackClicked = onBackClicked,
