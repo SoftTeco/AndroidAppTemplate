@@ -86,7 +86,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
         return Intent(this, AppFirebaseMessagingService::class.java).apply {
             action = ACTION_NOTIFICATION
             flags =
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // tap actions on notification
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
     }
 
@@ -107,9 +107,11 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun createNotificationLayout(message: RemoteMessage.Notification): RemoteViews {
-        val notificationLayout = RemoteViews(packageName, R.layout.notification_content_view)
-        notificationLayout.setTextViewText(R.id.notification_title, message.title)
-        notificationLayout.setTextViewText(R.id.notification_body, message.body)
+        val notificationLayout =
+            RemoteViews(packageName, R.layout.notification_content_view).apply {
+                setTextViewText(R.id.notification_title, message.title)
+                setTextViewText(R.id.notification_body, message.body)
+            }
         return notificationLayout
     }
 
