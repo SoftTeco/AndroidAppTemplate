@@ -3,6 +3,7 @@ package com.softteco.template.ui.components.snackBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
+import com.softteco.template.ui.LocalSnackbarController
 
 @Composable
 fun SnackbarHandler(
