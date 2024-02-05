@@ -3,5 +3,6 @@
 
     <style name="ChoiceText" parent="@android:style/TextAppearance">
         <item name="android:textColor">#000</item>
+        <item name="android:textSize">12sp</item>
     </style>
 </resources>

@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import com.google.firebase.messaging.RemoteMessage
 import com.google.mlkit.nl.smartreply.SmartReply
 import com.google.mlkit.nl.smartreply.SmartReplySuggestionResult
 import com.google.mlkit.nl.smartreply.TextMessage
@@ -23,35 +22,36 @@ class NotificationHelper @Inject constructor(private val context: Context) {
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private var repliesList = mutableListOf<String>()
 
-    fun createNotificationLayout(message: RemoteMessage.Notification): RemoteViews {
+    fun createNotificationLayout(message: String, title: String): RemoteViews {
         val notificationLayout =
             RemoteViews(context.packageName, R.layout.notification_content_view)
-        notificationLayout.setTextViewText(R.id.notification_title, message.title)
-        notificationLayout.setTextViewText(R.id.notification_body, message.body)
+        notificationLayout.setTextViewText(R.id.notification_title, title)
+        notificationLayout.setTextViewText(R.id.notification_body, message)
         return notificationLayout
     }
 
-    fun createNotificationContentLayout(message: RemoteMessage.Notification): RemoteViews {
+    fun createNotificationContentLayout(message: String, title: String): RemoteViews {
         val notificationLayout =
             RemoteViews(context.packageName, R.layout.notification_replies_view)
 
         coroutineScope.launch {
-            updateNotificationContentLayout(notificationLayout, message)
+            updateNotificationContentLayout(notificationLayout, message, title)
         }
 
         return notificationLayout
     }
 
-    private suspend fun updateNotificationContentLayout(
+    private fun updateNotificationContentLayout(
         notificationLayout: RemoteViews,
-        message: RemoteMessage.Notification
+        message: String,
+        title: String
     ) {
         notificationLayout.setTextViewText(R.id.choiсe_first_text, repliesList.getOrNull(0) ?: "")
         notificationLayout.setTextViewText(R.id.choiсe_second_text, repliesList.getOrNull(1) ?: "")
         notificationLayout.setTextViewText(R.id.choiсe_third_text, repliesList.getOrNull(2) ?: "")
 
-        notificationLayout.setTextViewText(R.id.notification_title_content, message.title)
-        notificationLayout.setTextViewText(R.id.notification_body_content, message.body)
+        notificationLayout.setTextViewText(R.id.notification_title_content, title)
+        notificationLayout.setTextViewText(R.id.notification_body_content, message)
 
         notificationLayout.setOnClickPendingIntent(
             R.id.choiсe_first_text,
@@ -79,19 +79,19 @@ class NotificationHelper @Inject constructor(private val context: Context) {
         )
     }
 
-    suspend fun getChoiceList(message: RemoteMessage.Notification): MutableList<String> =
+    suspend fun getChoiceList(message: String): MutableList<String> =
         suspendCancellableCoroutine { continuation ->
+            repliesList.clear()
             val conversation = mutableListOf<TextMessage>()
             val smartReplyGenerator = SmartReply.getClient()
             conversation.add(
                 TextMessage.createForLocalUser(
-                    message.body.toString(),
+                    message,
                     System.currentTimeMillis()
                 )
             )
             smartReplyGenerator.suggestReplies(conversation).addOnSuccessListener { result ->
                 if (result.status == SmartReplySuggestionResult.STATUS_SUCCESS) {
-                    repliesList.clear()
                     for (suggestion in result.suggestions) {
                         val replyText = suggestion.text.replace("\n", "")
                         repliesList.add(replyText)

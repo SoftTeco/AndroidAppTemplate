@@ -18,8 +18,18 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        remoteMessage.notification?.let { message ->
-            notificationHandler.handleMessage(message)
+        if (remoteMessage.data.isNotEmpty()) {
+            notificationHandler.handleMessage(
+                remoteMessage.data["message"]!!,
+                remoteMessage.data["title"]!!
+            )
+        } else {
+            if (remoteMessage.notification != null) {
+                notificationHandler.handleMessage(
+                    remoteMessage.notification!!.body!!,
+                    remoteMessage.notification!!.title!!
+                )
+            }
         }
     }
 

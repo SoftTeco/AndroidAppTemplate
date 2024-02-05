@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
-import com.google.firebase.messaging.RemoteMessage
 import com.softteco.template.Constants
 import com.softteco.template.MainActivity
 import com.softteco.template.R
@@ -28,28 +27,28 @@ class NotificationHandler@Inject constructor(
     private val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     private lateinit var remoteInput: RemoteInput
 
-    fun handleMessage(message: RemoteMessage.Notification) {
+    fun handleMessage(message: String, title: String) {
         coroutineScope.launch {
             val answersList = notificationHelper.getChoiceList(message)
 
-            val notificationLayout = notificationHelper.createNotificationLayout(message)
+            val notificationLayout = notificationHelper.createNotificationLayout(message, title)
             val channelId = context.getString(R.string.default_notification_channel_id)
 
             val notificationBuilder = if (answersList.isNotEmpty()) {
                 val notificationContentLayout =
-                    notificationHelper.createNotificationContentLayout(message)
+                    notificationHelper.createNotificationContentLayout(message, title)
                 createNotificationBuilderWithContent(
                     channelId,
                     notificationLayout,
                     notificationContentLayout,
-                    createPendingIntent(createNotificationIntent(message)),
+                    createPendingIntent(createNotificationIntent(message, title)),
                     createReplyAction(createPendingIntent(createReplyIntent()), createRemoteInput())
                 )
             } else {
                 createNotificationBuilder(
                     channelId,
                     notificationLayout,
-                    createPendingIntent(createNotificationIntent(message)),
+                    createPendingIntent(createNotificationIntent(message, title)),
                     createReplyAction(createPendingIntent(createReplyIntent()), createRemoteInput())
                 )
             }
@@ -103,12 +102,12 @@ class NotificationHandler@Inject constructor(
         }
     }
 
-    private fun createNotificationIntent(message: RemoteMessage.Notification): Intent {
+    private fun createNotificationIntent(message: String, title: String): Intent {
         return Intent(context, MainActivity::class.java).apply {
             action = Constants.ACTION_NOTIFICATION
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            putExtra("notificationTitle", message.title)
-            putExtra("notificationBody", message.body)
+            putExtra("notificationTitle", title)
+            putExtra("notificationBody", message)
         }
     }
 
