@@ -12,6 +12,7 @@ kotlinAndroidPlugin = "1.9.20"
 ktlinPlugin = "10.2.1"
 detektPlugin = "1.22.0"
 kspPlugin = "1.9.20-1.0.14"
+crashlyticsPlugin = "2.9.9"
 
 ktx = "1.12.0"
 appcompat = "1.6.1"
@@ -107,6 +108,7 @@ io-kotest-kotest-assertions = { module = "io.kotest:kotest-assertions-core", ver
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
 [plugins]
