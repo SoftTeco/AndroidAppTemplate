@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services") version "4.4.0"
     id("com.google.android.gms.oss-licenses-plugin")
+    id("com.google.firebase.crashlytics")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.kapt)
@@ -107,6 +108,8 @@ dependencies {
 
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.messaging)
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.google.firebase.crashlytics)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)

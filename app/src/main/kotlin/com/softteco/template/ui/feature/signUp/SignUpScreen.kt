@@ -40,6 +40,7 @@ import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
+import com.softteco.template.utils.Analytics
 
 @Composable
 fun SignUpScreen(
@@ -49,9 +50,11 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    Analytics.signUpOpened()
 
     LaunchedEffect(state.registrationState) {
         if (state.registrationState is SignUpViewModel.SignupState.Success) {
+            Analytics.signUpSuccess()
             onSuccess()
         }
     }

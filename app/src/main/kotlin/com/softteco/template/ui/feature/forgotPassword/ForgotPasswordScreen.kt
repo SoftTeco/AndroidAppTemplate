@@ -23,6 +23,7 @@ import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.utils.Analytics
 
 @Composable
 fun ForgotPasswordScreen(
@@ -32,6 +33,7 @@ fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    Analytics.forgotPasswordOpened()
 
     LaunchedEffect(state.forgotPasswordState) {
         if (state.forgotPasswordState is ForgotPasswordViewModel.ForgotPasswordState.Success) {
