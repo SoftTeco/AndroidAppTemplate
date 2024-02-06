@@ -43,6 +43,7 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.getHyperLinks
 
 private const val TAG = "URL"
@@ -54,6 +55,7 @@ fun OpenSourceLicensesScreen(
     viewModel: OpenSourceLicensesViewModel = hiltViewModel(),
 ) {
     val licenses by viewModel.licensesList.collectAsState()
+    Analytics.licensesOpened()
 
     ScreenContent(
         onBackClicked = onBackClicked,

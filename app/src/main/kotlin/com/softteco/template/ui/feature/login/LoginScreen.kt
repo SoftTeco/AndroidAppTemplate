@@ -33,6 +33,7 @@ import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.utils.Analytics
 
 @Composable
 fun LoginScreen(
@@ -44,9 +45,11 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    Analytics.logInOpened()
 
     LaunchedEffect(state.loginState) {
         if (state.loginState is LoginViewModel.LoginState.Success) {
+            Analytics.logInSuccess()
             onSuccess()
         }
     }

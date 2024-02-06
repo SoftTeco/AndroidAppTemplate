@@ -106,6 +106,7 @@ app-cash-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine
 io-kotest-kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
 [plugins]

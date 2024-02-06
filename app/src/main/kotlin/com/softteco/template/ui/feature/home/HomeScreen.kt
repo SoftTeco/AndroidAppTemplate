@@ -10,9 +10,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softteco.template.R
 import com.softteco.template.ui.theme.AppTheme
+import com.softteco.template.utils.Analytics
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
+    Analytics.homeOpened()
     ScreenContent(modifier = modifier)
 }
 
