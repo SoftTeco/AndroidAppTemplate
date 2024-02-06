@@ -7,7 +7,7 @@ import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
-import com.softteco.template.ui.components.SnackBarState
+import com.softteco.template.ui.components.snackBar.SnackBarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.utils.AppDispatchers

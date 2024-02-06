@@ -30,7 +30,7 @@ import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.SecondaryButton
-import com.softteco.template.ui.components.TextSnackbarContainer
+import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 
@@ -50,6 +50,11 @@ fun LoginScreen(
             onSuccess()
         }
     }
+
+    SnackbarHandler(
+        snackbarState = state.snackBar,
+        onDismissSnackbar = state.dismissSnackBar
+    )
 
     ScreenContent(
         modifier = modifier,
@@ -73,69 +78,62 @@ private fun ScreenContent(
     val color =
         if (isPressed) MaterialTheme.colorScheme.inversePrimary else MaterialTheme.colorScheme.primary
 
-    TextSnackbarContainer(
-        modifier = modifier,
-        snackbarText = stringResource(state.snackBar.textId),
-        showSnackbar = state.snackBar.show,
-        onDismissSnackbar = state.dismissSnackBar,
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        CustomTopAppBar(
+            stringResource(id = R.string.login),
+            modifier = Modifier.fillMaxWidth(),
+            onBackClicked = onBackClicked
+        )
         Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+            modifier = Modifier.padding(Dimens.PaddingNormal),
+            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CustomTopAppBar(
-                stringResource(id = R.string.login),
-                modifier = Modifier.fillMaxWidth(),
-                onBackClicked = onBackClicked
+            EmailField(
+                emailValue = state.emailValue,
+                onEmailChanged = state.onEmailChanged,
+                fieldStateEmail = state.fieldStateEmail,
+                modifier = Modifier.fillMaxWidth()
             )
-            Column(
-                modifier = Modifier.padding(Dimens.PaddingNormal),
-                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                EmailField(
-                    emailValue = state.emailValue,
-                    onEmailChanged = state.onEmailChanged,
-                    fieldStateEmail = state.fieldStateEmail,
-                    modifier = Modifier.fillMaxWidth()
+            PasswordField(
+                passwordValue = state.passwordValue,
+                onPasswordChanged = state.onPasswordChanged,
+                fieldStatePassword = state.fieldStatePassword,
+                modifier = Modifier.fillMaxWidth()
+            )
+            PrimaryButton(
+                buttonText = stringResource(id = R.string.login),
+                loading = state.loginState == LoginViewModel.LoginState.Loading,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state.isLoginBtnEnabled,
+                onClick = { state.onLoginClicked() },
+            )
+            SecondaryButton(
+                title = stringResource(id = R.string.sign_up),
+                loading = false,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onSignUpClicked() }
+            )
+            Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
+            Text(
+                text = stringResource(id = R.string.forgot_password),
+                modifier = Modifier.clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    onForgotPasswordClicked()
+                },
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    textDecoration = TextDecoration.Underline,
+                    color = color
                 )
-                PasswordField(
-                    passwordValue = state.passwordValue,
-                    onPasswordChanged = state.onPasswordChanged,
-                    fieldStatePassword = state.fieldStatePassword,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                PrimaryButton(
-                    buttonText = stringResource(id = R.string.login),
-                    loading = state.loginState == LoginViewModel.LoginState.Loading,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = state.isLoginBtnEnabled,
-                    onClick = { state.onLoginClicked() },
-                )
-                SecondaryButton(
-                    title = stringResource(id = R.string.sign_up),
-                    loading = false,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onSignUpClicked() }
-                )
-                Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
-                Text(
-                    text = stringResource(id = R.string.forgot_password),
-                    modifier = Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        onForgotPasswordClicked()
-                    },
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        textDecoration = TextDecoration.Underline,
-                        color = color
-                    )
-                )
-            }
+            )
         }
     }
 }
