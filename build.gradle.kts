@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application") version libs.versions.applicationPlugin apply false
     id("com.google.android.gms.oss-licenses-plugin") version libs.versions.ossLicensesPlugin apply false
+    id("com.google.firebase.crashlytics") version libs.versions.crashlyticsPlugin apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.ktlint)
