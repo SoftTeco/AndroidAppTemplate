@@ -23,6 +23,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     @Provides
     fun provideHTTPLoggingInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
@@ -59,7 +61,7 @@ object NetworkModule {
 
     @Suppress("SameParameterValue")
     private fun buildRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
-        val converterFactory = Json.asConverterFactory("application/json".toMediaType())
+        val converterFactory = json.asConverterFactory("application/json".toMediaType())
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
