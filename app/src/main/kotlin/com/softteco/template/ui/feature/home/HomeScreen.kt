@@ -1,14 +1,17 @@
 package com.softteco.template.ui.feature.home
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.softteco.template.R
+import com.softteco.template.navigation.BackButtonHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.utils.Analytics
 
@@ -20,6 +23,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ScreenContent(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
+    BackButtonHandler {
+        (context as? Activity)?.finish()
+    }
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

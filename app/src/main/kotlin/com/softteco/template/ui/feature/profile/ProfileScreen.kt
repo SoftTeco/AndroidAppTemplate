@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.profile
 
+import android.app.Activity
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.data.profile.entity.Profile
+import com.softteco.template.navigation.BackButtonHandler
 import com.softteco.template.ui.components.Avatar
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EditTextDialog
@@ -123,6 +125,10 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     onAvatarClicked: () -> Unit,
 ) {
+    val context = LocalContext.current
+    BackButtonHandler {
+        (context as? Activity)?.finish()
+    }
     Column(
         modifier
             .fillMaxSize()

@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.settings
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.Constants
 import com.softteco.template.Constants.TERMS_OF_SERVICES_URL
 import com.softteco.template.R
+import com.softteco.template.navigation.BackButtonHandler
 import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.AppListItem
 import com.softteco.template.ui.components.CustomBottomSheet
@@ -66,11 +68,14 @@ private fun ScreenContent(
     setThemeMode: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
+    BackButtonHandler {
+        (context as? Activity)?.finish()
+    }
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
-    val context = LocalContext.current
-
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column(
             modifier = Modifier
