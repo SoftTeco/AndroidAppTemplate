@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "project_number",
-    "project_id": "project_id",
-    "storage_bucket": "storage_bucket"
+    "project_number": "375486153979",
+    "project_id": "androidapptemplate-d4856",
+    "storage_bucket": "androidapptemplate-d4856.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "mobilesdk_app_id",
+        "mobilesdk_app_id": "1:375486153979:android:08c9fdc78f479c27ff9c5e",
         "android_client_info": {
           "package_name": "com.softteco.template"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "current_key"
+          "current_key": "AIzaSyCcbvZ4f1irEVLi4aA_g0dsSAVI2z1i-ow"
         }
       ],
       "services": {
