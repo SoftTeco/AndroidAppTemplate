@@ -1,6 +1,5 @@
 package com.softteco.template.ui.feature.profile
 
-import android.app.Activity
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -77,6 +76,7 @@ import java.util.Locale
 fun ProfileScreen(
     onBackClicked: () -> Unit,
     onLogout: () -> Unit,
+    onSystemBackClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -115,19 +115,20 @@ fun ProfileScreen(
     ScreenContent(
         state = state,
         onAvatarClicked = ::launchMediaPicker,
-        modifier = modifier
+        modifier = modifier,
+        onSystemBackClicked = onSystemBackClicked
     )
 }
 
 @Composable
 private fun ScreenContent(
     state: ProfileViewModel.State,
-    modifier: Modifier = Modifier,
     onAvatarClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    onSystemBackClicked: () -> Unit
 ) {
-    val context = LocalContext.current
     BackButtonHandler {
-        (context as? Activity)?.finish()
+        onSystemBackClicked()
     }
     Column(
         modifier
@@ -476,6 +477,7 @@ private fun Preview() {
                 )
             ),
             onAvatarClicked = {},
+            onSystemBackClicked = {},
         )
     }
 }
@@ -487,6 +489,7 @@ private fun PreviewLoading() {
         ScreenContent(
             state = ProfileViewModel.State(profileState = ProfileViewModel.GetProfileState.Loading),
             onAvatarClicked = {},
+            onSystemBackClicked = {}
         )
     }
 }

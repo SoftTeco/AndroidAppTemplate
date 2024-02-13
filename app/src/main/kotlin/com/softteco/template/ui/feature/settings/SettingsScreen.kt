@@ -1,7 +1,6 @@
 package com.softteco.template.ui.feature.settings
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
@@ -71,7 +70,7 @@ private fun ScreenContent(
     val context = LocalContext.current
 
     BackButtonHandler {
-        (context as? Activity)?.finish()
+        onBackClicked()
     }
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)

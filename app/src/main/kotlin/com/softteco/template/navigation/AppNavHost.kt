@@ -67,12 +67,13 @@ fun NavGraphBuilder.bottomBarGraph(
                         popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
                 },
+                onSystemBackClicked = { navController.navigate(Screen.Home.route) }
             )
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
                 modifier = modifier,
-                onBackClicked = { navController.navigateUp() },
+                onBackClicked = { navController.navigate(Screen.Home.route) },
                 onLicensesClicked = {
                     navController.navigate(Screen.OpenSourceLicenses.route)
                 }
