@@ -33,7 +33,9 @@ fun ResetPasswordScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Analytics.resetPasswordOpened()
+    LaunchedEffect(Unit) {
+        Analytics.resetPasswordOpened()
+    }
     LaunchedEffect(state.resetPasswordState) {
         if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
             Analytics.resetPasswordSuccess()

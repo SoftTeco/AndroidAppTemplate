@@ -43,6 +43,10 @@ android {
 
         val envBaseUrl = "\"${System.getenv("BASE_URL")}\""
         val baseUrl = gradleLocalProperties(rootDir).getProperty("BASE_URL", envBaseUrl)
+        val envShipBookAppId = "\"${System.getenv("SHIP_BOOK_APP_ID")}\""
+        val shipBookAppId = gradleLocalProperties(rootDir).getProperty("SHIP_BOOK_APP_ID", envShipBookAppId)
+        val envShipBookAppKey = "\"${System.getenv("SHIP_BOOK_APP_KEY")}\""
+        val shipBookAppKey = gradleLocalProperties(rootDir).getProperty("SHIP_BOOK_APP_KEY", envShipBookAppKey)
 
         release {
             isMinifyEnabled = false
@@ -53,10 +57,14 @@ android {
             isDebuggable = false
             buildConfigField("String", "BASE_URL", baseUrl)
             buildConfigField("String", "GOOGLE_SERVICES_JSON", "\"{}\"")
+            buildConfigField("String", "SHIP_BOOK_APP_ID", shipBookAppId)
+            buildConfigField("String", "SHIP_BOOK_APP_KEY", shipBookAppKey)
         }
         debug {
             isDebuggable = true
             buildConfigField("String", "BASE_URL", baseUrl)
+            buildConfigField("String", "SHIP_BOOK_APP_ID", shipBookAppId)
+            buildConfigField("String", "SHIP_BOOK_APP_KEY", shipBookAppKey)
             // disabled because of unit tests errors,
             // could be restored after running instrumentation tests on CI, and fixing unit tests errors
             // enableAndroidTestCoverage = true
@@ -140,6 +148,8 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.oss.licenses)
+
+    implementation(libs.ship.book)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

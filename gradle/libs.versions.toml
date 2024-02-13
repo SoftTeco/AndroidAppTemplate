@@ -54,6 +54,7 @@ kotlinReflect = "1.9.21"
 firebaseBom = "32.6.0"
 accompanist = "0.30.1"
 playServicesOssLicenses = "17.0.1"
+shipBook = "1.+"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -110,6 +111,7 @@ google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-k
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+ship-book = { module = "io.shipbook:shipbooksdk", version.ref = "shipBook" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "applicationPlugin" }

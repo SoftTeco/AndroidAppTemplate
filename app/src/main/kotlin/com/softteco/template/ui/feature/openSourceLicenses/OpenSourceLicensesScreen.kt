@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +56,9 @@ fun OpenSourceLicensesScreen(
     viewModel: OpenSourceLicensesViewModel = hiltViewModel(),
 ) {
     val licenses by viewModel.licensesList.collectAsState()
-    Analytics.licensesOpened()
+    LaunchedEffect(Unit) {
+        Analytics.licensesOpened()
+    }
 
     ScreenContent(
         onBackClicked = onBackClicked,

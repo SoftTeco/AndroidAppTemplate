@@ -50,7 +50,9 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    Analytics.signUpOpened()
+    LaunchedEffect(Unit) {
+        Analytics.signUpOpened()
+    }
 
     LaunchedEffect(state.registrationState) {
         if (state.registrationState is SignUpViewModel.SignupState.Success) {

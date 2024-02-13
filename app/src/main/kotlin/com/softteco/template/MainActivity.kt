@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,13 +26,12 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var profileRepository: ProfileRepository
-
-    @Inject
     lateinit var dataStore: DataStore<Preferences>
 
     @Inject
     lateinit var sessionManager: SessionManager
+
+    private val viewModel: MainViewModel by viewModels()
 
     @SuppressLint("FlowOperatorInvokedInComposition", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +44,12 @@ class MainActivity : ComponentActivity() {
             val appThemeContent: @Composable () -> Unit = {
                 val isUserLoggedIn by sessionManager.isUserLoggedIn.collectAsState(initial = false)
                 val startDestination =
-                    if (isUserLoggedIn) Graph.BottomBar.route else Graph.Login.route
+                    if (isUserLoggedIn) {
+                        viewModel.registerUserInShipBook()
+                        Graph.BottomBar.route
+                    } else {
+                        Graph.Login.route
+                    }
                 AppContent(startDestination)
             }
             theme.value?.let {
