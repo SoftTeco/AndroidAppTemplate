@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.base.error.AppError
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
@@ -13,7 +14,6 @@ import com.softteco.template.ui.components.snackBar.SnackBarState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validatePassword
 import com.softteco.template.utils.AppDispatchers
-import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,7 +32,7 @@ class ResetPasswordViewModel @Inject constructor(
     private val resetPasswordState =
         MutableStateFlow<ResetPasswordState>(ResetPasswordState.Default)
     private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow(SnackBarState())
+    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
 
     val state = combine(
@@ -47,7 +47,7 @@ class ResetPasswordViewModel @Inject constructor(
             fieldStatePassword = passwordState,
             snackBar = snackBar,
             isResetBtnEnabled = passwordState is PasswordFieldState.Success,
-            dismissSnackBar = { snackBarState.value = SnackBarState() },
+            dismissSnackBar = { snackBarState.value = null },
             onPasswordChanged = { passwordStateValue.value = it },
             onResetPasswordClicked = ::onResetPassword
         )
@@ -69,12 +69,19 @@ class ResetPasswordViewModel @Inject constructor(
             val result = repository.changePassword(token, newPassword)
             resetPasswordState.value = when (result) {
                 is Result.Success -> {
-                    snackBarState.value = SnackBarState(R.string.success, true)
+                    snackBarState.value = SnackBarState(R.string.success)
                     ResetPasswordState.Success
                 }
 
                 is Result.Error -> {
-                    handleApiError(result, snackBarState)
+                    if (result.error == AppError.AuthError.InvalidToken) {
+                        /*
+                         TODO Add a dialog explaining that the token has expired
+                               and need to initiate a password reset again
+                         */
+                    } else {
+                        snackBarState.value = SnackBarState(result.error.messageRes)
+                    }
                     ResetPasswordState.Default
                 }
             }
@@ -86,7 +93,7 @@ class ResetPasswordViewModel @Inject constructor(
         val resetPasswordState: ResetPasswordState = ResetPasswordState.Default,
         val passwordValue: String = "",
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
-        val snackBar: SnackBarState = SnackBarState(),
+        val snackBar: SnackBarState? = null,
         val isResetBtnEnabled: Boolean = false,
         val onPasswordChanged: (String) -> Unit = {},
         val onResetPasswordClicked: () -> Unit = {},

@@ -88,10 +88,12 @@ fun ProfileScreen(
         } else if (state.profileState == ProfileViewModel.GetProfileState.Error) onBackClicked()
     }
 
-    SnackbarHandler(
-        snackbarState = state.snackbar,
-        onDismissSnackbar = state.dismissSnackBar
-    )
+    state.snackbar?.let { snackBarState ->
+        SnackbarHandler(
+            snackbarState = snackBarState,
+            onDismissSnackbar = state.dismissSnackBar
+        )
+    }
 
     val pickMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -464,10 +466,7 @@ private fun Preview() {
                         createdAt = "2023-10-30 06:58:31.108922",
                     )
                 ),
-                snackbar = SnackBarState(
-                    textId = 0,
-                    show = false
-                )
+                snackbar = SnackBarState(textId = 0)
             ),
             onAvatarClicked = {}
         )

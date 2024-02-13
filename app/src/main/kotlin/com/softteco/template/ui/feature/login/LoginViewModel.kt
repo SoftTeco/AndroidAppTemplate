@@ -3,6 +3,8 @@ package com.softteco.template.ui.feature.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softteco.template.data.base.error.AppError.AuthError.EmailNotExist
+import com.softteco.template.data.base.error.AppError.AuthError.WrongCredentials
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
@@ -11,7 +13,6 @@ import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.utils.AppDispatchers
-import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +30,7 @@ class LoginViewModel @Inject constructor(
     private val loginState = MutableStateFlow<LoginState>(LoginState.Default)
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow(SnackBarState())
+    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
@@ -56,7 +57,7 @@ class LoginViewModel @Inject constructor(
             },
             onPasswordChanged = { passwordStateValue.value = it },
             onLoginClicked = ::onLogin,
-            dismissSnackBar = { snackBarState.value = SnackBarState() },
+            dismissSnackBar = { snackBarState.value = null },
         )
     }.stateIn(
         viewModelScope,
@@ -74,10 +75,16 @@ class LoginViewModel @Inject constructor(
             )
 
             val result = repository.login(credentials)
+
             loginState.value = when (result) {
                 is Result.Success -> LoginState.Success
+
                 is Result.Error -> {
-                    handleApiError(result, snackBarState)
+                    // TODO Add a dialog asking to register (with an option to go to "Sign up")
+                    if (result.error == EmailNotExist || result.error == WrongCredentials) {
+                        emailFieldState.value = EmailFieldState.Error
+                    }
+                    snackBarState.value = SnackBarState(result.error.messageRes)
                     LoginState.Default
                 }
             }
@@ -87,7 +94,7 @@ class LoginViewModel @Inject constructor(
     @Immutable
     data class State(
         val loginState: LoginState = LoginState.Default,
-        val snackBar: SnackBarState = SnackBarState(),
+        val snackBar: SnackBarState? = null,
         val emailValue: String = "",
         val passwordValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,

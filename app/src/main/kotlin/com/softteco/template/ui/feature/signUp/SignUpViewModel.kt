@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
@@ -14,7 +15,6 @@ import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.ui.feature.validatePassword
 import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.combine
-import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +31,7 @@ class SignUpViewModel @Inject constructor(
     private var userNameStateValue = MutableStateFlow("")
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow(SnackBarState())
+    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
     private var termsCheckedStateValue = MutableStateFlow(false)
 
@@ -58,7 +58,7 @@ class SignUpViewModel @Inject constructor(
                 passwordState is PasswordFieldState.Success &&
                 userName.isNotEmpty() &&
                 termsCheckedState,
-            dismissSnackBar = { snackBarState.value = SnackBarState() },
+            dismissSnackBar = { snackBarState.value = null },
             onUserNameChanged = { userNameStateValue.value = it.trim() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
@@ -87,12 +87,15 @@ class SignUpViewModel @Inject constructor(
             val result = repository.registration(createUserDto)
             registrationState.value = when (result) {
                 is Result.Success -> {
-                    snackBarState.value = SnackBarState(R.string.success, true)
+                    snackBarState.value = SnackBarState(R.string.success)
                     SignupState.Success(result.data)
                 }
 
                 is Result.Error -> {
-                    handleApiError(result, snackBarState)
+                    if (result.error == InvalidEmail) {
+                        emailFieldState.value = EmailFieldState.Error
+                    }
+                    snackBarState.value = SnackBarState(result.error.messageRes)
                     SignupState.Default
                 }
             }
@@ -102,7 +105,7 @@ class SignUpViewModel @Inject constructor(
     @Immutable
     data class State(
         val registrationState: SignupState = SignupState.Default,
-        val snackBar: SnackBarState = SnackBarState(),
+        val snackBar: SnackBarState? = null,
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",

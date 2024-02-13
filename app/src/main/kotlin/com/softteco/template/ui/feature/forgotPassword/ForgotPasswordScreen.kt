@@ -41,10 +41,12 @@ fun ForgotPasswordScreen(
         }
     }
 
-    SnackbarHandler(
-        snackbarState = state.snackBar,
-        onDismissSnackbar = state.dismissSnackBar
-    )
+    state.snackBar?.let { snackBarState ->
+        SnackbarHandler(
+            snackbarState = snackBarState,
+            onDismissSnackbar = state.dismissSnackBar
+        )
+    }
 
     ScreenContent(
         modifier = modifier,

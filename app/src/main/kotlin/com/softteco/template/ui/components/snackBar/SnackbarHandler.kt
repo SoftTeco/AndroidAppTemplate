@@ -11,7 +11,6 @@ fun SnackbarHandler(
     onDismissSnackbar: () -> Unit,
     snackbarController: SnackbarController = LocalSnackbarController.current
 ) {
-    if (!snackbarState.show) return
     val message = stringResource(id = snackbarState.textId)
     LaunchedEffect(snackbarState) {
         snackbarController.showMessage(
@@ -24,5 +23,4 @@ fun SnackbarHandler(
 
 data class SnackBarState(
     val textId: Int = android.R.string.unknownName,
-    val show: Boolean = false,
 )
