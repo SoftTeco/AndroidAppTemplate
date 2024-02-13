@@ -5,11 +5,13 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.softteco.template.BuildConfig
 import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
+import com.softteco.template.data.base.ApiResultCallAdapterFactory
 import com.softteco.template.utils.AppDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -47,20 +49,38 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTemplateApi(okHttpClient: OkHttpClient): TemplateApi {
-        val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
+    fun provideTemplateApi(
+        okHttpClient: OkHttpClient,
+        appDispatchers: AppDispatchers
+    ): TemplateApi {
+        val retrofit = buildRetrofit(
+            okHttpClient,
+            BuildConfig.BASE_URL,
+            CoroutineScope(appDispatchers.io)
+        )
         return retrofit.create(TemplateApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideRestCountriesApi(okHttpClient: OkHttpClient): RestCountriesApi {
-        val retrofit = buildRetrofit(okHttpClient, RestCountriesApi.BASE_URL)
+    fun provideRestCountriesApi(
+        okHttpClient: OkHttpClient,
+        appDispatchers: AppDispatchers
+    ): RestCountriesApi {
+        val retrofit = buildRetrofit(
+            okHttpClient,
+            RestCountriesApi.BASE_URL,
+            CoroutineScope(appDispatchers.io)
+        )
         return retrofit.create(RestCountriesApi::class.java)
     }
 
     @Suppress("SameParameterValue")
-    private fun buildRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
+    private fun buildRetrofit(
+        okHttpClient: OkHttpClient,
+        baseUrl: String,
+        coroutineScope: CoroutineScope
+    ): Retrofit {
         val converterFactory = json.asConverterFactory("application/json".toMediaType())
 
         return Retrofit.Builder()
@@ -68,6 +88,7 @@ object NetworkModule {
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addCallAdapterFactory(ApiResultCallAdapterFactory.create(coroutineScope))
             .client(okHttpClient)
             .build()
     }

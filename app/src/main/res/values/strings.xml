@@ -31,11 +31,18 @@
     <string name="forgot_password">Forgot password</string>
     <string name="restore_password">Restore password</string>
     <string name="check_email">Check your email</string>
-    <string name="error_access_denied">"Check permissions to access this resource"</string>
-    <string name="error_network">"Check your internet connection and try again"</string>
-    <string name="error_not_found">"Make sure you've entered the correct information"</string>
-    <string name="error_service_unavailable">"Our services are temporarily unavailable"</string>
-    <string name="error_unknown">"An unexpected error occurred"</string>
+
+    <!-- Error messages -->
+    <string name="error_wrong_credentials">Incorrect email or password. Please check the data and try again.</string>
+    <string name="error_invalid_username">Username must be at least 3 characters long and contain only letters and numbers.</string>
+    <string name="error_invalid_email">Invalid e-mail address. Please check the entered value and try again.</string>
+    <string name="error_invalid_password">Password must be at least 6 characters long and include at least one uppercase letter.</string>
+    <string name="error_invalid_access_token">Invalid Access Token. The access token is invalid and may need to be re-authorized.</string>
+    <string name="error_username_unavailable">Username is already taken. Please choose a different username.</string>
+    <string name="error_email_already_exists">An account with this email address already exists.</string>
+    <string name="error_email_not_found">No user found with this email. Please sign up for an account.</string>
+    <string name="error_network">Check your internet connection and try again</string>
+    <string name="error_unknown">Something went wrong. We are already looking into it. Please try again later or contact our support team if the error persists.</string>
 
     <!-- Home screen -->
     <string name="ble">BLE</string>

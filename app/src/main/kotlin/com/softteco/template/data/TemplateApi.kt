@@ -1,5 +1,6 @@
 package com.softteco.template.data
 
+import com.softteco.template.data.base.ApiResult
 import com.softteco.template.data.profile.dto.AuthTokenDto
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.data.profile.dto.CredentialsDto
@@ -21,26 +22,26 @@ interface TemplateApi {
     }
 
     @GET("/profile/me")
-    suspend fun getUser(@Header(AUTH_HEADER) authHeader: String): ProfileDto
+    suspend fun getUser(@Header(AUTH_HEADER) authHeader: String): ApiResult<ProfileDto>
 
     @POST("/login")
-    suspend fun login(@Body userAuth: CredentialsDto): AuthTokenDto
+    suspend fun login(@Body userAuth: CredentialsDto): ApiResult<AuthTokenDto>
 
     @POST("/signup")
-    suspend fun registration(@Body user: CreateUserDto): NewUserDto
+    suspend fun registration(@Body user: CreateUserDto): ApiResult<NewUserDto>
 
     @POST("/password_reset")
-    suspend fun resetPassword(@Body email: ResetPasswordDto)
+    suspend fun resetPassword(@Body email: ResetPasswordDto): ApiResult<Unit>
 
     @PUT("/password/{token}")
     suspend fun changePassword(
         @Path("token") resetToken: String,
         @Body newPassword: NewPasswordDto
-    )
+    ): ApiResult<Unit>
 
     @PUT("/profile/password")
     suspend fun updatePassword(
         @Header(AUTH_HEADER) authHeader: String,
         @Body newPassword: NewPasswordDto
-    )
+    ): ApiResult<Unit>
 }
