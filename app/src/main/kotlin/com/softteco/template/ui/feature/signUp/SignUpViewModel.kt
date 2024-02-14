@@ -8,7 +8,7 @@ import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
-import com.softteco.template.ui.components.snackBar.SnackBarState
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validateEmail
@@ -25,13 +25,13 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
 ) : ViewModel() {
     private val registrationState = MutableStateFlow<SignupState>(SignupState.Default)
     private var userNameStateValue = MutableStateFlow("")
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
     private var termsCheckedStateValue = MutableStateFlow(false)
 
@@ -40,10 +40,9 @@ class SignUpViewModel @Inject constructor(
         userNameStateValue,
         emailStateValue,
         passwordStateValue,
-        snackBarState,
         emailFieldState,
         termsCheckedStateValue,
-    ) { registrationState, userName, emailValue, passwordValue, snackBar, emailState, termsCheckedState ->
+    ) { registrationState, userName, emailValue, passwordValue, emailState, termsCheckedState ->
         val passwordState = validatePassword(passwordValue)
         State(
             registrationState = registrationState,
@@ -53,12 +52,10 @@ class SignUpViewModel @Inject constructor(
             fieldStateEmail = emailState,
             fieldStatePassword = passwordState,
             termsCheckedStateValue = termsCheckedState,
-            snackBar = snackBar,
             isSignupBtnEnabled = emailState is EmailFieldState.Success &&
                 passwordState is PasswordFieldState.Success &&
                 userName.isNotEmpty() &&
                 termsCheckedState,
-            dismissSnackBar = { snackBarState.value = null },
             onUserNameChanged = { userNameStateValue.value = it.trim() },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
@@ -87,7 +84,7 @@ class SignUpViewModel @Inject constructor(
             val result = repository.registration(createUserDto)
             registrationState.value = when (result) {
                 is Result.Success -> {
-                    snackBarState.value = SnackBarState(R.string.success)
+                    snackbarController.showSnackbar(R.string.success)
                     SignupState.Success(result.data)
                 }
 
@@ -95,7 +92,7 @@ class SignUpViewModel @Inject constructor(
                     if (result.error == InvalidEmail) {
                         emailFieldState.value = EmailFieldState.Error
                     }
-                    snackBarState.value = SnackBarState(result.error.messageRes)
+                    snackbarController.showSnackbar(result.error.messageRes)
                     SignupState.Default
                 }
             }
@@ -105,7 +102,6 @@ class SignUpViewModel @Inject constructor(
     @Immutable
     data class State(
         val registrationState: SignupState = SignupState.Default,
-        val snackBar: SnackBarState? = null,
         val userNameValue: String = "",
         val emailValue: String = "",
         val passwordValue: String = "",
@@ -118,7 +114,6 @@ class SignUpViewModel @Inject constructor(
         val onPasswordChanged: (String) -> Unit = {},
         val onRegisterClicked: () -> Unit = {},
         val onCheckTermsChange: (Boolean) -> Unit = {},
-        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable

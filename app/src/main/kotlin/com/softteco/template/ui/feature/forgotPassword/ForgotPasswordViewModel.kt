@@ -9,7 +9,7 @@ import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
-import com.softteco.template.ui.components.snackBar.SnackBarState
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.utils.AppDispatchers
@@ -24,28 +24,25 @@ import javax.inject.Inject
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
 ) : ViewModel() {
     private val forgotPasswordState =
         MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Default)
     private var emailStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val emailFieldState =
         MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
         forgotPasswordState,
         emailStateValue,
-        snackBarState,
         emailFieldState
-    ) { forgotPasswordState, emailValue, snackBar, emailState ->
+    ) { forgotPasswordState, emailValue, emailState ->
         State(
             forgotPasswordState = forgotPasswordState,
             emailValue = emailValue,
-            snackBar = snackBar,
             fieldStateEmail = emailState,
             isResetBtnEnabled = emailState is EmailFieldState.Success,
-            dismissSnackBar = { snackBarState.value = null },
             onEmailChanged = {
                 emailStateValue.value = it.trim()
                 validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
@@ -68,7 +65,7 @@ class ForgotPasswordViewModel @Inject constructor(
                 val result = repository.resetPassword(email)
                 forgotPasswordState.value = when (result) {
                     is Result.Success -> {
-                        snackBarState.value = SnackBarState(R.string.check_email)
+                        snackbarController.showSnackbar(R.string.check_email)
                         ForgotPasswordState.Success
                     }
 
@@ -77,13 +74,13 @@ class ForgotPasswordViewModel @Inject constructor(
                         if (result.error == EmailNotExist || result.error == InvalidEmail) {
                             emailFieldState.value = EmailFieldState.Error
                         }
-                        snackBarState.value = SnackBarState(result.error.messageRes)
+                        snackbarController.showSnackbar(R.string.check_email)
                         ForgotPasswordState.Default
                     }
                 }
             }
         } else {
-            snackBarState.value = SnackBarState(R.string.empty_fields_error)
+            snackbarController.showSnackbar(R.string.empty_fields_error)
         }
     }
 
@@ -92,11 +89,9 @@ class ForgotPasswordViewModel @Inject constructor(
         val forgotPasswordState: ForgotPasswordState = ForgotPasswordState.Default,
         val emailValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
-        val snackBar: SnackBarState? = null,
         val isResetBtnEnabled: Boolean = false,
         val onEmailChanged: (String) -> Unit = {},
         val onRestorePasswordClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable

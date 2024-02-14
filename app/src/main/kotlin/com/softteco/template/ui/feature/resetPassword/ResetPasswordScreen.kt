@@ -19,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
@@ -39,13 +38,6 @@ fun ResetPasswordScreen(
             Analytics.resetPasswordSuccess()
             onSuccess()
         }
-    }
-
-    state.snackBar?.let { snackBarState ->
-        SnackbarHandler(
-            snackbarState = snackBarState,
-            onDismissSnackbar = state.dismissSnackBar
-        )
     }
 
     ScreenContent(

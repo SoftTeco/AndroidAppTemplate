@@ -35,7 +35,6 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
@@ -57,13 +56,6 @@ fun SignUpScreen(
             Analytics.signUpSuccess()
             onSuccess()
         }
-    }
-
-    state.snackBar?.let { snackBarState ->
-        SnackbarHandler(
-            snackbarState = snackBarState,
-            onDismissSnackbar = state.dismissSnackBar
-        )
     }
 
     ScreenContent(

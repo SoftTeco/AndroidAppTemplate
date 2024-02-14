@@ -8,7 +8,7 @@ import com.softteco.template.data.base.error.AppError.LocalStorageAppError.AuthT
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
-import com.softteco.template.ui.components.snackBar.SnackBarState
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -29,23 +29,20 @@ private const val COUNTRY_DEBOUNCE = 600
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
 ) : ViewModel() {
 
     private val profileState = MutableStateFlow<GetProfileState>(GetProfileState.Loading)
-    private val snackbarState = MutableStateFlow<SnackBarState?>(null)
     private val countryState = MutableStateFlow("")
     private val countryList = MutableStateFlow(emptyList<String>())
 
     val state = combine(
         profileState,
         countryList,
-        snackbarState
-    ) { profile, countries, snackbar ->
+    ) { profile, countries ->
         State(
             profileState = profile,
-            snackbar = snackbar,
-            dismissSnackBar = { snackbarState.value = null },
             onProfileChanged = { onProfileChanged(it) },
             countries = countries,
             onCountryChanged = { country -> countryState.value = country },
@@ -70,11 +67,11 @@ class ProfileViewModel @Inject constructor(
 
                     is Result.Error -> {
                         if (result.error == InvalidToken || result.error == AuthTokenNotFound) {
-                            profileState.value = GetProfileState.Logout
+                            GetProfileState.Logout
                         } else {
-                            snackbarState.value = SnackBarState(result.error.messageRes)
+                            snackbarController.showSnackbar(result.error.messageRes)
+                            GetProfileState.Error
                         }
-                        GetProfileState.Error
                     }
                 }
             }
@@ -116,8 +113,6 @@ class ProfileViewModel @Inject constructor(
         val onCountryChanged: (String) -> Unit = {},
         val onCountrySelected: (String) -> Unit = {},
         val onLogoutClicked: () -> Unit = {},
-        val snackbar: SnackBarState? = null,
-        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable

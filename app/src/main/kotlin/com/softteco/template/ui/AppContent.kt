@@ -5,13 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.ktx.Firebase
@@ -19,7 +14,7 @@ import com.google.firebase.messaging.ktx.messaging
 import com.softteco.template.navigation.AppBottomBar
 import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.ui.components.RequestNotificationPermissionDialog
-import com.softteco.template.ui.components.snackBar.SnackbarController
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -27,11 +22,10 @@ import timber.log.Timber
 @Composable
 fun AppContent(
     startDestination: String,
-    modifier: Modifier = Modifier
+    snackbarController: SnackbarController,
+    modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         launch {
@@ -43,29 +37,18 @@ fun AppContent(
         RequestNotificationPermissionDialog()
     }
 
-    CompositionLocalProvider(
-        LocalSnackbarController provides SnackbarController(
-            snackbarHostState = snackbarHostState,
-            coroutineScope = coroutineScope
-        ),
-    ) {
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.background,
-            bottomBar = {
-                AppBottomBar(navController = navController)
-            },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-        ) { paddingValues ->
-            AppNavHost(
-                navController = navController,
-                startDestination = startDestination,
-                paddingValues = paddingValues
-            )
-        }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = {
+            AppBottomBar(navController = navController)
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarController.snackbarHostState) }
+    ) { paddingValues ->
+        AppNavHost(
+            navController = navController,
+            startDestination = startDestination,
+            paddingValues = paddingValues
+        )
     }
-}
-
-val LocalSnackbarController = staticCompositionLocalOf<SnackbarController> {
-    error("No SnackbarController provided.")
 }

@@ -10,7 +10,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
-import com.softteco.template.ui.components.snackBar.SnackBarState
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validatePassword
 import com.softteco.template.utils.AppDispatchers
@@ -24,30 +24,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
-    private val repository: ProfileRepository,
     savedStateHandle: SavedStateHandle,
-    private val appDispatchers: AppDispatchers
+    private val repository: ProfileRepository,
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
 ) : ViewModel() {
 
     private val resetPasswordState =
         MutableStateFlow<ResetPasswordState>(ResetPasswordState.Default)
     private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
 
     val state = combine(
         resetPasswordState,
         passwordStateValue,
-        snackBarState,
-    ) { resetPasswordState, passwordValue, snackBar ->
+    ) { resetPasswordState, passwordValue ->
         val passwordState = validatePassword(passwordValue)
         State(
             resetPasswordState = resetPasswordState,
             passwordValue = passwordValue,
             fieldStatePassword = passwordState,
-            snackBar = snackBar,
             isResetBtnEnabled = passwordState is PasswordFieldState.Success,
-            dismissSnackBar = { snackBarState.value = null },
             onPasswordChanged = { passwordStateValue.value = it },
             onResetPasswordClicked = ::onResetPassword
         )
@@ -69,7 +66,7 @@ class ResetPasswordViewModel @Inject constructor(
             val result = repository.changePassword(token, newPassword)
             resetPasswordState.value = when (result) {
                 is Result.Success -> {
-                    snackBarState.value = SnackBarState(R.string.success)
+                    snackbarController.showSnackbar(R.string.success)
                     ResetPasswordState.Success
                 }
 
@@ -80,7 +77,7 @@ class ResetPasswordViewModel @Inject constructor(
                                and need to initiate a password reset again
                          */
                     } else {
-                        snackBarState.value = SnackBarState(result.error.messageRes)
+                        snackbarController.showSnackbar(result.error.messageRes)
                     }
                     ResetPasswordState.Default
                 }
@@ -93,11 +90,9 @@ class ResetPasswordViewModel @Inject constructor(
         val resetPasswordState: ResetPasswordState = ResetPasswordState.Default,
         val passwordValue: String = "",
         val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
-        val snackBar: SnackBarState? = null,
         val isResetBtnEnabled: Boolean = false,
         val onPasswordChanged: (String) -> Unit = {},
         val onResetPasswordClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable

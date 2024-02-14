@@ -8,7 +8,7 @@ import com.softteco.template.data.base.error.AppError.AuthError.WrongCredentials
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
-import com.softteco.template.ui.components.snackBar.SnackBarState
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.validateEmail
@@ -24,27 +24,25 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
 ) : ViewModel() {
 
     private val loginState = MutableStateFlow<LoginState>(LoginState.Default)
     private var emailStateValue = MutableStateFlow("")
     private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow<SnackBarState?>(null)
     private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
 
     val state = combine(
         loginState,
         emailStateValue,
         passwordStateValue,
-        snackBarState,
         emailFieldState
-    ) { loginState, emailValue, passwordValue, snackBar, emailState ->
+    ) { loginState, emailValue, passwordValue, emailState ->
         State(
             loginState = loginState,
             emailValue = emailValue,
             passwordValue = passwordValue,
-            snackBar = snackBar,
             isLoginBtnEnabled = emailState is EmailFieldState.Success && passwordValue.isNotBlank(),
             fieldStateEmail = emailState,
             fieldStatePassword = when {
@@ -57,7 +55,6 @@ class LoginViewModel @Inject constructor(
             },
             onPasswordChanged = { passwordStateValue.value = it },
             onLoginClicked = ::onLogin,
-            dismissSnackBar = { snackBarState.value = null },
         )
     }.stateIn(
         viewModelScope,
@@ -84,7 +81,7 @@ class LoginViewModel @Inject constructor(
                     if (result.error == EmailNotExist || result.error == WrongCredentials) {
                         emailFieldState.value = EmailFieldState.Error
                     }
-                    snackBarState.value = SnackBarState(result.error.messageRes)
+                    snackbarController.showSnackbar(result.error.messageRes)
                     LoginState.Default
                 }
             }
@@ -94,7 +91,6 @@ class LoginViewModel @Inject constructor(
     @Immutable
     data class State(
         val loginState: LoginState = LoginState.Default,
-        val snackBar: SnackBarState? = null,
         val emailValue: String = "",
         val passwordValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
@@ -103,7 +99,6 @@ class LoginViewModel @Inject constructor(
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onLoginClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {},
     )
 
     @Immutable
