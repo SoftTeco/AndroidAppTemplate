@@ -118,8 +118,8 @@ class SignUpViewModel @Inject constructor(
 
     @Immutable
     sealed class SignupState {
-        object Default : SignupState()
-        object Loading : SignupState()
+        data object Default : SignupState()
+        data object Loading : SignupState()
         class Success(val email: String) : SignupState()
     }
 }

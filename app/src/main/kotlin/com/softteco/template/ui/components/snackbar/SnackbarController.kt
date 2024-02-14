@@ -25,7 +25,7 @@ class SnackbarController @Inject constructor(
         }
     }
 
-    fun showSnackbar(snackbarState: SnackBarState) {
+    fun showSnackbar(snackbarState: SnackbarState) {
         coroutineScope.launch {
             snackbarState.run {
                 snackbarHostState.showSnackbar(
@@ -39,4 +39,3 @@ class SnackbarController @Inject constructor(
         }
     }
 }
-

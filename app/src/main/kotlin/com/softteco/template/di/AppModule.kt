@@ -2,6 +2,7 @@ package com.softteco.template.di
 
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
+import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.utils.AppDispatchers
 import dagger.Module
@@ -21,6 +22,7 @@ object AppModule {
     fun provideSnackbarHostState(): SnackbarHostState = SnackbarHostState()
 
     @Provides
+    @Singleton
     fun provideSnackbarController(
         @ApplicationContext context: Context,
         snackbarHostState: SnackbarHostState,
@@ -31,5 +33,11 @@ object AppModule {
             CoroutineScope(appDispatchers.io),
             context,
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDialogController(appDispatchers: AppDispatchers): DialogController {
+        return DialogController(CoroutineScope(appDispatchers.io))
     }
 }

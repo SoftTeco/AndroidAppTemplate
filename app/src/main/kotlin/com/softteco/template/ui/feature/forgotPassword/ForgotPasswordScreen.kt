@@ -8,18 +8,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.softteco.template.R
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PrimaryButton
+import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.utils.Analytics
@@ -28,15 +34,34 @@ import com.softteco.template.utils.Analytics
 fun ForgotPasswordScreen(
     onBackClicked: () -> Unit,
     onSuccess: () -> Unit,
+    navigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
     Analytics.forgotPasswordOpened()
 
-    LaunchedEffect(state.forgotPasswordState) {
-        if (state.forgotPasswordState is ForgotPasswordViewModel.ForgotPasswordState.Success) {
-            onSuccess()
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) viewModel.onCreate()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(state.screenState) {
+        when (val screenState = state.screenState) {
+            ScreenState.Success -> onSuccess()
+
+            is ScreenState.Navigate -> {
+                if (screenState.screen == Screen.SignUp) navigateToSignUp()
+            }
+
+            else -> { /*NOOP*/
+            }
         }
     }
 
@@ -79,7 +104,7 @@ private fun ScreenContent(
             )
             PrimaryButton(
                 buttonText = stringResource(id = R.string.restore_password),
-                loading = state.forgotPasswordState == ForgotPasswordViewModel.ForgotPasswordState.Loading,
+                loading = state.screenState == ScreenState.Loading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Dimens.PaddingLarge),

@@ -6,6 +6,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -46,7 +47,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
                 }
 
                 awaitItem().run {
-                    forgotPasswordState.shouldBeTypeOf<ForgotPasswordViewModel.ForgotPasswordState.Success>()
+                    screenState.shouldBeTypeOf<ScreenState.Success>()
                     snackBar.show shouldBe true
                 }
             }
@@ -100,7 +101,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
                 }
 
                 awaitItem().run {
-                    forgotPasswordState.shouldBeTypeOf<ForgotPasswordViewModel.ForgotPasswordState.Loading>()
+                    screenState.shouldBeTypeOf<ScreenState.Loading>()
                 }
             }
 

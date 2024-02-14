@@ -3,7 +3,7 @@ package com.softteco.template.ui.components.snackbar
 import androidx.annotation.StringRes
 import androidx.compose.material3.SnackbarDuration
 
-data class SnackBarState(
+data class SnackbarState(
     @StringRes
     val messageRes: Int,
     @StringRes

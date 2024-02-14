@@ -12,6 +12,7 @@ import androidx.compose.runtime.key
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.softteco.template.navigation.Graph
 import com.softteco.template.ui.AppContent
+import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,6 +25,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var snackbarController: SnackbarController
+
+    @Inject
+    lateinit var dialogController: DialogController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -51,8 +55,8 @@ class MainActivity : ComponentActivity() {
             key(isUserLoggedIn) {
                 AppTheme(theme) {
                     when (isUserLoggedIn) {
-                        true -> AppContent(Graph.BottomBar.route, snackbarController)
-                        false -> AppContent(Graph.Login.route, snackbarController)
+                        true -> AppContent(Graph.BottomBar.route, snackbarController, dialogController)
+                        false -> AppContent(Graph.Login.route, snackbarController, dialogController)
                         null -> { /*NOOP*/
                         }
                     }

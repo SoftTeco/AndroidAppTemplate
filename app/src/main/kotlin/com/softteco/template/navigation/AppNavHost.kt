@@ -119,7 +119,8 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClicked = { navController.navigateUp() },
-                onSuccess = { navController.navigate(Screen.Login.route) }
+                onSuccess = { navController.navigate(Screen.Login.route) },
+                navigateToSignUp = { navController.navigate(Screen.SignUp.route) },
             )
         }
     }

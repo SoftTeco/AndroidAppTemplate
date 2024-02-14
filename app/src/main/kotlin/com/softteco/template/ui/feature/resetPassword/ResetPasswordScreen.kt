@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
+import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
@@ -34,7 +35,7 @@ fun ResetPasswordScreen(
 
     Analytics.resetPasswordOpened()
     LaunchedEffect(state.resetPasswordState) {
-        if (state.resetPasswordState is ResetPasswordViewModel.ResetPasswordState.Success) {
+        if (state.resetPasswordState is ScreenState.Success) {
             Analytics.resetPasswordSuccess()
             onSuccess()
         }
@@ -69,7 +70,7 @@ private fun ScreenContent(
         )
         PrimaryButton(
             buttonText = stringResource(id = R.string.reset_password),
-            loading = state.resetPasswordState == ResetPasswordViewModel.ResetPasswordState.Loading,
+            loading = state.resetPasswordState == ScreenState.Loading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = Dimens.PaddingDefault),

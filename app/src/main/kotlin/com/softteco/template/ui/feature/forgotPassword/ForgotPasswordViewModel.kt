@@ -9,8 +9,12 @@ import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
+import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.dialog.DialogController
+import com.softteco.template.ui.components.dialog.DialogState
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.EmailFieldState
+import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.feature.validateEmail
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,9 +30,10 @@ class ForgotPasswordViewModel @Inject constructor(
     private val repository: ProfileRepository,
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
+    private val dialogController: DialogController,
 ) : ViewModel() {
     private val forgotPasswordState =
-        MutableStateFlow<ForgotPasswordState>(ForgotPasswordState.Default)
+        MutableStateFlow<ScreenState>(ScreenState.Default)
     private var emailStateValue = MutableStateFlow("")
     private val emailFieldState =
         MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
@@ -39,7 +44,7 @@ class ForgotPasswordViewModel @Inject constructor(
         emailFieldState
     ) { forgotPasswordState, emailValue, emailState ->
         State(
-            forgotPasswordState = forgotPasswordState,
+            screenState = forgotPasswordState,
             emailValue = emailValue,
             fieldStateEmail = emailState,
             isResetBtnEnabled = emailState is EmailFieldState.Success,
@@ -55,27 +60,40 @@ class ForgotPasswordViewModel @Inject constructor(
         State()
     )
 
+    fun onCreate() {
+        forgotPasswordState.value = ScreenState.Default
+    }
+
     private fun onForgotPassword() {
         if (state.value.fieldStateEmail is EmailFieldState.Success) {
             viewModelScope.launch(appDispatchers.ui) {
-                forgotPasswordState.value = ForgotPasswordState.Loading
+                forgotPasswordState.value = ScreenState.Loading
 
                 val email = ResetPasswordDto(email = emailStateValue.value)
 
                 val result = repository.resetPassword(email)
-                forgotPasswordState.value = when (result) {
+
+                when (result) {
                     is Result.Success -> {
                         snackbarController.showSnackbar(R.string.check_email)
-                        ForgotPasswordState.Success
+                        forgotPasswordState.value = ScreenState.Success
                     }
 
                     is Result.Error -> {
-                        // TODO Add a dialog asking to register (with an option to go to "Sign up")
-                        if (result.error == EmailNotExist || result.error == InvalidEmail) {
-                            emailFieldState.value = EmailFieldState.Error
+                        when (result.error) {
+                            EmailNotExist, InvalidEmail -> {
+                                emailFieldState.value = EmailFieldState.Error
+
+                                if (result.error == EmailNotExist) {
+                                    showSignUpDialog()
+                                } else {
+                                    snackbarController.showSnackbar(result.error.messageRes)
+                                }
+                            }
+
+                            else -> snackbarController.showSnackbar(result.error.messageRes)
                         }
-                        snackbarController.showSnackbar(R.string.check_email)
-                        ForgotPasswordState.Default
+                        forgotPasswordState.value = ScreenState.Default
                     }
                 }
             }
@@ -84,20 +102,28 @@ class ForgotPasswordViewModel @Inject constructor(
         }
     }
 
+    private fun showSignUpDialog() {
+        viewModelScope.launch {
+            val dialogState = DialogState(
+                titleRes = R.string.dialog_user_not_found_title,
+                messageRes = R.string.dialog_user_not_found_message,
+                positiveBtnRes = R.string.sign_up,
+                positiveBtnAction = {
+                    forgotPasswordState.value = ScreenState.Navigate(Screen.SignUp)
+                },
+                negativeBtnRes = R.string.cancel,
+            )
+            dialogController.showDialog(dialogState)
+        }
+    }
+
     @Immutable
     data class State(
-        val forgotPasswordState: ForgotPasswordState = ForgotPasswordState.Default,
+        val screenState: ScreenState = ScreenState.Default,
         val emailValue: String = "",
         val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
         val isResetBtnEnabled: Boolean = false,
         val onEmailChanged: (String) -> Unit = {},
         val onRestorePasswordClicked: () -> Unit = {},
     )
-
-    @Immutable
-    sealed class ForgotPasswordState {
-        object Default : ForgotPasswordState()
-        object Loading : ForgotPasswordState()
-        object Success : ForgotPasswordState()
-    }
 }

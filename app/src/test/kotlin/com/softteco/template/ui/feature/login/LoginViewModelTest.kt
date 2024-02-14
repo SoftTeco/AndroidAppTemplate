@@ -7,6 +7,7 @@ import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.PasswordFieldState
+import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -44,7 +45,7 @@ class LoginViewModelTest : BaseTest() {
                     isLoginBtnEnabled shouldBe true
                     onLoginClicked()
                 }
-                awaitItem().loginState.shouldBeTypeOf<LoginViewModel.LoginState.Success>()
+                awaitItem().screenState.shouldBeTypeOf<ScreenState.Success>()
             }
             coVerify(exactly = 1) { repository.login(credentials) }
         }
@@ -108,7 +109,7 @@ class LoginViewModelTest : BaseTest() {
                 onLoginClicked()
             }
             awaitItem().run {
-                loginState.shouldBeTypeOf<LoginViewModel.LoginState.Loading>()
+                screenState.shouldBeTypeOf<ScreenState.Loading>()
             }
         }
         coVerify(exactly = 1) { repository.login(credentials) }
