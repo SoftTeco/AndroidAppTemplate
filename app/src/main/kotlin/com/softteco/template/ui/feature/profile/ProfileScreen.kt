@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.data.profile.entity.Profile
-import com.softteco.template.navigation.BackButtonHandler
 import com.softteco.template.ui.components.Avatar
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EditTextDialog
@@ -76,7 +75,6 @@ import java.util.Locale
 fun ProfileScreen(
     onBackClicked: () -> Unit,
     onLogout: () -> Unit,
-    onSystemBackClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -115,8 +113,7 @@ fun ProfileScreen(
     ScreenContent(
         state = state,
         onAvatarClicked = ::launchMediaPicker,
-        modifier = modifier,
-        onSystemBackClicked = onSystemBackClicked
+        modifier = modifier
     )
 }
 
@@ -124,12 +121,8 @@ fun ProfileScreen(
 private fun ScreenContent(
     state: ProfileViewModel.State,
     onAvatarClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-    onSystemBackClicked: () -> Unit
+    modifier: Modifier = Modifier
 ) {
-    BackButtonHandler {
-        onSystemBackClicked()
-    }
     Column(
         modifier
             .fillMaxSize()
@@ -476,8 +469,7 @@ private fun Preview() {
                     show = false
                 )
             ),
-            onAvatarClicked = {},
-            onSystemBackClicked = {},
+            onAvatarClicked = {}
         )
     }
 }
@@ -488,8 +480,7 @@ private fun PreviewLoading() {
     AppTheme {
         ScreenContent(
             state = ProfileViewModel.State(profileState = ProfileViewModel.GetProfileState.Loading),
-            onAvatarClicked = {},
-            onSystemBackClicked = {}
+            onAvatarClicked = {}
         )
     }
 }

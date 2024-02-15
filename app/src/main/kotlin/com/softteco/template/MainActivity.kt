@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -43,13 +44,13 @@ class MainActivity : ComponentActivity() {
                 it[PreferencesKeys.THEME_MODE]
             }.collectAsState(initial = ThemeMode.SystemDefault.value)
             val appThemeContent: @Composable () -> Unit = {
-                var isUserLoggedIn by rememberSaveable { mutableStateOf<Boolean?>(null) }
+               var isUserLoggedIn by rememberSaveable { mutableStateOf<Boolean?>(null) }
                 LaunchedEffect(Unit) {
                     isUserLoggedIn = profileRepository.getUser() is Result.Success
                 }
                 isUserLoggedIn?.let {
                     val startDestination = if (it) Graph.BottomBar.route else Graph.Login.route
-                    AppContent(startDestination)
+                    AppContent(startDestination, { isUserLoggedIn = it })
                 }
             }
             theme.value?.let {
