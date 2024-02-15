@@ -3,8 +3,6 @@ package com.softteco.template.data.base
 import com.softteco.template.data.base.error.ErrorBody
 import kotlinx.coroutines.delay
 
-const val REQUEST_RETRY_DELAY = 5000L
-
 sealed interface ApiResult<T : Any>
 
 class ApiSuccess<T : Any>(val code: Int, val data: T) : ApiResult<T>

@@ -6,11 +6,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -32,6 +36,8 @@ fun AppContent(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         launch {
@@ -50,7 +56,7 @@ fun AppContent(
             bottomBar = {
                 AppBottomBar(navController = navController)
             },
-            snackbarHost = { SnackbarHost(hostState = snackbarController.snackbarHostState) }
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         ) { paddingValues ->
             AppNavHost(
                 navController = navController,
@@ -59,13 +65,26 @@ fun AppContent(
             )
         }
 
-        val dialogs = dialogController.dialogs.collectAsState()
+        val dialogs by dialogController.dialogs.collectAsState()
         key(dialogs) {
-            dialogs.value.firstOrNull()?.let { dialogState ->
+            dialogs.firstOrNull()?.let { dialogState ->
                 AppDialog(
                     onDismissRequest = { dialogController.dismissDialog() },
                     state = dialogState
                 )
+            }
+        }
+
+        val snackbars by snackbarController.snackbars.collectAsState()
+        LaunchedEffect(snackbars) {
+            snackbars.firstOrNull()?.run {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(messageRes),
+                    actionLabel = actionLabelRes?.let { context.getString(it) },
+                    withDismissAction = withDismissAction,
+                    duration = duration
+                )
+                snackbarController.dismissSnackbar(this@run)
             }
         }
     }

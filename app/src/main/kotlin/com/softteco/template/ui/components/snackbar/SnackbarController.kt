@@ -1,40 +1,36 @@
 package com.softteco.template.ui.components.snackbar
 
-import android.content.Context
 import androidx.annotation.StringRes
-import androidx.compose.material3.SnackbarHostState
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class SnackbarController @Inject constructor(
-    val snackbarHostState: SnackbarHostState,
-    private val coroutineScope: CoroutineScope,
-    @ApplicationContext
-    private val context: Context,
-) {
-    private val _onDismissEvents = MutableSharedFlow<Unit>()
+@Singleton
+class SnackbarController @Inject constructor() {
+
+    private val _snackbars = MutableStateFlow<Set<SnackbarState>>(emptySet())
+    val snackbars get() = _snackbars.asStateFlow()
+
+    private val _onDismissEvents = MutableSharedFlow<SnackbarState>()
     val onDismissEvents get() = _onDismissEvents.asSharedFlow()
 
     fun showSnackbar(@StringRes messageRes: Int) {
-        coroutineScope.launch {
-            snackbarHostState.showSnackbar(context.getString(messageRes))
-        }
+        _snackbars.update { it.plus(SnackbarState(messageRes)) }
     }
 
     fun showSnackbar(snackbarState: SnackbarState) {
-        coroutineScope.launch {
-            snackbarState.run {
-                snackbarHostState.showSnackbar(
-                    message = context.getString(messageRes),
-                    actionLabel = actionLabelRes?.let { context.getString(it) },
-                    withDismissAction = withDismissAction,
-                    duration = duration
-                )
-                _onDismissEvents.emit(Unit)
+        _snackbars.update { it.plus(snackbarState) }
+    }
+
+    fun dismissSnackbar(snackbarState: SnackbarState) {
+        _onDismissEvents.tryEmit(snackbarState)
+        if (snackbars.value.isNotEmpty()) {
+            _snackbars.update { snackbar ->
+                snackbar.minus(snackbarState)
             }
         }
     }

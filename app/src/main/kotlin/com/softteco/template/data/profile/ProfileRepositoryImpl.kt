@@ -1,12 +1,12 @@
 package com.softteco.template.data.profile
 
 import androidx.datastore.core.DataStore
+import com.softteco.template.Constants.REQUEST_RETRY_DELAY
 import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
 import com.softteco.template.data.base.ApiError
 import com.softteco.template.data.base.ApiException
 import com.softteco.template.data.base.ApiSuccess
-import com.softteco.template.data.base.REQUEST_RETRY_DELAY
 import com.softteco.template.data.base.error.AppError
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.base.error.handleError
