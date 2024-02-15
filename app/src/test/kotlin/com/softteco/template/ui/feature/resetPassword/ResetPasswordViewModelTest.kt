@@ -3,12 +3,17 @@ package com.softteco.template.ui.feature.resetPassword
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
+import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.ui.components.snackbar.SnackbarController
+import com.softteco.template.ui.components.snackbar.SnackbarState
 import com.softteco.template.ui.feature.PasswordFieldState
+import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
@@ -31,6 +36,7 @@ class ResetPasswordViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: ResetPasswordViewModel
+    private val snackbarController = SnackbarController()
 
     @Test
     fun `when valid password and reset password button is enabled then success state is emitted`() =
@@ -38,10 +44,17 @@ class ResetPasswordViewModelTest : BaseTest() {
             coEvery {
                 repository.changePassword(TOKEN, NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD))
             } returns Result.Success(Unit)
+
             val savedStateHandle = SavedStateHandle().apply {
                 set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
             }
-            viewModel = ResetPasswordViewModel(repository, savedStateHandle, appDispatchers)
+
+            viewModel = ResetPasswordViewModel(
+                savedStateHandle,
+                repository,
+                appDispatchers,
+                snackbarController
+            )
 
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD)
@@ -53,8 +66,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                 }
 
                 awaitItem().run {
-                    resetPasswordState.shouldBeTypeOf<ResetPasswordViewModel.ResetPasswordState.Success>()
-                    snackBar.show shouldBe true
+                    resetPasswordState.shouldBeTypeOf<ScreenState.Success>()
+                    snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
                 }
             }
 
@@ -70,12 +83,14 @@ class ResetPasswordViewModelTest : BaseTest() {
     fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() =
         runTest {
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
+
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
                 delay(1.seconds)
@@ -91,12 +106,14 @@ class ResetPasswordViewModelTest : BaseTest() {
     fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() =
         runTest {
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
+
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
                 delay(1.seconds)
@@ -112,12 +129,14 @@ class ResetPasswordViewModelTest : BaseTest() {
     fun `when empty password then password field error is shown and button isn't enabled`() =
         runTest {
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
+
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
@@ -138,12 +157,14 @@ class ResetPasswordViewModelTest : BaseTest() {
                 delay(1.seconds)
                 Result.Success(Unit)
             }
+
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
 
             viewModel.state.test {
@@ -155,9 +176,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onResetPasswordClicked()
                 }
 
-                awaitItem().run {
-                    resetPasswordState.shouldBeTypeOf<ResetPasswordViewModel.ResetPasswordState.Loading>()
-                }
+                awaitItem().resetPasswordState.shouldBeTypeOf<ScreenState.Loading>()
             }
 
             coVerify(exactly = 1) {

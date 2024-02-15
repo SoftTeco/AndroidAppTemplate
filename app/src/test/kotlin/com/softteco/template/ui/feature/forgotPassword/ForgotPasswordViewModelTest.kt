@@ -2,12 +2,17 @@ package com.softteco.template.ui.feature.forgotPassword
 
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
+import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
+import com.softteco.template.ui.components.dialog.DialogController
+import com.softteco.template.ui.components.snackbar.SnackbarController
+import com.softteco.template.ui.components.snackbar.SnackbarState
 import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
@@ -28,6 +33,8 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: ForgotPasswordViewModel
+    private val snackbarController = SnackbarController()
+    private val dialogController = DialogController()
 
     @Test
     fun `when valid email and reset password button is enabled then success state is emitted`() =
@@ -35,7 +42,13 @@ class ForgotPasswordViewModelTest : BaseTest() {
             coEvery { repository.resetPassword(ResetPasswordDto(EMAIL)) } returns Result.Success(
                 Unit
             )
-            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
+
+            viewModel = ForgotPasswordViewModel(
+                repository,
+                appDispatchers,
+                snackbarController,
+                dialogController
+            )
 
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
@@ -48,7 +61,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
 
                 awaitItem().run {
                     screenState.shouldBeTypeOf<ScreenState.Success>()
-                    snackBar.show shouldBe true
+                    snackbarController.snackbars.value shouldContain SnackbarState(R.string.check_email)
                 }
             }
 
@@ -58,7 +71,13 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @Test
     fun `when invalid email then reset password button isn't enabled and email field error is shown`() =
         runTest {
-            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
+            viewModel = ForgotPasswordViewModel(
+                repository,
+                appDispatchers,
+                snackbarController,
+                dialogController
+            )
+
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 delay(1.seconds)
@@ -73,7 +92,13 @@ class ForgotPasswordViewModelTest : BaseTest() {
     @Test
     fun `when empty email then reset password button isn't enabled and email field error is shown`() =
         runTest {
-            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
+            viewModel = ForgotPasswordViewModel(
+                repository,
+                appDispatchers,
+                snackbarController,
+                dialogController
+            )
+
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
@@ -89,7 +114,13 @@ class ForgotPasswordViewModelTest : BaseTest() {
                 delay(1.seconds)
                 Result.Success(Unit)
             }
-            viewModel = ForgotPasswordViewModel(repository, appDispatchers)
+
+            viewModel = ForgotPasswordViewModel(
+                repository,
+                appDispatchers,
+                snackbarController,
+                dialogController
+            )
 
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
