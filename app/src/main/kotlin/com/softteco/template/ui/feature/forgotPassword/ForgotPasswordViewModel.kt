@@ -10,12 +10,13 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.FieldType
+import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.dialog.DialogState
 import com.softteco.template.ui.components.snackbar.SnackbarController
-import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.ScreenState
-import com.softteco.template.ui.feature.validateEmail
+import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,26 +33,27 @@ class ForgotPasswordViewModel @Inject constructor(
     private val snackbarController: SnackbarController,
     private val dialogController: DialogController,
 ) : ViewModel() {
-    private val forgotPasswordState =
-        MutableStateFlow<ScreenState>(ScreenState.Default)
-    private var emailStateValue = MutableStateFlow("")
-    private val emailFieldState =
-        MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
+    private val forgotPasswordState = MutableStateFlow<ScreenState>(ScreenState.Default)
+    private var emailValue = MutableStateFlow("")
+    private val emailFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
+    private val ctaButtonState = MutableStateFlow(false)
 
     val state = combine(
         forgotPasswordState,
-        emailStateValue,
-        emailFieldState
-    ) { forgotPasswordState, emailValue, emailState ->
+        emailValue,
+        emailFieldState,
+        ctaButtonState,
+    ) { forgotPasswordState, email, emailState, isCtaEnabled ->
         State(
             screenState = forgotPasswordState,
-            emailValue = emailValue,
-            fieldStateEmail = emailState,
-            isResetBtnEnabled = emailState is EmailFieldState.Success,
+            email = email,
+            emailFieldState = emailState,
             onEmailChanged = {
-                emailStateValue.value = it.trim()
-                validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
+                emailValue.value = it.trim()
+                emailFieldState.value = TextFieldState.AwaitingInput
             },
+            onInputComplete = ::onInputComplete,
+            isResetBtnEnabled = isCtaEnabled,
             onRestorePasswordClicked = ::onForgotPassword,
         )
     }.stateIn(
@@ -60,45 +62,51 @@ class ForgotPasswordViewModel @Inject constructor(
         State()
     )
 
+    init {
+        viewModelScope.launch {
+            emailValue.collect { email: String ->
+                ctaButtonState.value =
+                    email.validateInputValue(FieldType.EMAIL) is TextFieldState.Valid
+            }
+        }
+    }
+
     fun onCreate() {
         forgotPasswordState.value = ScreenState.Default
     }
 
     private fun onForgotPassword() {
-        if (state.value.fieldStateEmail is EmailFieldState.Success) {
-            viewModelScope.launch(appDispatchers.ui) {
-                forgotPasswordState.value = ScreenState.Loading
+        viewModelScope.launch(appDispatchers.ui) {
+            forgotPasswordState.value = ScreenState.Loading
 
-                val email = ResetPasswordDto(email = emailStateValue.value)
+            val email = ResetPasswordDto(email = emailValue.value)
 
-                val result = repository.resetPassword(email)
+            val result = repository.resetPassword(email)
 
-                when (result) {
-                    is Result.Success -> {
-                        snackbarController.showSnackbar(R.string.check_email)
-                        forgotPasswordState.value = ScreenState.Success
-                    }
+            when (result) {
+                is Result.Success -> {
+                    snackbarController.showSnackbar(R.string.check_email)
+                    forgotPasswordState.value = ScreenState.Success
+                }
 
-                    is Result.Error -> {
-                        when (result.error) {
-                            EmailNotExist, InvalidEmail -> {
-                                emailFieldState.value = EmailFieldState.Error
+                is Result.Error -> {
+                    when (result.error) {
+                        EmailNotExist, InvalidEmail -> {
+                            emailFieldState.value =
+                                TextFieldState.EmailError(R.string.email_not_valid)
 
-                                if (result.error == EmailNotExist) {
-                                    showSignUpDialog()
-                                } else {
-                                    snackbarController.showSnackbar(result.error.messageRes)
-                                }
+                            if (result.error == EmailNotExist) {
+                                showSignUpDialog()
+                            } else {
+                                snackbarController.showSnackbar(result.error.messageRes)
                             }
-
-                            else -> snackbarController.showSnackbar(result.error.messageRes)
                         }
-                        forgotPasswordState.value = ScreenState.Default
+
+                        else -> snackbarController.showSnackbar(result.error.messageRes)
                     }
+                    forgotPasswordState.value = ScreenState.Default
                 }
             }
-        } else {
-            snackbarController.showSnackbar(R.string.empty_fields_error)
         }
     }
 
@@ -117,13 +125,18 @@ class ForgotPasswordViewModel @Inject constructor(
         }
     }
 
+    private fun onInputComplete() {
+        emailFieldState.value = emailValue.value.validateInputValue(FieldType.EMAIL)
+    }
+
     @Immutable
     data class State(
         val screenState: ScreenState = ScreenState.Default,
-        val emailValue: String = "",
-        val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
-        val isResetBtnEnabled: Boolean = false,
+        val email: String = "",
+        val emailFieldState: TextFieldState = TextFieldState.Empty,
         val onEmailChanged: (String) -> Unit = {},
+        val onInputComplete: () -> Unit = {},
+        val isResetBtnEnabled: Boolean = false,
         val onRestorePasswordClicked: () -> Unit = {},
     )
 }

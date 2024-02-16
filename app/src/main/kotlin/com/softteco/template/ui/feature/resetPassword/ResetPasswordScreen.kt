@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.resetPassword
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +13,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,6 +29,7 @@ import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
 import com.softteco.template.utils.Analytics
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ResetPasswordScreen(
     onSuccess: () -> Unit,
@@ -41,12 +46,16 @@ fun ResetPasswordScreen(
         }
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
     ScreenContent(
         state = state,
-        modifier = modifier,
+        modifier = modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { keyboardController?.hide() })
+        },
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ScreenContent(
     state: ResetPasswordViewModel.State,
@@ -61,13 +70,16 @@ private fun ScreenContent(
     ) {
         Text(text = stringResource(id = R.string.enter_new_password))
         PasswordField(
-            passwordValue = state.passwordValue,
+            passwordValue = state.password,
             onPasswordChanged = state.onPasswordChanged,
-            fieldStatePassword = state.fieldStatePassword,
+            fieldStatePassword = state.passwordFieldState,
+            onInputComplete = state.onInputComplete,
             modifier = Modifier
                 .padding(top = PaddingExtraLarge)
                 .fillMaxWidth()
         )
+
+        val keyboardController = LocalSoftwareKeyboardController.current
         PrimaryButton(
             buttonText = stringResource(id = R.string.reset_password),
             loading = state.resetPasswordState == ScreenState.Loading,
@@ -75,7 +87,10 @@ private fun ScreenContent(
                 .fillMaxWidth()
                 .padding(top = Dimens.PaddingDefault),
             enabled = state.isResetBtnEnabled,
-            onClick = { state.onResetPasswordClicked() }
+            onClick = {
+                state.onResetPasswordClicked()
+                keyboardController?.hide()
+            }
         )
     }
 }

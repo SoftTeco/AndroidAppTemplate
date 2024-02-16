@@ -9,10 +9,12 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.ui.components.FieldType
+import com.softteco.template.ui.components.TextFieldState
+import com.softteco.template.ui.components.TextFieldState.Valid
 import com.softteco.template.ui.components.snackbar.SnackbarController
-import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ScreenState
-import com.softteco.template.ui.feature.validatePassword
+import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,22 +32,28 @@ class ResetPasswordViewModel @Inject constructor(
     private val snackbarController: SnackbarController,
 ) : ViewModel() {
 
-    private val resetPasswordState =
-        MutableStateFlow<ScreenState>(ScreenState.Default)
-    private var passwordStateValue = MutableStateFlow("")
+    private val resetPasswordState = MutableStateFlow<ScreenState>(ScreenState.Default)
+    private var passwordValue = MutableStateFlow("")
+    private val passwordFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
+    private val ctaButtonState = MutableStateFlow(false)
 
     val state = combine(
         resetPasswordState,
-        passwordStateValue,
-    ) { resetPasswordState, passwordValue ->
-        val passwordState = validatePassword(passwordValue)
+        passwordValue,
+        passwordFieldState,
+        ctaButtonState,
+    ) { resetPasswordState, password, passwordState, isCtaEnabled ->
         State(
             resetPasswordState = resetPasswordState,
-            passwordValue = passwordValue,
-            fieldStatePassword = passwordState,
-            isResetBtnEnabled = passwordState is PasswordFieldState.Success,
-            onPasswordChanged = { passwordStateValue.value = it },
+            password = password,
+            passwordFieldState = passwordState,
+            onPasswordChanged = {
+                passwordValue.value = it.trim()
+                passwordFieldState.value = TextFieldState.AwaitingInput
+            },
+            onInputComplete = ::onInputComplete,
+            isResetBtnEnabled = isCtaEnabled,
             onResetPasswordClicked = ::onResetPassword
         )
     }.stateIn(
@@ -54,13 +62,21 @@ class ResetPasswordViewModel @Inject constructor(
         State()
     )
 
+    init {
+        viewModelScope.launch {
+            passwordValue.collect { password ->
+                ctaButtonState.value = password.validateInputValue(FieldType.PASSWORD) is Valid
+            }
+        }
+    }
+
     private fun onResetPassword() {
         viewModelScope.launch(appDispatchers.ui) {
             resetPasswordState.value = ScreenState.Loading
 
             val newPassword = NewPasswordDto(
-                password = passwordStateValue.value,
-                confirmation = passwordStateValue.value,
+                password = passwordValue.value,
+                confirmation = passwordValue.value,
             )
 
             val result = repository.changePassword(token, newPassword)
@@ -79,13 +95,18 @@ class ResetPasswordViewModel @Inject constructor(
         }
     }
 
+    private fun onInputComplete() {
+        passwordFieldState.value = passwordValue.value.validateInputValue(FieldType.PASSWORD)
+    }
+
     @Immutable
     data class State(
         val resetPasswordState: ScreenState = ScreenState.Default,
-        val passwordValue: String = "",
-        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
-        val isResetBtnEnabled: Boolean = false,
+        val password: String = "",
+        val passwordFieldState: TextFieldState = TextFieldState.Empty,
         val onPasswordChanged: (String) -> Unit = {},
+        val onInputComplete: () -> Unit = {},
+        val isResetBtnEnabled: Boolean = false,
         val onResetPasswordClicked: () -> Unit = {},
     )
 }

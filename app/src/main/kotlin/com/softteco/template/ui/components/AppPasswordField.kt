@@ -4,7 +4,9 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,7 +41,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.softteco.template.R
-import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.Dimens
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -43,19 +48,28 @@ import com.softteco.template.ui.theme.Dimens
 fun PasswordField(
     passwordValue: String,
     onPasswordChanged: (String) -> Unit,
-    fieldStatePassword: PasswordFieldState,
+    fieldStatePassword: TextFieldState,
+    onInputComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var passwordVisibility by remember { mutableStateOf(true) }
+    val isError = fieldStatePassword is TextFieldState.Error
+    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    var isFocused by remember { mutableStateOf(false) }
+
+    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    LaunchedEffect(isKeyboardVisible) { if (!isKeyboardVisible) onInputComplete() }
+
     Column {
-        var passwordVisibility by remember { mutableStateOf(true) }
-        val isError = fieldStatePassword is PasswordFieldState.Error
-        val keyboardController = LocalSoftwareKeyboardController.current
         OutlinedTextField(
             value = passwordValue,
             onValueChange = { newValue ->
                 onPasswordChanged(newValue)
             },
-            modifier = modifier,
+            modifier = modifier.onFocusChanged {
+                isFocused = it.isFocused
+                if (!it.isFocused) onInputComplete()
+            },
             label = {
                 Text(text = stringResource(id = R.string.password))
             },
@@ -82,9 +96,12 @@ fun PasswordField(
             },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password,
+                keyboardType = KeyboardType.Email,
             ),
-            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+                onInputComplete()
+            }),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
@@ -94,11 +111,11 @@ fun PasswordField(
 }
 
 @Composable
-private fun SupportingText(passwordState: PasswordFieldState, modifier: Modifier = Modifier) {
+private fun SupportingText(passwordState: TextFieldState, modifier: Modifier = Modifier) {
     Column(modifier.height(48.dp)) {
         when (passwordState) {
-            PasswordFieldState.Empty -> Text(stringResource(R.string.required))
-            is PasswordFieldState.Error -> {
+            TextFieldState.Empty -> Text(stringResource(R.string.required))
+            is TextFieldState.PasswordError -> {
                 Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall)) {
                     ConditionRow(
                         condition = stringResource(R.string.registration_password_condition1),
@@ -111,7 +128,7 @@ private fun SupportingText(passwordState: PasswordFieldState, modifier: Modifier
                 }
             }
 
-            PasswordFieldState.Success -> { /* NOOP */
+            else -> { /* NOOP */
             }
         }
     }

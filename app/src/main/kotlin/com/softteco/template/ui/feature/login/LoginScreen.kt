@@ -2,6 +2,7 @@ package com.softteco.template.ui.feature.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +21,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +34,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.softteco.template.R
 import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.AppTextField
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.EmailField
+import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.SecondaryButton
@@ -40,6 +45,7 @@ import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.utils.Analytics
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(
     onBackClicked: () -> Unit,
@@ -82,8 +88,11 @@ fun LoginScreen(
         }
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
     ScreenContent(
-        modifier = modifier,
+        modifier = modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { keyboardController?.hide() })
+        },
         state = state,
         onBackClicked = onBackClicked,
         onSignUpClicked = onSignUpClicked,
@@ -91,6 +100,7 @@ fun LoginScreen(
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ScreenContent(
     state: LoginViewModel.State,
@@ -121,25 +131,34 @@ private fun ScreenContent(
             verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            EmailField(
-                emailValue = state.emailValue,
-                onEmailChanged = state.onEmailChanged,
-                fieldStateEmail = state.fieldStateEmail,
+            AppTextField(
+                value = state.email,
+                onValueChanged = state.onEmailChanged,
+                fieldState = state.emailFieldState,
+                onInputComplete = { state.onInputComplete(FieldType.EMAIL) },
+                labelRes = R.string.email,
                 modifier = Modifier.fillMaxWidth()
             )
             PasswordField(
-                passwordValue = state.passwordValue,
+                passwordValue = state.password,
                 onPasswordChanged = state.onPasswordChanged,
-                fieldStatePassword = state.fieldStatePassword,
+                fieldStatePassword = state.passwordFieldState,
+                onInputComplete = { state.onInputComplete(FieldType.PASSWORD) },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            val keyboardController = LocalSoftwareKeyboardController.current
             PrimaryButton(
                 buttonText = stringResource(id = R.string.login),
                 loading = state.screenState == ScreenState.Loading,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = state.isLoginBtnEnabled,
-                onClick = { state.onLoginClicked() },
+                onClick = {
+                    state.onLoginClicked()
+                    keyboardController?.hide()
+                },
             )
+
             SecondaryButton(
                 title = stringResource(id = R.string.sign_up),
                 loading = false,
