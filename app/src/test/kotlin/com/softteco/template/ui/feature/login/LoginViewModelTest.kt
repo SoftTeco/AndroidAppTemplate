@@ -2,14 +2,15 @@ package com.softteco.template.ui.feature.login
 
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
+import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.data.profile.entity.AuthToken
+import com.softteco.template.ui.components.FieldType
+import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
-import com.softteco.template.ui.feature.EmailFieldState
-import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.time.Duration.Companion.seconds
 
 private const val EMAIL = "test@email.com"
-private const val PASSWORD = "password"
+private const val PASSWORD = "Password"
 private const val INVALID_EMAIL = "invalid@email"
 
 @ExtendWith(MainDispatcherExtension::class)
@@ -78,7 +79,7 @@ class LoginViewModelTest : BaseTest() {
                 awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
                 expectMostRecentItem().run {
-                    fieldStatePassword shouldBe PasswordFieldState.Empty
+                    passwordFieldState shouldBe TextFieldState.Empty
                     isLoginBtnEnabled shouldBe false
                 }
             }
@@ -97,9 +98,10 @@ class LoginViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
+                awaitItem().onInputComplete(FieldType.EMAIL)
                 delay(1.seconds)
                 expectMostRecentItem().run {
-                    fieldStateEmail shouldBe EmailFieldState.Error
+                    emailFieldState shouldBe TextFieldState.EmailError(R.string.email_not_valid)
                     isLoginBtnEnabled shouldBe false
                 }
             }
@@ -117,8 +119,8 @@ class LoginViewModelTest : BaseTest() {
 
             viewModel.state.test {
                 awaitItem().run {
-                    fieldStateEmail shouldBe EmailFieldState.Empty
-                    fieldStatePassword shouldBe PasswordFieldState.Empty
+                    emailFieldState shouldBe TextFieldState.Empty
+                    passwordFieldState shouldBe TextFieldState.Empty
                     isLoginBtnEnabled shouldBe false
                 }
             }
@@ -147,9 +149,7 @@ class LoginViewModelTest : BaseTest() {
                 isLoginBtnEnabled shouldBe true
                 onLoginClicked()
             }
-            awaitItem().run {
-                screenState.shouldBeTypeOf<ScreenState.Loading>()
-            }
+            awaitItem().screenState.shouldBeTypeOf<ScreenState.Loading>()
         }
         coVerify(exactly = 1) { repository.login(credentials) }
     }

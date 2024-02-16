@@ -6,10 +6,10 @@ import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
+import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
-import com.softteco.template.ui.feature.EmailFieldState
 import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
@@ -79,12 +79,14 @@ class ForgotPasswordViewModelTest : BaseTest() {
             )
 
             viewModel.state.test {
-                awaitItem().onEmailChanged(INVALID_EMAIL)
-                delay(1.seconds)
+                awaitItem().run {
+                    onEmailChanged(INVALID_EMAIL)
+                    onInputComplete()
+                }
 
                 expectMostRecentItem().run {
                     isResetBtnEnabled shouldBe false
-                    fieldStateEmail shouldBe EmailFieldState.Error
+                    emailFieldState shouldBe TextFieldState.EmailError(R.string.email_not_valid)
                 }
             }
         }
@@ -102,7 +104,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
-                    fieldStateEmail shouldBe EmailFieldState.Empty
+                    emailFieldState shouldBe TextFieldState.Empty
                 }
             }
         }

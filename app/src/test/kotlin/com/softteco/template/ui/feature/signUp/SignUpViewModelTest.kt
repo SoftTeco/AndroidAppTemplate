@@ -6,10 +6,10 @@ import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.ui.components.FieldType
+import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
-import com.softteco.template.ui.feature.EmailFieldState
-import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -53,7 +53,7 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
 
             viewModel.state.test {
-                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onUsernameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
@@ -79,14 +79,15 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
-                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onUsernameChanged(USERNAME)
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
+                awaitItem().onInputComplete(FieldType.EMAIL)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
                     isSignupBtnEnabled shouldBe false
-                    fieldStateEmail shouldBe EmailFieldState.Error
+                    emailFieldState.shouldBeTypeOf<TextFieldState.EmailError>()
                 }
             }
         }
@@ -97,14 +98,15 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
-                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onUsernameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
+                awaitItem().onInputComplete(FieldType.PASSWORD)
                 delay(1.seconds)
 
                 expectMostRecentItem().run {
-                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
-                    (fieldStatePassword as PasswordFieldState.Error).isUppercase shouldBe false
+                    passwordFieldState.shouldBeTypeOf<TextFieldState.PasswordError>()
+                    (passwordFieldState as TextFieldState.PasswordError).isUppercase shouldBe false
                     isSignupBtnEnabled shouldBe false
                 }
             }
@@ -115,15 +117,17 @@ class SignUpViewModelTest : BaseTest() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
-                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
-                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().run {
+                    onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
+                    onInputComplete(FieldType.PASSWORD)
+                }
+                awaitItem().onUsernameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)
-                delay(1.seconds)
 
                 expectMostRecentItem().run {
-                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
-                    (fieldStatePassword as PasswordFieldState.Error).isRightLength shouldBe false
+                    passwordFieldState.shouldBeTypeOf<TextFieldState.PasswordError>()
+                    (passwordFieldState as TextFieldState.PasswordError).isRightLength shouldBe false
                     isSignupBtnEnabled shouldBe false
                 }
             }
@@ -151,8 +155,8 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().run {
-                    fieldStatePassword shouldBe PasswordFieldState.Empty
-                    fieldStateEmail shouldBe EmailFieldState.Empty
+                    passwordFieldState shouldBe TextFieldState.Empty
+                    emailFieldState shouldBe TextFieldState.Empty
                     isSignupBtnEnabled shouldBe false
                 }
             }
@@ -164,7 +168,7 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
-                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onUsernameChanged(USERNAME)
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onCheckTermsChange(UNSELECTED_TERMS_CHECKBOX)
                 delay(1.seconds)
@@ -191,7 +195,7 @@ class SignUpViewModelTest : BaseTest() {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
 
             viewModel.state.test {
-                awaitItem().onUserNameChanged(USERNAME)
+                awaitItem().onUsernameChanged(USERNAME)
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onCheckTermsChange(SELECTED_TERMS_CHECKBOX)

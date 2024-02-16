@@ -8,9 +8,9 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
-import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
@@ -92,11 +92,13 @@ class ResetPasswordViewModelTest : BaseTest() {
             )
 
             viewModel.state.test {
-                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
-                delay(1.seconds)
+                awaitItem().run {
+                    onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
+                    onInputComplete()
+                }
                 expectMostRecentItem().run {
-                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
-                    (fieldStatePassword as PasswordFieldState.Error).isUppercase shouldBe false
+                    passwordFieldState.shouldBeTypeOf<TextFieldState.PasswordError>()
+                    (passwordFieldState as TextFieldState.PasswordError).isUppercase shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
@@ -115,11 +117,13 @@ class ResetPasswordViewModelTest : BaseTest() {
             )
 
             viewModel.state.test {
-                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
-                delay(1.seconds)
+                awaitItem().run {
+                    onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
+                    onInputComplete()
+                }
                 expectMostRecentItem().run {
-                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
-                    (fieldStatePassword as PasswordFieldState.Error).isRightLength shouldBe false
+                    passwordFieldState.shouldBeTypeOf<TextFieldState.PasswordError>()
+                    (passwordFieldState as TextFieldState.PasswordError).isRightLength shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
@@ -140,7 +144,7 @@ class ResetPasswordViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
-                    fieldStatePassword shouldBe PasswordFieldState.Empty
+                    passwordFieldState shouldBe TextFieldState.Empty
                 }
             }
         }
