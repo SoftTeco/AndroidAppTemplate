@@ -34,24 +34,22 @@ fun AppNavHost(
     navController: NavHostController,
     startDestination: String,
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier,
-    updateIsUserLoggedIn: (Boolean) -> Unit
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        bottomBarGraph(navController, Modifier.padding(paddingValues = paddingValues), updateIsUserLoggedIn)
-        loginGraph(navController, updateIsUserLoggedIn)
+        bottomBarGraph(navController, Modifier.padding(paddingValues = paddingValues))
+        loginGraph(navController)
         settingsGraph(navController)
     }
 }
 
 fun NavGraphBuilder.bottomBarGraph(
     navController: NavController,
-    modifier: Modifier = Modifier,
-    updateIsUserLoggedIn: (Boolean) -> Unit
+    modifier: Modifier = Modifier
 ) {
     navigation(
         startDestination = Screen.Home.route,
@@ -65,7 +63,6 @@ fun NavGraphBuilder.bottomBarGraph(
                 modifier = modifier,
                 onBackClicked = { navController.popBackStack() },
                 onLogout = {
-                    updateIsUserLoggedIn(false)
                     navController.navigate(Graph.Login.route) {
                         popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
@@ -84,7 +81,7 @@ fun NavGraphBuilder.bottomBarGraph(
     }
 }
 
-fun NavGraphBuilder.loginGraph(navController: NavController, updateIsUserLoggedIn: (Boolean) -> Unit) {
+fun NavGraphBuilder.loginGraph(navController: NavController) {
     navigation(
         startDestination = Screen.Login.route,
         route = Graph.Login.route
@@ -93,9 +90,8 @@ fun NavGraphBuilder.loginGraph(navController: NavController, updateIsUserLoggedI
             LoginScreen(
                 onBackClicked = { navController.navigateUp() },
                 onSuccess = {
-                    updateIsUserLoggedIn(true)
                     navController.navigate(Graph.BottomBar.route) {
-                        popUpTo(Graph.Login.route) { inclusive = true }
+                        popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
                 },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },

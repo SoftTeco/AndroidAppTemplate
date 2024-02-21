@@ -27,7 +27,6 @@ import timber.log.Timber
 @Composable
 fun AppContent(
     startDestination: String,
-    updateIsUserLoggedIn: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -61,8 +60,7 @@ fun AppContent(
             AppNavHost(
                 navController = navController,
                 startDestination = startDestination,
-                paddingValues = paddingValues,
-                updateIsUserLoggedIn = updateIsUserLoggedIn
+                paddingValues = paddingValues
             )
         }
     }
