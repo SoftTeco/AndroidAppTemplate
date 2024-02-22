@@ -1,7 +1,6 @@
 package com.softteco.template.ui.components
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
@@ -13,6 +12,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,44 +43,57 @@ fun AppTextField(
     var isFocused by remember { mutableStateOf(false) }
     val isError = fieldState is TextFieldState.Error
 
-    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    LaunchedEffect(isKeyboardVisible) { if (!isKeyboardVisible) onInputComplete() }
+    OnHideKeyboard { onInputComplete() }
 
-    Column {
-        OutlinedTextField(
-            value = value,
-            onValueChange = { newValue ->
-                onValueChanged(newValue)
-            },
-            modifier = modifier.onFocusChanged {
-                isFocused = it.isFocused
-                if (!it.isFocused) onInputComplete()
-            },
-            label = {
-                Text(text = stringResource(labelRes))
-            },
-            isError = isError,
-            supportingText = {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = when (fieldState) {
-                        is TextFieldState.Empty -> stringResource(R.string.required)
-                        is TextFieldState.EmailError -> stringResource(fieldState.errorRes)
-                        is TextFieldState.UsernameError -> stringResource(fieldState.errorRes)
-                        else -> ""
-                    },
-                    color = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
-                )
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Email,
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-                onInputComplete()
-            }),
-            singleLine = true,
-        )
+    OutlinedTextField(
+        value = value,
+        onValueChange = { newValue ->
+            onValueChanged(newValue)
+        },
+        modifier = modifier.onFocusChanged {
+            isFocused = it.isFocused
+            if (!it.isFocused) onInputComplete()
+        },
+        label = {
+            Text(text = stringResource(labelRes))
+        },
+        isError = isError,
+        supportingText = {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = when (fieldState) {
+                    is TextFieldState.Empty -> stringResource(R.string.required)
+                    is TextFieldState.EmailError -> stringResource(fieldState.errorRes)
+                    is TextFieldState.UsernameError -> stringResource(fieldState.errorRes)
+                    else -> ""
+                },
+                color = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Email,
+        ),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
+            onInputComplete()
+        }),
+        singleLine = true,
+    )
+}
+
+@Composable
+fun OnHideKeyboard(action: () -> Unit) {
+    val windowInsets = WindowInsets.ime
+    val density = LocalDensity.current
+    val isKeyboardVisible by remember {
+        derivedStateOf { windowInsets.getBottom(density) > 0 }
+    }
+
+    var isInitialized by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isKeyboardVisible) {
+        if (!isKeyboardVisible && isInitialized) action()
+        isInitialized = true
     }
 }

@@ -4,9 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,7 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -57,57 +53,54 @@ fun PasswordField(
     val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
     var isFocused by remember { mutableStateOf(false) }
 
-    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    LaunchedEffect(isKeyboardVisible) { if (!isKeyboardVisible) onInputComplete() }
+    OnHideKeyboard { onInputComplete() }
 
-    Column {
-        OutlinedTextField(
-            value = passwordValue,
-            onValueChange = { newValue ->
-                onPasswordChanged(newValue)
-            },
-            modifier = modifier.onFocusChanged {
-                isFocused = it.isFocused
-                if (!it.isFocused) onInputComplete()
-            },
-            label = {
-                Text(text = stringResource(id = R.string.password))
-            },
-            isError = isError,
-            supportingText = { SupportingText(passwordState = fieldStatePassword) },
-            trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisibility = !passwordVisibility
-                }) {
-                    Icon(
-                        imageVector = if (passwordVisibility) {
-                            Icons.Filled.VisibilityOff
-                        } else {
-                            Icons.Filled.Visibility
-                        },
-                        contentDescription = stringResource(id = R.string.visibility),
-                    )
-                }
-            },
-            visualTransformation = if (passwordVisibility) {
-                PasswordVisualTransformation()
-            } else {
-                VisualTransformation.None
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Email,
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-                onInputComplete()
-            }),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-            )
+    OutlinedTextField(
+        value = passwordValue,
+        onValueChange = { newValue ->
+            onPasswordChanged(newValue)
+        },
+        modifier = modifier.onFocusChanged {
+            isFocused = it.isFocused
+            if (!it.isFocused) onInputComplete()
+        },
+        label = {
+            Text(text = stringResource(id = R.string.password))
+        },
+        isError = isError,
+        supportingText = { SupportingText(passwordState = fieldStatePassword) },
+        trailingIcon = {
+            IconButton(onClick = {
+                passwordVisibility = !passwordVisibility
+            }) {
+                Icon(
+                    imageVector = if (passwordVisibility) {
+                        Icons.Filled.VisibilityOff
+                    } else {
+                        Icons.Filled.Visibility
+                    },
+                    contentDescription = stringResource(id = R.string.visibility),
+                )
+            }
+        },
+        visualTransformation = if (passwordVisibility) {
+            PasswordVisualTransformation()
+        } else {
+            VisualTransformation.None
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Email,
+        ),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
+            onInputComplete()
+        }),
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
         )
-    }
+    )
 }
 
 @Composable
