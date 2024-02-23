@@ -132,17 +132,17 @@ private fun ScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppTextField(
-                value = state.email,
+                value = state.email.text,
                 onValueChanged = state.onEmailChanged,
-                fieldState = state.emailFieldState,
+                fieldState = state.email.state,
                 onInputComplete = { state.onInputComplete(FieldType.EMAIL) },
                 labelRes = R.string.email,
                 modifier = Modifier.fillMaxWidth()
             )
             PasswordField(
-                passwordValue = state.password,
+                passwordValue = state.password.text,
                 onPasswordChanged = state.onPasswordChanged,
-                fieldStatePassword = state.passwordFieldState,
+                fieldStatePassword = state.password.state,
                 onInputComplete = { state.onInputComplete(FieldType.PASSWORD) },
                 modifier = Modifier.fillMaxWidth()
             )

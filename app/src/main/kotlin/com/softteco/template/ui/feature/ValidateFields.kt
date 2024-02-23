@@ -2,12 +2,12 @@ package com.softteco.template.ui.feature
 
 import com.softteco.template.Constants
 import com.softteco.template.R
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
-import com.softteco.template.ui.components.TextFieldState
 
-fun String.validateInputValue(fieldType: FieldType): TextFieldState {
+fun String.validateInputValue(fieldType: FieldType): FieldState {
     return if (isEmpty()) {
-        TextFieldState.Empty
+        FieldState.Empty
     } else {
         when (fieldType) {
             FieldType.EMAIL -> validateEmail()
@@ -17,35 +17,35 @@ fun String.validateInputValue(fieldType: FieldType): TextFieldState {
     }
 }
 
-private fun String.validateEmail(): TextFieldState {
+private fun String.validateEmail(): FieldState {
     val regex = Constants.EMAIL_PATTERN.toRegex()
     return if (regex.matches(this)) {
-        TextFieldState.Valid
+        FieldState.Valid
     } else {
-        TextFieldState.EmailError(R.string.email_not_valid)
+        FieldState.EmailError(R.string.email_not_valid)
     }
 }
 
-private fun String.validateUsername(): TextFieldState {
+private fun String.validateUsername(): FieldState {
     val regex = Constants.USERNAME_PATTERN.toRegex()
     return if (regex.matches(this)) {
-        TextFieldState.Valid
+        FieldState.Valid
     } else {
-        TextFieldState.UsernameError(R.string.username_not_valid)
+        FieldState.UsernameError(R.string.username_not_valid)
     }
 }
 
-private fun String.validatePassword(): TextFieldState {
+private fun String.validatePassword(): FieldState {
     return when {
-        isEmpty() -> TextFieldState.Empty
+        isEmpty() -> FieldState.Empty
         !isHasMinimum() || !isHasCapitalizedLetter() -> {
-            TextFieldState.PasswordError(
+            FieldState.PasswordError(
                 isRightLength = isHasMinimum(),
                 isUppercase = isHasCapitalizedLetter()
             )
         }
 
-        else -> TextFieldState.Valid
+        else -> FieldState.Valid
     }
 }
 

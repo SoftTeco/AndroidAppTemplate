@@ -10,6 +10,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,23 +36,19 @@ class ForgotPasswordViewModel @Inject constructor(
     private val dialogController: DialogController,
 ) : ViewModel() {
     private val forgotPasswordState = MutableStateFlow<ScreenState>(ScreenState.Default)
-    private var emailValue = MutableStateFlow("")
-    private val emailFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
+    private var emailState = MutableStateFlow(TextFieldState())
     private val ctaButtonState = MutableStateFlow(false)
 
     val state = combine(
         forgotPasswordState,
-        emailValue,
-        emailFieldState,
+        emailState,
         ctaButtonState,
-    ) { forgotPasswordState, email, emailState, isCtaEnabled ->
+    ) { forgotPasswordState, email, isCtaEnabled ->
         State(
             screenState = forgotPasswordState,
             email = email,
-            emailFieldState = emailState,
             onEmailChanged = {
-                emailValue.value = it.trim()
-                emailFieldState.value = TextFieldState.AwaitingInput
+                emailState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onInputComplete = ::onInputComplete,
             isResetBtnEnabled = isCtaEnabled,
@@ -64,9 +62,9 @@ class ForgotPasswordViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            emailValue.collect { email: String ->
+            emailState.collect { email ->
                 ctaButtonState.value =
-                    email.validateInputValue(FieldType.EMAIL) is TextFieldState.Valid
+                    email.text.validateInputValue(FieldType.EMAIL) is FieldState.Valid
             }
         }
     }
@@ -79,7 +77,7 @@ class ForgotPasswordViewModel @Inject constructor(
         viewModelScope.launch(appDispatchers.ui) {
             forgotPasswordState.value = ScreenState.Loading
 
-            val email = ResetPasswordDto(email = emailValue.value)
+            val email = ResetPasswordDto(email = emailState.value.text)
 
             val result = repository.resetPassword(email)
 
@@ -92,8 +90,12 @@ class ForgotPasswordViewModel @Inject constructor(
                 is Result.Error -> {
                     when (result.error) {
                         EmailNotExist, InvalidEmail -> {
-                            emailFieldState.value =
-                                TextFieldState.EmailError(R.string.email_not_valid)
+                            emailState.update {
+                                TextFieldState(
+                                    it.text,
+                                    FieldState.EmailError(R.string.email_not_valid)
+                                )
+                            }
 
                             if (result.error == EmailNotExist) {
                                 showSignUpDialog()
@@ -126,14 +128,13 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     private fun onInputComplete() {
-        emailFieldState.value = emailValue.value.validateInputValue(FieldType.EMAIL)
+        emailState.update { TextFieldState(it.text, it.text.validateInputValue(FieldType.EMAIL)) }
     }
 
     @Immutable
     data class State(
         val screenState: ScreenState = ScreenState.Default,
-        val email: String = "",
-        val emailFieldState: TextFieldState = TextFieldState.Empty,
+        val email: TextFieldState = TextFieldState(),
         val onEmailChanged: (String) -> Unit = {},
         val onInputComplete: () -> Unit = {},
         val isResetBtnEnabled: Boolean = false,

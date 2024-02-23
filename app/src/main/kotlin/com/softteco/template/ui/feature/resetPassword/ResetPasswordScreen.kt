@@ -70,9 +70,9 @@ private fun ScreenContent(
     ) {
         Text(text = stringResource(id = R.string.enter_new_password))
         PasswordField(
-            passwordValue = state.password,
+            passwordValue = state.password.text,
             onPasswordChanged = state.onPasswordChanged,
-            fieldStatePassword = state.passwordFieldState,
+            fieldStatePassword = state.password.state,
             onInputComplete = state.onInputComplete,
             modifier = Modifier
                 .padding(top = PaddingExtraLarge)

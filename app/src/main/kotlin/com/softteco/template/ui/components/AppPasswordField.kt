@@ -44,12 +44,12 @@ import com.softteco.template.ui.theme.Dimens
 fun PasswordField(
     passwordValue: String,
     onPasswordChanged: (String) -> Unit,
-    fieldStatePassword: TextFieldState,
+    fieldStatePassword: FieldState,
     onInputComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var passwordVisibility by remember { mutableStateOf(true) }
-    val isError = fieldStatePassword is TextFieldState.Error
+    val isError = fieldStatePassword is FieldState.Error
     val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
     var isFocused by remember { mutableStateOf(false) }
 
@@ -104,11 +104,11 @@ fun PasswordField(
 }
 
 @Composable
-private fun SupportingText(passwordState: TextFieldState, modifier: Modifier = Modifier) {
+private fun SupportingText(passwordState: FieldState, modifier: Modifier = Modifier) {
     Column(modifier.height(48.dp)) {
         when (passwordState) {
-            TextFieldState.Empty -> Text(stringResource(R.string.required))
-            is TextFieldState.PasswordError -> {
+            FieldState.Empty -> Text(stringResource(R.string.required))
+            is FieldState.PasswordError -> {
                 Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall)) {
                     ConditionRow(
                         condition = stringResource(R.string.registration_password_condition1),

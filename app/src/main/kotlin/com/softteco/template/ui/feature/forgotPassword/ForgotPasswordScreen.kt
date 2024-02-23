@@ -106,9 +106,9 @@ private fun ScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppTextField(
-                value = state.email,
+                value = state.email.text,
                 onValueChanged = state.onEmailChanged,
-                fieldState = state.emailFieldState,
+                fieldState = state.email.state,
                 onInputComplete = state.onInputComplete,
                 labelRes = R.string.email,
                 modifier = Modifier.fillMaxWidth()

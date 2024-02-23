@@ -7,8 +7,8 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.data.profile.entity.AuthToken
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
-import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.ScreenState
@@ -79,7 +79,7 @@ class LoginViewModelTest : BaseTest() {
                 awaitItem().onEmailChanged(EMAIL)
                 delay(1.seconds)
                 expectMostRecentItem().run {
-                    passwordFieldState shouldBe TextFieldState.Empty
+                    password.state shouldBe FieldState.Empty
                     isLoginBtnEnabled shouldBe false
                 }
             }
@@ -101,7 +101,7 @@ class LoginViewModelTest : BaseTest() {
                 awaitItem().onInputComplete(FieldType.EMAIL)
                 delay(1.seconds)
                 expectMostRecentItem().run {
-                    emailFieldState shouldBe TextFieldState.EmailError(R.string.email_not_valid)
+                    email.state shouldBe FieldState.EmailError(R.string.email_not_valid)
                     isLoginBtnEnabled shouldBe false
                 }
             }
@@ -119,8 +119,8 @@ class LoginViewModelTest : BaseTest() {
 
             viewModel.state.test {
                 awaitItem().run {
-                    emailFieldState shouldBe TextFieldState.Empty
-                    passwordFieldState shouldBe TextFieldState.Empty
+                    email.state shouldBe FieldState.Empty
+                    password.state shouldBe FieldState.Empty
                     isLoginBtnEnabled shouldBe false
                 }
             }

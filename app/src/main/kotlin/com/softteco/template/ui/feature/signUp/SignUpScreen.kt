@@ -32,6 +32,7 @@ import com.softteco.template.R
 import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.AppTextField
 import com.softteco.template.ui.components.CustomTopAppBar
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
@@ -100,9 +101,9 @@ private fun ScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppTextField(
-                value = state.username,
+                value = state.username.text,
                 onValueChanged = state.onUsernameChanged,
-                fieldState = state.usernameFieldState,
+                fieldState = state.username.state,
                 onInputComplete = { state.onInputComplete(FieldType.USERNAME) },
                 labelRes = R.string.username,
                 modifier = Modifier
@@ -110,9 +111,9 @@ private fun ScreenContent(
                     .fillMaxWidth()
             )
             AppTextField(
-                value = state.email,
+                value = state.email.text,
                 onValueChanged = state.onEmailChanged,
-                fieldState = state.emailFieldState,
+                fieldState = state.email.state,
                 onInputComplete = { state.onInputComplete(FieldType.EMAIL) },
                 labelRes = R.string.email,
                 modifier = Modifier
@@ -120,9 +121,9 @@ private fun ScreenContent(
                     .fillMaxWidth()
             )
             PasswordField(
-                passwordValue = state.password,
+                passwordValue = state.password.text,
                 onPasswordChanged = state.onPasswordChanged,
-                fieldStatePassword = state.passwordFieldState,
+                fieldStatePassword = state.password.state,
                 onInputComplete = { state.onInputComplete(FieldType.PASSWORD) },
                 modifier = Modifier
                     .padding(top = PaddingDefault)
@@ -170,10 +171,13 @@ private fun Preview() {
     AppTheme {
         ScreenContent(
             SignUpViewModel.State(
-                passwordFieldState = TextFieldState.PasswordError(
-                    isRightLength = true,
-                    isUppercase = false
-                )
+                password = TextFieldState(
+                    "password",
+                    FieldState.PasswordError(
+                        isRightLength = true,
+                        isUppercase = false
+                    )
+                ),
             ),
             onBackClicked = {},
         )

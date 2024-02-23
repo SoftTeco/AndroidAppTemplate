@@ -6,7 +6,7 @@ import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.ResetPasswordDto
-import com.softteco.template.ui.components.TextFieldState
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
@@ -86,7 +86,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
 
                 expectMostRecentItem().run {
                     isResetBtnEnabled shouldBe false
-                    emailFieldState shouldBe TextFieldState.EmailError(R.string.email_not_valid)
+                    email.state shouldBe FieldState.EmailError(R.string.email_not_valid)
                 }
             }
         }
@@ -104,7 +104,7 @@ class ForgotPasswordViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
-                    emailFieldState shouldBe TextFieldState.Empty
+                    email.state shouldBe FieldState.Empty
                 }
             }
         }

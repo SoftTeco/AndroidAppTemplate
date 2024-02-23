@@ -8,20 +8,21 @@ import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.ui.components.FieldState
+import com.softteco.template.ui.components.FieldState.EmailError
+import com.softteco.template.ui.components.FieldState.Valid
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.TextFieldState
-import com.softteco.template.ui.components.TextFieldState.EmailError
-import com.softteco.template.ui.components.TextFieldState.Valid
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
-import com.softteco.template.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,50 +34,35 @@ class SignUpViewModel @Inject constructor(
 ) : ViewModel() {
     private val registrationState = MutableStateFlow<SignupState>(SignupState.Default())
 
-    private var usernameValue = MutableStateFlow("")
-    private val usernameFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
-
-    private var emailValue = MutableStateFlow("")
-    private val emailFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
-
-    private var passwordValue = MutableStateFlow("")
-    private val passwordFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
+    private val usernameState = MutableStateFlow(TextFieldState())
+    private val emailState = MutableStateFlow(TextFieldState())
+    private val passwordState = MutableStateFlow(TextFieldState())
 
     private var isTermsAccepted = MutableStateFlow(false)
 
     val state = combine(
         registrationState,
-        usernameValue,
-        usernameFieldState,
-        emailValue,
-        emailFieldState,
-        passwordValue,
-        passwordFieldState,
-    ) { registrationState, username, usernameState, email, emailState, password, passwordState ->
+        usernameState,
+        emailState,
+        passwordState,
+        isTermsAccepted,
+    ) { registrationState, username, email, password, terms ->
         State(
             registrationState = registrationState,
             username = username,
             email = email,
             password = password,
-            usernameFieldState = usernameState,
-            emailFieldState = emailState,
-            passwordFieldState = passwordState,
             onUsernameChanged = {
-                usernameValue.value = it.trim()
-                usernameFieldState.value = TextFieldState.AwaitingInput
+                usernameState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onEmailChanged = {
-                viewModelScope.launch {
-                    emailValue.value = it.trim()
-                    emailFieldState.value = TextFieldState.AwaitingInput
-                }
+                emailState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onPasswordChanged = {
-                passwordValue.value = it.trim()
-                passwordFieldState.value = TextFieldState.AwaitingInput
+                passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onInputComplete = { onInputComplete(it) },
-            isTermsAccepted = isTermsAccepted.value,
+            isTermsAccepted = terms,
             onCheckTermsChange = { isTermsAccepted.value = it },
             isSignupBtnEnabled = registrationState is SignupState.Default && registrationState.isCtaEnabled,
             onRegisterClicked = ::onRegister,
@@ -90,14 +76,14 @@ class SignUpViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             combine(
-                usernameValue,
-                emailValue,
-                passwordValue,
+                usernameState,
+                emailState,
+                passwordState,
                 isTermsAccepted,
             ) { username, email, password, isTermsAccepted ->
-                val isCtaEnabled = username.validateInputValue(FieldType.USERNAME) is Valid &&
-                    email.validateInputValue(FieldType.EMAIL) is Valid &&
-                    password.validateInputValue(FieldType.PASSWORD) is Valid &&
+                val isCtaEnabled = username.text.validateInputValue(FieldType.USERNAME) is Valid &&
+                    email.text.validateInputValue(FieldType.EMAIL) is Valid &&
+                    password.text.validateInputValue(FieldType.PASSWORD) is Valid &&
                     isTermsAccepted
                 registrationState.value = SignupState.Default(isCtaEnabled)
             }.collect()
@@ -109,9 +95,9 @@ class SignUpViewModel @Inject constructor(
             registrationState.value = SignupState.Loading
 
             val createUserDto = CreateUserDto(
-                username = usernameValue.value,
-                email = emailValue.value,
-                password = passwordValue.value,
+                username = usernameState.value.text,
+                email = emailState.value.text,
+                password = passwordState.value.text,
             )
 
             val result = repository.registration(createUserDto)
@@ -123,7 +109,12 @@ class SignUpViewModel @Inject constructor(
 
                 is Result.Error -> {
                     if (result.error == InvalidEmail) {
-                        usernameFieldState.value = EmailError(R.string.email_not_valid)
+                        usernameState.update {
+                            TextFieldState(
+                                it.text,
+                                EmailError(R.string.email_not_valid)
+                            )
+                        }
                     }
                     snackbarController.showSnackbar(result.error.messageRes)
                     SignupState.Default(true)
@@ -134,29 +125,18 @@ class SignUpViewModel @Inject constructor(
 
     private fun onInputComplete(fieldType: FieldType) {
         when (fieldType) {
-            FieldType.EMAIL -> {
-                emailFieldState.value = emailValue.value.validateInputValue(fieldType)
-            }
-
-            FieldType.PASSWORD -> {
-                passwordFieldState.value = passwordValue.value.validateInputValue(fieldType)
-            }
-
-            FieldType.USERNAME -> {
-                usernameFieldState.value = usernameValue.value.validateInputValue(fieldType)
-            }
-        }
+            FieldType.EMAIL -> emailState
+            FieldType.PASSWORD -> passwordState
+            FieldType.USERNAME -> usernameState
+        }.update { TextFieldState(it.text, it.text.validateInputValue(fieldType)) }
     }
 
     @Immutable
     data class State(
         val registrationState: SignupState = SignupState.Default(),
-        val username: String = "",
-        val email: String = "",
-        val password: String = "",
-        val usernameFieldState: TextFieldState = TextFieldState.Empty,
-        val emailFieldState: TextFieldState = TextFieldState.Empty,
-        val passwordFieldState: TextFieldState = TextFieldState.Empty,
+        val username: TextFieldState = TextFieldState(),
+        val email: TextFieldState = TextFieldState(),
+        val password: TextFieldState = TextFieldState(),
         val onUsernameChanged: (String) -> Unit = {},
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},

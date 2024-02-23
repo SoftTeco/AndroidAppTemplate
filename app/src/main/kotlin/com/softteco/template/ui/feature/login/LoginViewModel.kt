@@ -10,6 +10,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
@@ -18,13 +19,13 @@ import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
-import com.softteco.template.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,33 +38,25 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val loginState = MutableStateFlow<ScreenState>(ScreenState.Default)
-    private var emailValue = MutableStateFlow("")
-    private val emailFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
-    private var passwordValue = MutableStateFlow("")
-    private val passwordFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
+    private var emailState = MutableStateFlow(TextFieldState())
+    private var passwordState = MutableStateFlow(TextFieldState())
     private val ctaButtonState = MutableStateFlow(false)
 
     val state = combine(
         loginState,
-        emailValue,
-        emailFieldState,
-        passwordValue,
-        passwordFieldState,
+        emailState,
+        passwordState,
         ctaButtonState,
-    ) { loginState, email, emailState, password, passwordState, isCtaEnabled ->
+    ) { loginState, email, password, isCtaEnabled ->
         State(
             screenState = loginState,
             email = email,
             password = password,
-            emailFieldState = emailState,
-            passwordFieldState = passwordState,
             onEmailChanged = {
-                emailValue.value = it.trim()
-                emailFieldState.value = TextFieldState.AwaitingInput
+                emailState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onPasswordChanged = {
-                passwordValue.value = it.trim()
-                passwordFieldState.value = TextFieldState.AwaitingInput
+                passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             isLoginBtnEnabled = isCtaEnabled,
             onInputComplete = { onInputComplete(it) },
@@ -77,10 +70,10 @@ class LoginViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(emailValue, passwordValue) { email, password ->
+            combine(emailState, passwordState) { email, password ->
                 ctaButtonState.value =
-                    email.validateInputValue(FieldType.EMAIL) is TextFieldState.Valid &&
-                    password.validateInputValue(FieldType.PASSWORD) is TextFieldState.Valid
+                    email.text.validateInputValue(FieldType.EMAIL) is FieldState.Valid &&
+                    password.text.validateInputValue(FieldType.PASSWORD) is FieldState.Valid
             }.collect()
         }
     }
@@ -94,8 +87,8 @@ class LoginViewModel @Inject constructor(
             loginState.value = ScreenState.Loading
 
             val credentials = CredentialsDto(
-                email = emailValue.value,
-                password = passwordValue.value
+                email = emailState.value.text,
+                password = passwordState.value.text,
             )
 
             val result = repository.login(credentials)
@@ -106,8 +99,12 @@ class LoginViewModel @Inject constructor(
                 is Result.Error -> {
                     when (result.error) {
                         EmailNotExist, WrongCredentials -> {
-                            emailFieldState.value =
-                                TextFieldState.EmailError(R.string.email_not_valid)
+                            emailState.update {
+                                TextFieldState(
+                                    it.text,
+                                    FieldState.EmailError(R.string.email_not_valid)
+                                )
+                            }
 
                             if (result.error == EmailNotExist) {
                                 showSignUpDialog()
@@ -141,12 +138,12 @@ class LoginViewModel @Inject constructor(
 
     private fun onInputComplete(fieldType: FieldType) {
         when (fieldType) {
-            FieldType.EMAIL -> {
-                emailFieldState.value = emailValue.value.validateInputValue(fieldType)
+            FieldType.EMAIL -> emailState.update {
+                TextFieldState(it.text, it.text.validateInputValue(fieldType))
             }
 
-            FieldType.PASSWORD -> {
-                passwordFieldState.value = passwordValue.value.validateInputValue(fieldType)
+            FieldType.PASSWORD -> passwordState.update {
+                TextFieldState(it.text, it.text.validateInputValue(fieldType))
             }
 
             FieldType.USERNAME -> { /*NOOP*/
@@ -157,10 +154,8 @@ class LoginViewModel @Inject constructor(
     @Immutable
     data class State(
         val screenState: ScreenState = ScreenState.Default,
-        val email: String = "",
-        val password: String = "",
-        val emailFieldState: TextFieldState = TextFieldState.Empty,
-        val passwordFieldState: TextFieldState = TextFieldState.Empty,
+        val email: TextFieldState = TextFieldState(),
+        val password: TextFieldState = TextFieldState(),
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
         val onInputComplete: (FieldType) -> Unit = {},

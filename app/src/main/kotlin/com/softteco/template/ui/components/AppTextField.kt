@@ -33,7 +33,7 @@ import com.softteco.template.R
 fun AppTextField(
     value: String,
     onValueChanged: (String) -> Unit,
-    fieldState: TextFieldState,
+    fieldState: FieldState,
     onInputComplete: () -> Unit,
     @StringRes
     labelRes: Int,
@@ -41,7 +41,7 @@ fun AppTextField(
 ) {
     val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
     var isFocused by remember { mutableStateOf(false) }
-    val isError = fieldState is TextFieldState.Error
+    val isError = fieldState is FieldState.Error
 
     OnHideKeyboard { onInputComplete() }
 
@@ -62,9 +62,9 @@ fun AppTextField(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = when (fieldState) {
-                    is TextFieldState.Empty -> stringResource(R.string.required)
-                    is TextFieldState.EmailError -> stringResource(fieldState.errorRes)
-                    is TextFieldState.UsernameError -> stringResource(fieldState.errorRes)
+                    is FieldState.Empty -> stringResource(R.string.required)
+                    is FieldState.EmailError -> stringResource(fieldState.errorRes)
+                    is FieldState.UsernameError -> stringResource(fieldState.errorRes)
                     else -> ""
                 },
                 color = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current

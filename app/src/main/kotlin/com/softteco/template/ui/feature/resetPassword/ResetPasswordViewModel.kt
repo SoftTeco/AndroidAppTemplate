@@ -9,9 +9,10 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.ui.components.FieldState
+import com.softteco.template.ui.components.FieldState.Valid
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.TextFieldState
-import com.softteco.template.ui.components.TextFieldState.Valid
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.feature.validateInputValue
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,24 +35,20 @@ class ResetPasswordViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val resetPasswordState = MutableStateFlow<ScreenState>(ScreenState.Default)
-    private var passwordValue = MutableStateFlow("")
-    private val passwordFieldState = MutableStateFlow<TextFieldState>(TextFieldState.Empty)
+    private var passwordState = MutableStateFlow(TextFieldState())
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
     private val ctaButtonState = MutableStateFlow(false)
 
     val state = combine(
         resetPasswordState,
-        passwordValue,
-        passwordFieldState,
+        passwordState,
         ctaButtonState,
-    ) { resetPasswordState, password, passwordState, isCtaEnabled ->
+    ) { resetPasswordState, password, isCtaEnabled ->
         State(
             resetPasswordState = resetPasswordState,
             password = password,
-            passwordFieldState = passwordState,
             onPasswordChanged = {
-                passwordValue.value = it.trim()
-                passwordFieldState.value = TextFieldState.AwaitingInput
+                passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onInputComplete = ::onInputComplete,
             isResetBtnEnabled = isCtaEnabled,
@@ -64,8 +62,8 @@ class ResetPasswordViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            passwordValue.collect { password ->
-                ctaButtonState.value = password.validateInputValue(FieldType.PASSWORD) is Valid
+            passwordState.collect { password ->
+                ctaButtonState.value = password.text.validateInputValue(FieldType.PASSWORD) is Valid
             }
         }
     }
@@ -75,8 +73,8 @@ class ResetPasswordViewModel @Inject constructor(
             resetPasswordState.value = ScreenState.Loading
 
             val newPassword = NewPasswordDto(
-                password = passwordValue.value,
-                confirmation = passwordValue.value,
+                password = passwordState.value.text,
+                confirmation = passwordState.value.text,
             )
 
             val result = repository.changePassword(token, newPassword)
@@ -96,14 +94,15 @@ class ResetPasswordViewModel @Inject constructor(
     }
 
     private fun onInputComplete() {
-        passwordFieldState.value = passwordValue.value.validateInputValue(FieldType.PASSWORD)
+        passwordState.update {
+            TextFieldState(it.text, it.text.validateInputValue(FieldType.PASSWORD))
+        }
     }
 
     @Immutable
     data class State(
         val resetPasswordState: ScreenState = ScreenState.Default,
-        val password: String = "",
-        val passwordFieldState: TextFieldState = TextFieldState.Empty,
+        val password: TextFieldState = TextFieldState(),
         val onPasswordChanged: (String) -> Unit = {},
         val onInputComplete: () -> Unit = {},
         val isResetBtnEnabled: Boolean = false,

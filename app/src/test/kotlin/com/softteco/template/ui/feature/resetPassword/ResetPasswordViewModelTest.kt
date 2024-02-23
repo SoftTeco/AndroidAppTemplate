@@ -8,7 +8,7 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
-import com.softteco.template.ui.components.TextFieldState
+import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
 import com.softteco.template.ui.feature.ScreenState
@@ -97,8 +97,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onInputComplete()
                 }
                 expectMostRecentItem().run {
-                    passwordFieldState.shouldBeTypeOf<TextFieldState.PasswordError>()
-                    (passwordFieldState as TextFieldState.PasswordError).isUppercase shouldBe false
+                    password.state.shouldBeTypeOf<FieldState.PasswordError>()
+                    (password.state as FieldState.PasswordError).isUppercase shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
@@ -122,8 +122,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onInputComplete()
                 }
                 expectMostRecentItem().run {
-                    passwordFieldState.shouldBeTypeOf<TextFieldState.PasswordError>()
-                    (passwordFieldState as TextFieldState.PasswordError).isRightLength shouldBe false
+                    password.state.shouldBeTypeOf<FieldState.PasswordError>()
+                    (password.state as FieldState.PasswordError).isRightLength shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
@@ -144,7 +144,7 @@ class ResetPasswordViewModelTest : BaseTest() {
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
-                    passwordFieldState shouldBe TextFieldState.Empty
+                    password.state shouldBe FieldState.Empty
                 }
             }
         }
