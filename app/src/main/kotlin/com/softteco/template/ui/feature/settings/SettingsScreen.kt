@@ -70,7 +70,6 @@ private fun ScreenContent(
         mutableStateOf(false)
     }
     val context = LocalContext.current
-
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column(
             modifier = Modifier

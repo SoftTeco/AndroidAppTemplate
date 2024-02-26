@@ -34,7 +34,7 @@ fun AppNavHost(
     navController: NavHostController,
     startDestination: String,
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
@@ -66,7 +66,7 @@ fun NavGraphBuilder.bottomBarGraph(
                     navController.navigate(Graph.Login.route) {
                         popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
-                },
+                }
             )
         }
         composable(Screen.Settings.route) {
@@ -91,7 +91,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 onBackClicked = { navController.navigateUp() },
                 onSuccess = {
                     navController.navigate(Graph.BottomBar.route) {
-                        popUpTo(Graph.Login.route) { inclusive = true }
+                        popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
                 },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },

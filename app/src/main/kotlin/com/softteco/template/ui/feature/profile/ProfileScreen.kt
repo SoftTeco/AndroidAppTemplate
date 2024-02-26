@@ -120,8 +120,8 @@ fun ProfileScreen(
 @Composable
 private fun ScreenContent(
     state: ProfileViewModel.State,
-    modifier: Modifier = Modifier,
     onAvatarClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier
@@ -469,7 +469,7 @@ private fun Preview() {
                     show = false
                 )
             ),
-            onAvatarClicked = {},
+            onAvatarClicked = {}
         )
     }
 }
@@ -480,7 +480,7 @@ private fun PreviewLoading() {
     AppTheme {
         ScreenContent(
             state = ProfileViewModel.State(profileState = ProfileViewModel.GetProfileState.Loading),
-            onAvatarClicked = {},
+            onAvatarClicked = {}
         )
     }
 }
