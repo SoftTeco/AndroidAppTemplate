@@ -5,16 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.lifecycle.lifecycleScope
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.navigation.Graph
 import com.softteco.template.ui.AppContent
@@ -24,7 +19,6 @@ import com.softteco.template.ui.theme.ThemeMode
 import com.softteco.template.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -48,20 +42,10 @@ class MainActivity : ComponentActivity() {
                 it[PreferencesKeys.THEME_MODE]
             }.collectAsState(initial = ThemeMode.SystemDefault.value)
             val appThemeContent: @Composable () -> Unit = {
-                var isUserLoggedIn by rememberSaveable { mutableStateOf<Boolean?>(null) }
-                lifecycleScope.launch {
-                    sessionManager.observeTokenUpdates()
-                }
-
-                LaunchedEffect(Unit) {
-                    sessionManager.tokenStateFlow.collect { token ->
-                        isUserLoggedIn = token.isNotEmpty()
-                    }
-                }
-                isUserLoggedIn?.let {
-                    val startDestination = if (it) Graph.BottomBar.route else Graph.Login.route
-                    AppContent(startDestination)
-                }
+                val isUserLoggedIn by sessionManager.isUserLoggedIn.collectAsState(initial = false)
+                val startDestination =
+                    if (isUserLoggedIn) Graph.BottomBar.route else Graph.Login.route
+                AppContent(startDestination)
             }
             theme.value?.let {
                 AppTheme(themeMode = it, content = appThemeContent)
