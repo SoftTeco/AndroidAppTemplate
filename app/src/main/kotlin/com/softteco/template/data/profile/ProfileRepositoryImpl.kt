@@ -16,6 +16,7 @@ import com.softteco.template.data.profile.dto.toModel
 import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
+import io.shipbook.shipbooksdk.ShipBook
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -140,6 +141,7 @@ internal class ProfileRepositoryImpl @Inject constructor(
     override suspend fun logout(): Result<Unit> {
         return try {
             authTokenEncryptedDataStore.updateData { token -> token.copy(token = "") }
+            ShipBook.logout()
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(errorHandler.getError(e))

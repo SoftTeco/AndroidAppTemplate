@@ -45,7 +45,9 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    Analytics.logInOpened()
+    LaunchedEffect(Unit) {
+        Analytics.logInOpened()
+    }
 
     LaunchedEffect(state.loginState) {
         if (state.loginState is LoginViewModel.LoginState.Success) {

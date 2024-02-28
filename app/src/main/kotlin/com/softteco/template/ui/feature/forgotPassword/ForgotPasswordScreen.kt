@@ -33,7 +33,9 @@ fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    Analytics.forgotPasswordOpened()
+    LaunchedEffect(Unit) {
+        Analytics.forgotPasswordOpened()
+    }
 
     LaunchedEffect(state.forgotPasswordState) {
         if (state.forgotPasswordState is ForgotPasswordViewModel.ForgotPasswordState.Success) {
