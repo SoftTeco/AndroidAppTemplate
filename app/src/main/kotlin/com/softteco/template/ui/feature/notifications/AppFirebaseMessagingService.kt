@@ -2,9 +2,7 @@ package com.softteco.template.ui.feature.notifications
 
 import android.app.Notification
 import android.app.Notification.EXTRA_NOTIFICATION_ID
-import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.Intent
@@ -16,7 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.softteco.template.Constants.ACTION_NOTIFICATION
 import com.softteco.template.Constants.ACTION_NOTIFICATION_REPLY
-import com.softteco.template.Constants.CHANNEL_NAME
+import com.softteco.template.Constants.FCM_DEFAULT_CHANNEL_ID
 import com.softteco.template.Constants.NOTIFICATION_ID
 import com.softteco.template.Constants.NOTIFICATION_REPLY
 import com.softteco.template.MainActivity
@@ -27,6 +25,10 @@ import timber.log.Timber
 @AndroidEntryPoint
 class AppFirebaseMessagingService : FirebaseMessagingService() {
 
+    private val notificationManager by lazy {
+        getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         remoteMessage.notification?.let { message ->
             sendNotification(message)
@@ -34,12 +36,6 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(message: RemoteMessage.Notification) {
-        val channelId = this.getString(R.string.default_notification_channel_id)
-        val channel = NotificationChannel(channelId, CHANNEL_NAME, IMPORTANCE_DEFAULT)
-
-        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(channel)
-
         val intent = createNotificationIntent()
         val replyIntent = createReplyIntent()
 
@@ -52,19 +48,24 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 
         val replyAction = createReplyAction(replyPendingIntent, remoteInput)
 
-        val notificationBuilder =
-            createNotificationBuilder(channelId, notificationLayout, pendingIntent, replyAction)
+        val notificationBuilder = createNotificationBuilder(
+            FCM_DEFAULT_CHANNEL_ID,
+            notificationLayout,
+            pendingIntent,
+            replyAction
+        )
 
         NotificationManagerCompat.from(this).apply {
-            manager.notify(NOTIFICATION_ID, notificationBuilder)
+            notificationManager.notify(NOTIFICATION_ID, notificationBuilder)
         }
     }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Timber.tag("FCM new token:").d(token)
+        Timber.d("FCM new token: $token")
     }
 
+    @Suppress("SameParameterValue")
     private fun createNotificationBuilder(
         channelId: String,
         notificationLayout: RemoteViews,
@@ -72,7 +73,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
         replyAction: NotificationCompat.Action
     ): Notification {
         return NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.logo)
             .setAutoCancel(true)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(notificationLayout)
@@ -85,8 +86,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     private fun createNotificationIntent(): Intent {
         return Intent(this, AppFirebaseMessagingService::class.java).apply {
             action = ACTION_NOTIFICATION
-            flags =
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
     }
 

@@ -77,7 +77,7 @@
     <string name="no_open_source_licenses">No open source licenses found</string>
 
     <!-- FCM -->
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="default_fcm_channel_name">FCM notification channel</string>
     <string name="notification_permission_title">Notification permission</string>
     <string name="notification_permission_description">The notification permission is important for this app. Please grant the permission.</string>
     <string name="request_notification_permission">Request permission</string>

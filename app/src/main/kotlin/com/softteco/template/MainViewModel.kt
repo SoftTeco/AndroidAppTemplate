@@ -1,5 +1,7 @@
 package com.softteco.template
 
+import android.content.Intent
+import androidx.core.app.RemoteInput
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
@@ -12,7 +14,9 @@ import com.softteco.template.utils.AppDispatchers
 import com.softteco.template.utils.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.shipbook.shipbooksdk.ShipBook
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,6 +37,9 @@ class MainViewModel @Inject constructor(
 
     val isUserLoggedIn = sessionManager.isUserLoggedIn
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    private val _enteredText = MutableStateFlow("")
+    val enteredText = _enteredText.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -60,6 +67,15 @@ class MainViewModel @Inject constructor(
                     Timber.e("Error get user data")
                 }
             }
+        }
+    }
+
+    fun processNotificationReply(remoteInput: Intent) {
+        viewModelScope.launch(appDispatchers.default) {
+            val enteredText = RemoteInput.getResultsFromIntent(remoteInput)
+                ?.getString(Constants.NOTIFICATION_REPLY) ?: ""
+
+            _enteredText.value = enteredText
         }
     }
 }

@@ -11,5 +11,5 @@ object Constants {
     const val ACTION_NOTIFICATION = "ACTION_NOTIFICATION"
     const val NOTIFICATION_REPLY = "NOTIFICATION_REPLY"
     const val NOTIFICATION_ID = 1
-    const val CHANNEL_NAME = "FCM notification channel"
+    const val FCM_DEFAULT_CHANNEL_ID = "fcm_default_channel"
 }
