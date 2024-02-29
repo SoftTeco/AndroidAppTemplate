@@ -1,7 +1,5 @@
 package com.softteco.template.data.base
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call
@@ -14,28 +12,20 @@ import java.lang.reflect.Type
 
 class ApiResultCallAdapter(
     private val resultType: Type,
-    private val coroutineScope: CoroutineScope,
 ) : CallAdapter<Type, Call<ApiResult<Type>>> {
 
     override fun responseType(): Type = resultType
 
-    override fun adapt(call: Call<Type>): Call<ApiResult<Type>> {
-        return ApiResultCall(call, coroutineScope)
-    }
+    override fun adapt(call: Call<Type>): Call<ApiResult<Type>> = ApiResultCall(call)
 }
 
-class ApiResultCall<T : Any>(
-    private val proxy: Call<T>,
-    private val coroutineScope: CoroutineScope,
-) : Call<ApiResult<T>> {
+class ApiResultCall<T : Any>(private val proxy: Call<T>) : Call<ApiResult<T>> {
 
     override fun enqueue(callback: Callback<ApiResult<T>>) {
         proxy.enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
-                coroutineScope.launch {
-                    val apiResult = handleApiResponse { response }
-                    callback.onResponse(this@ApiResultCall, Response.success(apiResult))
-                }
+                val apiResult = handleApiResponse(response)
+                callback.onResponse(this@ApiResultCall, Response.success(apiResult))
             }
 
             override fun onFailure(call: Call<T>, t: Throwable) {
@@ -46,19 +36,15 @@ class ApiResultCall<T : Any>(
     }
 
     override fun execute(): Response<ApiResult<T>> = throw NotImplementedError()
-    override fun clone(): Call<ApiResult<T>> = ApiResultCall(proxy.clone(), coroutineScope)
+    override fun clone(): Call<ApiResult<T>> = ApiResultCall(proxy.clone())
     override fun request(): Request = proxy.request()
     override fun timeout(): Timeout = proxy.timeout()
     override fun isExecuted(): Boolean = proxy.isExecuted
     override fun isCanceled(): Boolean = proxy.isCanceled
-    override fun cancel() {
-        proxy.cancel()
-    }
+    override fun cancel() = proxy.cancel()
 }
 
-class ApiResultCallAdapterFactory private constructor(
-    private val coroutineScope: CoroutineScope
-) : CallAdapter.Factory() {
+class ApiResultCallAdapterFactory private constructor() : CallAdapter.Factory() {
 
     override fun get(
         returnType: Type,
@@ -70,12 +56,13 @@ class ApiResultCallAdapterFactory private constructor(
         return when {
             getRawType(returnType) != Call::class.java -> null
             getRawType(callType) != ApiResult::class.java -> null
-            else -> ApiResultCallAdapter(resultType, coroutineScope)
+            else -> ApiResultCallAdapter(resultType)
         }
     }
 
     companion object {
-        fun create(coroutineScope: CoroutineScope): ApiResultCallAdapterFactory =
-            ApiResultCallAdapterFactory(coroutineScope)
+        @JvmStatic
+        @JvmName("create")
+        operator fun invoke() = ApiResultCallAdapterFactory()
     }
 }

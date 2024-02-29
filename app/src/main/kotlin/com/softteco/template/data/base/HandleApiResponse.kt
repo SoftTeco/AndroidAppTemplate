@@ -7,11 +7,8 @@ import retrofit2.Response
 import timber.log.Timber
 
 @Suppress("TooGenericExceptionCaught")
-suspend fun <T : Any> handleApiResponse(
-    execute: suspend () -> Response<T>
-): ApiResult<T> {
+fun <T : Any> handleApiResponse(response: Response<T>): ApiResult<T> {
     return try {
-        val response: Response<T> = execute()
         val body = response.body()
 
         if (response.isSuccessful && body != null) {

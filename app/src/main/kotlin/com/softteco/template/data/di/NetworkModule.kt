@@ -11,7 +11,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -49,29 +48,15 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTemplateApi(
-        okHttpClient: OkHttpClient,
-        appDispatchers: AppDispatchers
-    ): TemplateApi {
-        val retrofit = buildRetrofit(
-            okHttpClient,
-            BuildConfig.BASE_URL,
-            CoroutineScope(appDispatchers.io)
-        )
+    fun provideTemplateApi(okHttpClient: OkHttpClient): TemplateApi {
+        val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
         return retrofit.create(TemplateApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideRestCountriesApi(
-        okHttpClient: OkHttpClient,
-        appDispatchers: AppDispatchers
-    ): RestCountriesApi {
-        val retrofit = buildRetrofit(
-            okHttpClient,
-            RestCountriesApi.BASE_URL,
-            CoroutineScope(appDispatchers.io)
-        )
+    fun provideRestCountriesApi(okHttpClient: OkHttpClient): RestCountriesApi {
+        val retrofit = buildRetrofit(okHttpClient, RestCountriesApi.BASE_URL)
         return retrofit.create(RestCountriesApi::class.java)
     }
 
@@ -79,7 +64,6 @@ object NetworkModule {
     private fun buildRetrofit(
         okHttpClient: OkHttpClient,
         baseUrl: String,
-        coroutineScope: CoroutineScope
     ): Retrofit {
         val converterFactory = json.asConverterFactory("application/json".toMediaType())
 
@@ -88,7 +72,7 @@ object NetworkModule {
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .addCallAdapterFactory(ApiResultCallAdapterFactory.create(coroutineScope))
+            .addCallAdapterFactory(ApiResultCallAdapterFactory())
             .client(okHttpClient)
             .build()
     }
