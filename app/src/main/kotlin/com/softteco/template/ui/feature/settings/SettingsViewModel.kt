@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,4 +34,5 @@ class SettingsViewModel @Inject constructor(
 
 object PreferencesKeys {
     val THEME_MODE = stringPreferencesKey("theme_mode")
+    val BUILD_VERSION_CODE = intPreferencesKey("version_code")
 }
