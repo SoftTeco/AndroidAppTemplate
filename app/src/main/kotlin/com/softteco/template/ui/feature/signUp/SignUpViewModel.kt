@@ -8,6 +8,7 @@ import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldState.EmailError
 import com.softteco.template.ui.components.FieldState.Valid
@@ -17,8 +18,11 @@ import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -32,7 +36,7 @@ class SignUpViewModel @Inject constructor(
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
 ) : ViewModel() {
-    private val registrationState = MutableStateFlow<SignupState>(SignupState.Default())
+    private val signUpState = MutableStateFlow(SignupState())
 
     private val usernameState = MutableStateFlow(TextFieldState())
     private val emailState = MutableStateFlow(TextFieldState())
@@ -40,15 +44,21 @@ class SignUpViewModel @Inject constructor(
 
     private var isTermsAccepted = MutableStateFlow(false)
 
+    private val _navDestination = MutableSharedFlow<Screen>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navDestination = _navDestination.asSharedFlow()
+
     val state = combine(
-        registrationState,
+        signUpState,
         usernameState,
         emailState,
         passwordState,
         isTermsAccepted,
-    ) { registrationState, username, email, password, terms ->
+    ) { signUpState, username, email, password, terms ->
         State(
-            registrationState = registrationState,
+            signUpState = signUpState,
             username = username,
             email = email,
             password = password,
@@ -64,7 +74,7 @@ class SignUpViewModel @Inject constructor(
             onInputComplete = { onInputComplete(it) },
             isTermsAccepted = terms,
             onCheckTermsChange = { isTermsAccepted.value = it },
-            isSignupBtnEnabled = registrationState is SignupState.Default && registrationState.isCtaEnabled,
+            isSignupBtnEnabled = !signUpState.loading && signUpState.isCtaEnabled,
             onRegisterClicked = ::onRegister,
         )
     }.stateIn(
@@ -85,14 +95,14 @@ class SignUpViewModel @Inject constructor(
                     email.text.validateInputValue(FieldType.EMAIL) is Valid &&
                     password.text.validateInputValue(FieldType.PASSWORD) is Valid &&
                     isTermsAccepted
-                registrationState.value = SignupState.Default(isCtaEnabled)
+                signUpState.update { SignupState(it.loading, isCtaEnabled) }
             }.collect()
         }
     }
 
     private fun onRegister() {
         viewModelScope.launch(appDispatchers.ui) {
-            registrationState.value = SignupState.Loading
+            signUpState.update { SignupState(true, it.isCtaEnabled) }
 
             val createUserDto = CreateUserDto(
                 username = usernameState.value.text,
@@ -101,10 +111,11 @@ class SignUpViewModel @Inject constructor(
             )
 
             val result = repository.registration(createUserDto)
-            registrationState.value = when (result) {
+
+            when (result) {
                 is Result.Success -> {
                     snackbarController.showSnackbar(R.string.success)
-                    SignupState.Success(result.data)
+                    _navDestination.tryEmit(Screen.Login)
                 }
 
                 is Result.Error -> {
@@ -117,9 +128,9 @@ class SignUpViewModel @Inject constructor(
                         }
                     }
                     snackbarController.showSnackbar(result.error.messageRes)
-                    SignupState.Default(true)
                 }
             }
+            signUpState.update { SignupState(false, it.isCtaEnabled) }
         }
     }
 
@@ -133,7 +144,7 @@ class SignUpViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val registrationState: SignupState = SignupState.Default(),
+        val signUpState: SignupState = SignupState(),
         val username: TextFieldState = TextFieldState(),
         val email: TextFieldState = TextFieldState(),
         val password: TextFieldState = TextFieldState(),
@@ -148,9 +159,8 @@ class SignUpViewModel @Inject constructor(
     )
 
     @Immutable
-    sealed class SignupState {
-        data class Default(val isCtaEnabled: Boolean = false) : SignupState()
-        data object Loading : SignupState()
-        class Success(val email: String) : SignupState()
-    }
+    data class SignupState(
+        val loading: Boolean = false,
+        val isCtaEnabled: Boolean = false,
+    )
 }

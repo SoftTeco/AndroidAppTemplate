@@ -6,6 +6,7 @@ import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.snackbar.SnackbarController
@@ -17,7 +18,10 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -40,7 +44,7 @@ class SignUpViewModelTest : BaseTest() {
     private val snackbarController = SnackbarController()
 
     @Test
-    fun `when valid credentials and sign-up button is enabled then success state is emitted`() =
+    fun `when sign up success then navigate to login`() {
         runTest {
             val createUserDto = CreateUserDto(
                 username = USERNAME,
@@ -50,6 +54,8 @@ class SignUpViewModelTest : BaseTest() {
             coEvery { repository.registration(createUserDto) } returns Result.Success("")
 
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+
+            val navDestination = async { viewModel.navDestination.first() }
 
             viewModel.state.test {
                 awaitItem().onUsernameChanged(USERNAME)
@@ -63,17 +69,17 @@ class SignUpViewModelTest : BaseTest() {
                     onRegisterClicked()
                 }
 
-                awaitItem().run {
-                    registrationState.shouldBeTypeOf<SignUpViewModel.SignupState.Success>()
-                    snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
-                }
+                snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
             }
+
+            launch { navDestination.await() shouldBe Screen.Login }
 
             coVerify(exactly = 1) { repository.registration(createUserDto) }
         }
+    }
 
     @Test
-    fun `when invalid email then email field error is shown and sign-up button isn't enabled`() =
+    fun `when invalid email then email field error is shown and sign-up button isn't enabled`() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
@@ -90,9 +96,10 @@ class SignUpViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when password hasn't capital letter then password field error is shown and sign-up button isn't enabled`() =
+    fun `when password hasn't capital letter then password field error is shown and sign-up button isn't enabled`() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
@@ -110,9 +117,10 @@ class SignUpViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when password hasn't enough symbols then password field error is shown and sign-up button isn't enabled`() =
+    fun `when password hasn't enough symbols then password field error is shown and sign-up button isn't enabled`() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
@@ -131,9 +139,10 @@ class SignUpViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when empty username then sign-up button isn't enabled`() =
+    fun `when empty username then sign-up button isn't enabled`() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
@@ -147,9 +156,10 @@ class SignUpViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when empty username, email, password then password, email fields error are shown and button isn't enabled`() =
+    fun `when empty username, email, password then password, email fields error are shown and button isn't enabled`() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
@@ -160,9 +170,10 @@ class SignUpViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when checkbox isn't selected and sign-up button isn't enabled`() =
+    fun `when checkbox isn't selected and sign-up button isn't enabled`() {
         runTest {
             viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
             viewModel.state.test {
@@ -172,9 +183,10 @@ class SignUpViewModelTest : BaseTest() {
                 awaitItem().isSignupBtnEnabled shouldBe false
             }
         }
+    }
 
     @Test
-    fun `when registration button clicked and request in progress then loading is shown`() =
+    fun `when registration button clicked and request in progress then loading is shown`() {
         runTest {
             val createUserDto = CreateUserDto(
                 username = USERNAME,
@@ -200,9 +212,13 @@ class SignUpViewModelTest : BaseTest() {
                     onRegisterClicked()
                 }
 
-                awaitItem().registrationState.shouldBeTypeOf<SignUpViewModel.SignupState.Loading>()
+                awaitItem().signUpState shouldBe SignUpViewModel.SignupState(
+                    loading = true,
+                    isCtaEnabled = true
+                )
             }
 
             coVerify(exactly = 1) { repository.registration(createUserDto) }
         }
+    }
 }

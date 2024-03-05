@@ -8,10 +8,10 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
-import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -19,7 +19,10 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -39,7 +42,7 @@ class ResetPasswordViewModelTest : BaseTest() {
     private val snackbarController = SnackbarController()
 
     @Test
-    fun `when valid password and reset password button is enabled then success state is emitted`() =
+    fun `when password reset success then navigate to login`() {
         runTest {
             coEvery {
                 repository.changePassword(TOKEN, NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD))
@@ -56,6 +59,8 @@ class ResetPasswordViewModelTest : BaseTest() {
                 snackbarController
             )
 
+            val navDestination = async { viewModel.navDestination.first() }
+
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD)
                 delay(1.seconds)
@@ -65,10 +70,11 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onResetPasswordClicked()
                 }
 
-                awaitItem().run {
-                    resetPasswordState.shouldBeTypeOf<ScreenState.Success>()
-                    snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
-                }
+                snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
+            }
+
+            launch {
+                navDestination.await() shouldBe Screen.Login
             }
 
             coVerify(exactly = 1) {
@@ -78,9 +84,10 @@ class ResetPasswordViewModelTest : BaseTest() {
                 )
             }
         }
+    }
 
     @Test
-    fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() =
+    fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() {
         runTest {
             viewModel = ResetPasswordViewModel(
                 SavedStateHandle().apply {
@@ -103,9 +110,10 @@ class ResetPasswordViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() =
+    fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() {
         runTest {
             viewModel = ResetPasswordViewModel(
                 SavedStateHandle().apply {
@@ -128,9 +136,10 @@ class ResetPasswordViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when empty password then password field error is shown and button isn't enabled`() =
+    fun `when empty password then password field error is shown and button isn't enabled`() {
         runTest {
             viewModel = ResetPasswordViewModel(
                 SavedStateHandle().apply {
@@ -148,9 +157,10 @@ class ResetPasswordViewModelTest : BaseTest() {
                 }
             }
         }
+    }
 
     @Test
-    fun `when reset password button clicked and request in progress then loading is shown`() =
+    fun `when reset password button clicked and request in progress then loading is shown`() {
         runTest {
             coEvery {
                 repository.changePassword(
@@ -180,7 +190,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onResetPasswordClicked()
                 }
 
-                awaitItem().resetPasswordState.shouldBeTypeOf<ScreenState.Loading>()
+                awaitItem().loading shouldBe true
             }
 
             coVerify(exactly = 1) {
@@ -190,4 +200,5 @@ class ResetPasswordViewModelTest : BaseTest() {
                 )
             }
         }
+    }
 }

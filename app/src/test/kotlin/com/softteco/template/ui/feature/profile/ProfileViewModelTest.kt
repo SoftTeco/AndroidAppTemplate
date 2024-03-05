@@ -30,58 +30,64 @@ class ProfileViewModelTest : BaseTest() {
     private val snackbarController = SnackbarController()
 
     @Test
-    fun `when screen is open and data isn't received then loading is shown`() = runTest {
-        coEvery { profileRepository.getUser() } coAnswers {
-            delay(1.seconds) // emulation a delay in receiving data
-            Result.Success(testProfile)
-        }
+    fun `when screen is open and data isn't received then loading is shown`() {
+        runTest {
+            coEvery { profileRepository.getUser() } coAnswers {
+                delay(1.seconds) // emulation a delay in receiving data
+                Result.Success(testProfile)
+            }
 
-        viewModel = ProfileViewModel(
-            profileRepository,
-            appDispatchers,
-            snackbarController,
-        )
+            viewModel = ProfileViewModel(
+                profileRepository,
+                appDispatchers,
+                snackbarController,
+            )
 
-        viewModel.state.test {
-            awaitItem().profileState shouldBe ProfileViewModel.GetProfileState.Loading
-        }
-    }
-
-    @Test
-    fun `when screen is open and data received then profile data is shown`() = runTest {
-        coEvery { profileRepository.getUser() } returns Result.Success(testProfile)
-
-        viewModel = ProfileViewModel(
-            profileRepository,
-            appDispatchers,
-            snackbarController,
-        )
-
-        viewModel.state.test {
-            awaitItem().run {
-                profileState.shouldBeTypeOf<ProfileViewModel.GetProfileState.Success>()
-                (profileState as ProfileViewModel.GetProfileState.Success).profile shouldBe testProfile
+            viewModel.state.test {
+                awaitItem().profileState shouldBe ProfileViewModel.GetProfileState.Loading
             }
         }
-        coVerify(exactly = 1) { profileRepository.getUser() }
     }
 
     @Test
-    fun `when screen is open and network error happened then snackbar is shown`() = runTest {
-        val error = AppError.NetworkError()
-        coEvery { profileRepository.getUser() } returns Result.Error(error)
+    fun `when screen is open and data received then profile data is shown`() {
+        runTest {
+            coEvery { profileRepository.getUser() } returns Result.Success(testProfile)
 
-        viewModel = ProfileViewModel(
-            profileRepository,
-            appDispatchers,
-            snackbarController,
-        )
+            viewModel = ProfileViewModel(
+                profileRepository,
+                appDispatchers,
+                snackbarController,
+            )
 
-        viewModel.state.test {
-            snackbarController.snackbars.value shouldContain SnackbarState(error.messageRes)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                awaitItem().run {
+                    profileState.shouldBeTypeOf<ProfileViewModel.GetProfileState.Success>()
+                    (profileState as ProfileViewModel.GetProfileState.Success).profile shouldBe testProfile
+                }
+            }
+            coVerify(exactly = 1) { profileRepository.getUser() }
         }
-        coVerify(exactly = 1) { profileRepository.getUser() }
+    }
+
+    @Test
+    fun `when screen is open and network error happened then snackbar is shown`() {
+        runTest {
+            val error = AppError.NetworkError()
+            coEvery { profileRepository.getUser() } returns Result.Error(error)
+
+            viewModel = ProfileViewModel(
+                profileRepository,
+                appDispatchers,
+                snackbarController,
+            )
+
+            viewModel.state.test {
+                snackbarController.snackbars.value shouldContain SnackbarState(error.messageRes)
+                cancelAndIgnoreRemainingEvents()
+            }
+            coVerify(exactly = 1) { profileRepository.getUser() }
+        }
     }
 
     companion object {

@@ -9,17 +9,20 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldState.Valid
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.snackbar.SnackbarController
-import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -34,24 +37,30 @@ class ResetPasswordViewModel @Inject constructor(
     private val snackbarController: SnackbarController,
 ) : ViewModel() {
 
-    private val resetPasswordState = MutableStateFlow<ScreenState>(ScreenState.Default)
+    private val loading = MutableStateFlow(false)
     private var passwordState = MutableStateFlow(TextFieldState())
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
     private val ctaButtonState = MutableStateFlow(false)
 
+    private val _navDestination = MutableSharedFlow<Screen>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navDestination = _navDestination.asSharedFlow()
+
     val state = combine(
-        resetPasswordState,
+        loading,
         passwordState,
         ctaButtonState,
-    ) { resetPasswordState, password, isCtaEnabled ->
+    ) { loading, password, isCtaEnabled ->
         State(
-            resetPasswordState = resetPasswordState,
+            loading = loading,
             password = password,
             onPasswordChanged = {
                 passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
             onInputComplete = ::onInputComplete,
-            isResetBtnEnabled = isCtaEnabled,
+            isResetBtnEnabled = !loading && isCtaEnabled,
             onResetPasswordClicked = ::onResetPassword
         )
     }.stateIn(
@@ -70,7 +79,7 @@ class ResetPasswordViewModel @Inject constructor(
 
     private fun onResetPassword() {
         viewModelScope.launch(appDispatchers.ui) {
-            resetPasswordState.value = ScreenState.Loading
+            loading.value = true
 
             val newPassword = NewPasswordDto(
                 password = passwordState.value.text,
@@ -82,14 +91,14 @@ class ResetPasswordViewModel @Inject constructor(
             when (result) {
                 is Result.Success -> {
                     snackbarController.showSnackbar(R.string.success)
-                    resetPasswordState.value = ScreenState.Success
+                    _navDestination.tryEmit(Screen.Login)
                 }
 
                 is Result.Error -> {
                     snackbarController.showSnackbar(result.error.messageRes)
-                    resetPasswordState.value = ScreenState.Default
                 }
             }
+            loading.value = false
         }
     }
 
@@ -101,7 +110,7 @@ class ResetPasswordViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val resetPasswordState: ScreenState = ScreenState.Default,
+        val loading: Boolean = false,
         val password: TextFieldState = TextFieldState(),
         val onPasswordChanged: (String) -> Unit = {},
         val onInputComplete: () -> Unit = {},

@@ -78,7 +78,9 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
-    Analytics.profileOpened()
+    LaunchedEffect(Unit) {
+        Analytics.profileOpened()
+    }
 
     LaunchedEffect(state.profileState) {
         if (state.profileState is ProfileViewModel.GetProfileState.Logout) {

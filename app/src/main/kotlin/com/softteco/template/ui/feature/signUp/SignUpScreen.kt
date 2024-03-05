@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.Constants.TERMS_OF_SERVICES_URL
 import com.softteco.template.R
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.AppTextField
 import com.softteco.template.ui.components.CustomTopAppBar
@@ -41,6 +42,8 @@ import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.utils.Analytics
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -51,13 +54,16 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    Analytics.signUpOpened()
 
-    LaunchedEffect(state.registrationState) {
-        if (state.registrationState is SignUpViewModel.SignupState.Success) {
-            Analytics.signUpSuccess()
-            onSuccess()
-        }
+    LaunchedEffect(Unit) {
+        Analytics.signUpOpened()
+
+        viewModel.navDestination.onEach { screen ->
+            if (screen == Screen.Login) {
+                Analytics.signUpSuccess()
+                onSuccess()
+            }
+        }.launchIn(this)
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -151,7 +157,7 @@ private fun ScreenContent(
             val keyboardController = LocalSoftwareKeyboardController.current
             PrimaryButton(
                 buttonText = stringResource(id = R.string.sign_up),
-                loading = state.registrationState == SignUpViewModel.SignupState.Loading,
+                loading = state.signUpState.loading,
                 modifier = Modifier
                     .padding(top = PaddingDefault)
                     .fillMaxWidth(),

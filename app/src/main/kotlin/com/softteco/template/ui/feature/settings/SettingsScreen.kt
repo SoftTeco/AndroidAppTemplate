@@ -15,6 +15,7 @@ import androidx.compose.material.icons.sharp.ArrowForwardIos
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,7 +50,10 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    Analytics.settingsOpened()
+    LaunchedEffect(Unit) {
+        Analytics.settingsOpened()
+    }
+
     ScreenContent(
         modifier = modifier,
         onBackClicked = onBackClicked,

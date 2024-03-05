@@ -21,13 +21,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
 import com.softteco.template.utils.Analytics
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -38,12 +40,15 @@ fun ResetPasswordScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Analytics.resetPasswordOpened()
-    LaunchedEffect(state.resetPasswordState) {
-        if (state.resetPasswordState is ScreenState.Success) {
-            Analytics.resetPasswordSuccess()
-            onSuccess()
-        }
+    LaunchedEffect(Unit) {
+        Analytics.resetPasswordOpened()
+
+        viewModel.navDestination.onEach { screen ->
+            if (screen == Screen.Login) {
+                Analytics.resetPasswordSuccess()
+                onSuccess()
+            }
+        }.launchIn(this)
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -82,7 +87,7 @@ private fun ScreenContent(
         val keyboardController = LocalSoftwareKeyboardController.current
         PrimaryButton(
             buttonText = stringResource(id = R.string.reset_password),
-            loading = state.resetPasswordState == ScreenState.Loading,
+            loading = state.loading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = Dimens.PaddingDefault),

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,22 +16,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.softteco.template.R
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.AppTextField
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.utils.Analytics
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -44,30 +41,19 @@ fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    val lifecycleOwner = LocalLifecycleOwner.current
-    Analytics.forgotPasswordOpened()
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) viewModel.onCreate()
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
+    LaunchedEffect(Unit) {
+        Analytics.forgotPasswordOpened()
 
-    LaunchedEffect(state.screenState) {
-        when (val screenState = state.screenState) {
-            ScreenState.Success -> onSuccess()
+        viewModel.navDestination.onEach { screen ->
+            when (screen) {
+                Screen.Login -> onSuccess()
+                Screen.SignUp -> navigateToSignUp()
 
-            is ScreenState.Navigate -> {
-                if (screenState.screen == Screen.SignUp) navigateToSignUp()
+                else -> { /*NOOP*/
+                }
             }
-
-            else -> { /*NOOP*/
-            }
-        }
+        }.launchIn(this)
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -117,7 +103,7 @@ private fun ScreenContent(
             val keyboardController = LocalSoftwareKeyboardController.current
             PrimaryButton(
                 buttonText = stringResource(id = R.string.restore_password),
-                loading = state.screenState == ScreenState.Loading,
+                loading = state.loading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Dimens.PaddingLarge),

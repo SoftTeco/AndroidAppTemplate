@@ -16,12 +16,14 @@ import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.dialog.DialogState
 import com.softteco.template.ui.components.snackbar.SnackbarController
-import com.softteco.template.ui.feature.ScreenState
 import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -37,19 +39,25 @@ class LoginViewModel @Inject constructor(
     private val dialogController: DialogController,
 ) : ViewModel() {
 
-    private val loginState = MutableStateFlow<ScreenState>(ScreenState.Default)
+    private val loading = MutableStateFlow(false)
     private var emailState = MutableStateFlow(TextFieldState())
     private var passwordState = MutableStateFlow(TextFieldState())
     private val ctaButtonState = MutableStateFlow(false)
 
+    private val _navDestination = MutableSharedFlow<Screen>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navDestination = _navDestination.asSharedFlow()
+
     val state = combine(
-        loginState,
+        loading,
         emailState,
         passwordState,
         ctaButtonState,
-    ) { loginState, email, password, isCtaEnabled ->
+    ) { loading, email, password, isCtaEnabled ->
         State(
-            screenState = loginState,
+            loading = loading,
             email = email,
             password = password,
             onEmailChanged = {
@@ -58,7 +66,7 @@ class LoginViewModel @Inject constructor(
             onPasswordChanged = {
                 passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
-            isLoginBtnEnabled = isCtaEnabled,
+            isLoginBtnEnabled = !loading && isCtaEnabled,
             onInputComplete = { onInputComplete(it) },
             onLoginClicked = ::onLogin,
         )
@@ -78,13 +86,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun onCreate() {
-        loginState.value = ScreenState.Default
-    }
-
     private fun onLogin() {
         viewModelScope.launch(appDispatchers.io) {
-            loginState.value = ScreenState.Loading
+            loading.value = true
 
             val credentials = CredentialsDto(
                 email = emailState.value.text,
@@ -94,7 +98,7 @@ class LoginViewModel @Inject constructor(
             val result = repository.login(credentials)
 
             when (result) {
-                is Result.Success -> loginState.value = ScreenState.Success
+                is Result.Success -> _navDestination.tryEmit(Screen.Home)
 
                 is Result.Error -> {
                     when (result.error) {
@@ -115,7 +119,7 @@ class LoginViewModel @Inject constructor(
 
                         else -> snackbarController.showSnackbar(result.error.messageRes)
                     }
-                    loginState.value = ScreenState.Default
+                    loading.value = false
                 }
             }
         }
@@ -128,7 +132,7 @@ class LoginViewModel @Inject constructor(
                 messageRes = R.string.dialog_user_not_found_message,
                 positiveBtnRes = R.string.sign_up,
                 positiveBtnAction = {
-                    loginState.value = ScreenState.Navigate(Screen.SignUp)
+                    _navDestination.tryEmit(Screen.SignUp)
                 },
                 negativeBtnRes = R.string.cancel,
             )
@@ -153,7 +157,7 @@ class LoginViewModel @Inject constructor(
 
     @Immutable
     data class State(
-        val screenState: ScreenState = ScreenState.Default,
+        val loading: Boolean = false,
         val email: TextFieldState = TextFieldState(),
         val password: TextFieldState = TextFieldState(),
         val onEmailChanged: (String) -> Unit = {},
