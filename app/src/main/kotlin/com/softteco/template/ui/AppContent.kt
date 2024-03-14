@@ -16,17 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
 import com.softteco.template.navigation.AppBottomBar
 import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.ui.components.RequestNotificationPermissionDialog
 import com.softteco.template.ui.components.dialog.AppDialog
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 
 @Composable
 fun AppContent(
@@ -39,12 +34,6 @@ fun AppContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        launch {
-            val token = Firebase.messaging.token.await()
-            Timber.tag("FCM token:").d(token)
-        }
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         RequestNotificationPermissionDialog()
     }
