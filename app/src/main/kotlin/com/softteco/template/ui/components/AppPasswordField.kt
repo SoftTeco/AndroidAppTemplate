@@ -27,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,7 +37,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.softteco.template.R
-import com.softteco.template.ui.feature.PasswordFieldState
 import com.softteco.template.ui.theme.Dimens
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -43,62 +44,71 @@ import com.softteco.template.ui.theme.Dimens
 fun PasswordField(
     passwordValue: String,
     onPasswordChanged: (String) -> Unit,
-    fieldStatePassword: PasswordFieldState,
+    fieldStatePassword: FieldState,
+    onInputComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column {
-        var passwordVisibility by remember { mutableStateOf(true) }
-        val isError = fieldStatePassword is PasswordFieldState.Error
-        val keyboardController = LocalSoftwareKeyboardController.current
-        OutlinedTextField(
-            value = passwordValue,
-            onValueChange = { newValue ->
-                onPasswordChanged(newValue)
-            },
-            modifier = modifier,
-            label = {
-                Text(text = stringResource(id = R.string.password))
-            },
-            isError = isError,
-            supportingText = { SupportingText(passwordState = fieldStatePassword) },
-            trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisibility = !passwordVisibility
-                }) {
-                    Icon(
-                        imageVector = if (passwordVisibility) {
-                            Icons.Filled.VisibilityOff
-                        } else {
-                            Icons.Filled.Visibility
-                        },
-                        contentDescription = stringResource(id = R.string.visibility),
-                    )
-                }
-            },
-            visualTransformation = if (passwordVisibility) {
-                PasswordVisualTransformation()
-            } else {
-                VisualTransformation.None
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password,
-            ),
-            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-            )
+    var passwordVisibility by remember { mutableStateOf(true) }
+    val isError = fieldStatePassword is FieldState.Error
+    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    var isFocused by remember { mutableStateOf(false) }
+
+    OnHideKeyboard { onInputComplete() }
+
+    OutlinedTextField(
+        value = passwordValue,
+        onValueChange = { newValue ->
+            onPasswordChanged(newValue)
+        },
+        modifier = modifier.onFocusChanged {
+            isFocused = it.isFocused
+            if (!it.isFocused) onInputComplete()
+        },
+        label = {
+            Text(text = stringResource(id = R.string.password))
+        },
+        isError = isError,
+        supportingText = { SupportingText(passwordState = fieldStatePassword) },
+        trailingIcon = {
+            IconButton(onClick = {
+                passwordVisibility = !passwordVisibility
+            }) {
+                Icon(
+                    imageVector = if (passwordVisibility) {
+                        Icons.Filled.VisibilityOff
+                    } else {
+                        Icons.Filled.Visibility
+                    },
+                    contentDescription = stringResource(id = R.string.visibility),
+                )
+            }
+        },
+        visualTransformation = if (passwordVisibility) {
+            PasswordVisualTransformation()
+        } else {
+            VisualTransformation.None
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Email,
+        ),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
+            onInputComplete()
+        }),
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
         )
-    }
+    )
 }
 
 @Composable
-private fun SupportingText(passwordState: PasswordFieldState, modifier: Modifier = Modifier) {
+private fun SupportingText(passwordState: FieldState, modifier: Modifier = Modifier) {
     Column(modifier.height(48.dp)) {
         when (passwordState) {
-            PasswordFieldState.Empty -> Text(stringResource(R.string.required))
-            is PasswordFieldState.Error -> {
+            FieldState.Empty -> Text(stringResource(R.string.required))
+            is FieldState.PasswordError -> {
                 Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall)) {
                     ConditionRow(
                         condition = stringResource(R.string.registration_password_condition1),
@@ -111,7 +121,7 @@ private fun SupportingText(passwordState: PasswordFieldState, modifier: Modifier
                 }
             }
 
-            PasswordFieldState.Success -> { /* NOOP */
+            else -> { /* NOOP */
             }
         }
     }

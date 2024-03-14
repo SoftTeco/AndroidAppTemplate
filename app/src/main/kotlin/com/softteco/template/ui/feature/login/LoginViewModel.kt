@@ -3,60 +3,72 @@ package com.softteco.template.ui.feature.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softteco.template.R
+import com.softteco.template.data.base.error.AppError.AuthError.EmailNotExist
+import com.softteco.template.data.base.error.AppError.AuthError.WrongCredentials
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
-import com.softteco.template.ui.components.snackBar.SnackBarState
-import com.softteco.template.ui.feature.EmailFieldState
-import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.validateEmail
+import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.FieldState
+import com.softteco.template.ui.components.FieldType
+import com.softteco.template.ui.components.TextFieldState
+import com.softteco.template.ui.components.dialog.DialogController
+import com.softteco.template.ui.components.dialog.DialogState
+import com.softteco.template.ui.components.snackbar.SnackbarController
+import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
-import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
+    private val dialogController: DialogController,
 ) : ViewModel() {
 
-    private val loginState = MutableStateFlow<LoginState>(LoginState.Default)
-    private var emailStateValue = MutableStateFlow("")
-    private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow(SnackBarState())
-    private val emailFieldState = MutableStateFlow<EmailFieldState>(EmailFieldState.Empty)
+    private val loading = MutableStateFlow(false)
+    private var emailState = MutableStateFlow(TextFieldState())
+    private var passwordState = MutableStateFlow(TextFieldState())
+    private val ctaButtonState = MutableStateFlow(false)
+
+    private val _navDestination = MutableSharedFlow<Screen>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navDestination = _navDestination.asSharedFlow()
 
     val state = combine(
-        loginState,
-        emailStateValue,
-        passwordStateValue,
-        snackBarState,
-        emailFieldState
-    ) { loginState, emailValue, passwordValue, snackBar, emailState ->
+        loading,
+        emailState,
+        passwordState,
+        ctaButtonState,
+    ) { loading, email, password, isCtaEnabled ->
         State(
-            loginState = loginState,
-            emailValue = emailValue,
-            passwordValue = passwordValue,
-            snackBar = snackBar,
-            isLoginBtnEnabled = emailState is EmailFieldState.Success && passwordValue.isNotBlank(),
-            fieldStateEmail = emailState,
-            fieldStatePassword = when {
-                passwordValue.isEmpty() -> PasswordFieldState.Empty
-                else -> PasswordFieldState.Success
-            },
+            loading = loading,
+            email = email,
+            password = password,
             onEmailChanged = {
-                emailStateValue.value = it.trim()
-                validateEmail(emailStateValue, emailFieldState, viewModelScope, appDispatchers)
+                emailState.value = TextFieldState(it, FieldState.AwaitingInput)
             },
-            onPasswordChanged = { passwordStateValue.value = it },
+            onPasswordChanged = {
+                passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
+            },
+            isLoginBtnEnabled = !loading && isCtaEnabled,
+            onInputComplete = { onInputComplete(it) },
             onLoginClicked = ::onLogin,
-            dismissSnackBar = { snackBarState.value = SnackBarState() },
         )
     }.stateIn(
         viewModelScope,
@@ -64,45 +76,94 @@ class LoginViewModel @Inject constructor(
         State()
     )
 
+    init {
+        viewModelScope.launch {
+            combine(emailState, passwordState) { email, password ->
+                ctaButtonState.value =
+                    email.text.validateInputValue(FieldType.EMAIL) is FieldState.Valid &&
+                    password.text.validateInputValue(FieldType.PASSWORD) is FieldState.Valid
+            }.collect()
+        }
+    }
+
     private fun onLogin() {
         viewModelScope.launch(appDispatchers.io) {
-            loginState.value = LoginState.Loading
+            loading.value = true
 
             val credentials = CredentialsDto(
-                email = emailStateValue.value,
-                password = passwordStateValue.value
+                email = emailState.value.text,
+                password = passwordState.value.text,
             )
 
             val result = repository.login(credentials)
-            loginState.value = when (result) {
-                is Result.Success -> LoginState.Success
+
+            when (result) {
+                is Result.Success -> _navDestination.tryEmit(Screen.Home)
+
                 is Result.Error -> {
-                    handleApiError(result, snackBarState)
-                    LoginState.Default
+                    when (result.error) {
+                        EmailNotExist, WrongCredentials -> {
+                            emailState.update {
+                                TextFieldState(
+                                    it.text,
+                                    FieldState.EmailError(R.string.email_not_valid)
+                                )
+                            }
+
+                            if (result.error == EmailNotExist) {
+                                showSignUpDialog()
+                            } else {
+                                snackbarController.showSnackbar(result.error.messageRes)
+                            }
+                        }
+
+                        else -> snackbarController.showSnackbar(result.error.messageRes)
+                    }
+                    loading.value = false
                 }
+            }
+        }
+    }
+
+    private fun showSignUpDialog() {
+        viewModelScope.launch {
+            val dialogState = DialogState(
+                titleRes = R.string.dialog_user_not_found_title,
+                messageRes = R.string.dialog_user_not_found_message,
+                positiveBtnRes = R.string.sign_up,
+                positiveBtnAction = {
+                    _navDestination.tryEmit(Screen.SignUp)
+                },
+                negativeBtnRes = R.string.cancel,
+            )
+            dialogController.showDialog(dialogState)
+        }
+    }
+
+    private fun onInputComplete(fieldType: FieldType) {
+        when (fieldType) {
+            FieldType.EMAIL -> emailState.update {
+                TextFieldState(it.text, it.text.validateInputValue(fieldType))
+            }
+
+            FieldType.PASSWORD -> passwordState.update {
+                TextFieldState(it.text, it.text.validateInputValue(fieldType))
+            }
+
+            FieldType.USERNAME -> { /*NOOP*/
             }
         }
     }
 
     @Immutable
     data class State(
-        val loginState: LoginState = LoginState.Default,
-        val snackBar: SnackBarState = SnackBarState(),
-        val emailValue: String = "",
-        val passwordValue: String = "",
-        val fieldStateEmail: EmailFieldState = EmailFieldState.Empty,
-        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
-        val isLoginBtnEnabled: Boolean = false,
+        val loading: Boolean = false,
+        val email: TextFieldState = TextFieldState(),
+        val password: TextFieldState = TextFieldState(),
         val onEmailChanged: (String) -> Unit = {},
         val onPasswordChanged: (String) -> Unit = {},
+        val onInputComplete: (FieldType) -> Unit = {},
+        val isLoginBtnEnabled: Boolean = false,
         val onLoginClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {},
     )
-
-    @Immutable
-    sealed class LoginState {
-        object Default : LoginState()
-        object Loading : LoginState()
-        object Success : LoginState()
-    }
 }

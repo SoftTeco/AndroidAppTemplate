@@ -9,46 +9,58 @@ import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
-import com.softteco.template.ui.components.snackBar.SnackBarState
-import com.softteco.template.ui.feature.PasswordFieldState
-import com.softteco.template.ui.feature.validatePassword
+import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.FieldState
+import com.softteco.template.ui.components.FieldState.Valid
+import com.softteco.template.ui.components.FieldType
+import com.softteco.template.ui.components.TextFieldState
+import com.softteco.template.ui.components.snackbar.SnackbarController
+import com.softteco.template.ui.feature.validateInputValue
 import com.softteco.template.utils.AppDispatchers
-import com.softteco.template.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
-    private val repository: ProfileRepository,
     savedStateHandle: SavedStateHandle,
-    private val appDispatchers: AppDispatchers
+    private val repository: ProfileRepository,
+    private val appDispatchers: AppDispatchers,
+    private val snackbarController: SnackbarController,
 ) : ViewModel() {
 
-    private val resetPasswordState =
-        MutableStateFlow<ResetPasswordState>(ResetPasswordState.Default)
-    private var passwordStateValue = MutableStateFlow("")
-    private var snackBarState = MutableStateFlow(SnackBarState())
+    private val loading = MutableStateFlow(false)
+    private var passwordState = MutableStateFlow(TextFieldState())
     private val token: String = checkNotNull(savedStateHandle[AppNavHost.RESET_TOKEN_ARG])
+    private val ctaButtonState = MutableStateFlow(false)
+
+    private val _navDestination = MutableSharedFlow<Screen>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val navDestination = _navDestination.asSharedFlow()
 
     val state = combine(
-        resetPasswordState,
-        passwordStateValue,
-        snackBarState,
-    ) { resetPasswordState, passwordValue, snackBar ->
-        val passwordState = validatePassword(passwordValue)
+        loading,
+        passwordState,
+        ctaButtonState,
+    ) { loading, password, isCtaEnabled ->
         State(
-            resetPasswordState = resetPasswordState,
-            passwordValue = passwordValue,
-            fieldStatePassword = passwordState,
-            snackBar = snackBar,
-            isResetBtnEnabled = passwordState is PasswordFieldState.Success,
-            dismissSnackBar = { snackBarState.value = SnackBarState() },
-            onPasswordChanged = { passwordStateValue.value = it },
+            loading = loading,
+            password = password,
+            onPasswordChanged = {
+                passwordState.value = TextFieldState(it, FieldState.AwaitingInput)
+            },
+            onInputComplete = ::onInputComplete,
+            isResetBtnEnabled = !loading && isCtaEnabled,
             onResetPasswordClicked = ::onResetPassword
         )
     }.stateIn(
@@ -57,46 +69,52 @@ class ResetPasswordViewModel @Inject constructor(
         State()
     )
 
+    init {
+        viewModelScope.launch {
+            passwordState.collect { password ->
+                ctaButtonState.value = password.text.validateInputValue(FieldType.PASSWORD) is Valid
+            }
+        }
+    }
+
     private fun onResetPassword() {
         viewModelScope.launch(appDispatchers.ui) {
-            resetPasswordState.value = ResetPasswordState.Loading
+            loading.value = true
 
             val newPassword = NewPasswordDto(
-                password = passwordStateValue.value,
-                confirmation = passwordStateValue.value,
+                password = passwordState.value.text,
+                confirmation = passwordState.value.text,
             )
 
             val result = repository.changePassword(token, newPassword)
-            resetPasswordState.value = when (result) {
+
+            when (result) {
                 is Result.Success -> {
-                    snackBarState.value = SnackBarState(R.string.success, true)
-                    ResetPasswordState.Success
+                    snackbarController.showSnackbar(R.string.success)
+                    _navDestination.tryEmit(Screen.Login)
                 }
 
                 is Result.Error -> {
-                    handleApiError(result, snackBarState)
-                    ResetPasswordState.Default
+                    snackbarController.showSnackbar(result.error.messageRes)
                 }
             }
+            loading.value = false
+        }
+    }
+
+    private fun onInputComplete() {
+        passwordState.update {
+            TextFieldState(it.text, it.text.validateInputValue(FieldType.PASSWORD))
         }
     }
 
     @Immutable
     data class State(
-        val resetPasswordState: ResetPasswordState = ResetPasswordState.Default,
-        val passwordValue: String = "",
-        val fieldStatePassword: PasswordFieldState = PasswordFieldState.Empty,
-        val snackBar: SnackBarState = SnackBarState(),
-        val isResetBtnEnabled: Boolean = false,
+        val loading: Boolean = false,
+        val password: TextFieldState = TextFieldState(),
         val onPasswordChanged: (String) -> Unit = {},
+        val onInputComplete: () -> Unit = {},
+        val isResetBtnEnabled: Boolean = false,
         val onResetPasswordClicked: () -> Unit = {},
-        val dismissSnackBar: () -> Unit = {},
     )
-
-    @Immutable
-    sealed class ResetPasswordState {
-        object Default : ResetPasswordState()
-        object Loading : ResetPasswordState()
-        object Success : ResetPasswordState()
-    }
 }

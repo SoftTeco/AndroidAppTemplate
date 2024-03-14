@@ -10,19 +10,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import com.softteco.template.navigation.Graph
 import com.softteco.template.ui.AppContent
+import com.softteco.template.ui.components.dialog.DialogController
+import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
+
+    @Inject
+    lateinit var snackbarController: SnackbarController
+
+    @Inject
+    lateinit var dialogController: DialogController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
@@ -46,8 +57,8 @@ class MainActivity : ComponentActivity() {
             key(isUserLoggedIn) {
                 AppTheme(theme) {
                     when (isUserLoggedIn) {
-                        true -> AppContent(Graph.BottomBar.route)
-                        false -> AppContent(Graph.Login.route)
+                        true -> AppContent(Graph.BottomBar.route, snackbarController, dialogController)
+                        false -> AppContent(Graph.Login.route, snackbarController, dialogController)
                         null -> { /*NOOP*/
                         }
                     }

@@ -60,8 +60,6 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EditTextDialog
 import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.components.skeletonBackground
-import com.softteco.template.ui.components.snackBar.SnackBarState
-import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingLarge
@@ -80,18 +78,15 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
-    Analytics.profileOpened()
+    LaunchedEffect(Unit) {
+        Analytics.profileOpened()
+    }
 
     LaunchedEffect(state.profileState) {
         if (state.profileState is ProfileViewModel.GetProfileState.Logout) {
             onLogout()
         } else if (state.profileState == ProfileViewModel.GetProfileState.Error) onBackClicked()
     }
-
-    SnackbarHandler(
-        snackbarState = state.snackbar,
-        onDismissSnackbar = state.dismissSnackBar
-    )
 
     val pickMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -464,10 +459,6 @@ private fun Preview() {
                         createdAt = "2023-10-30 06:58:31.108922",
                     )
                 ),
-                snackbar = SnackBarState(
-                    textId = 0,
-                    show = false
-                )
             ),
             onAvatarClicked = {}
         )

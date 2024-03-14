@@ -5,6 +5,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.softteco.template.BuildConfig
 import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
+import com.softteco.template.data.base.ApiResultCallAdapterFactory
 import com.softteco.template.utils.AppDispatchers
 import dagger.Module
 import dagger.Provides
@@ -60,7 +61,10 @@ object NetworkModule {
     }
 
     @Suppress("SameParameterValue")
-    private fun buildRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
+    private fun buildRetrofit(
+        okHttpClient: OkHttpClient,
+        baseUrl: String,
+    ): Retrofit {
         val converterFactory = json.asConverterFactory("application/json".toMediaType())
 
         return Retrofit.Builder()
@@ -68,6 +72,7 @@ object NetworkModule {
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addCallAdapterFactory(ApiResultCallAdapterFactory())
             .client(okHttpClient)
             .build()
     }

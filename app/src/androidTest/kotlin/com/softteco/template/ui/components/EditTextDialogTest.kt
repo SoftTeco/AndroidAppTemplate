@@ -18,14 +18,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.softteco.template.BaseTest
 import com.softteco.template.R
 import com.softteco.template.ui.theme.AppTheme
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class EditTextDialogTest : BaseTest() {
 
     @get:Rule

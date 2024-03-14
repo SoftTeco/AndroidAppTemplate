@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.forgotPassword
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,47 +13,60 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
+import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.AppTextField
 import com.softteco.template.ui.components.CustomTopAppBar
-import com.softteco.template.ui.components.EmailField
 import com.softteco.template.ui.components.PrimaryButton
-import com.softteco.template.ui.components.snackBar.SnackbarHandler
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.utils.Analytics
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ForgotPasswordScreen(
     onBackClicked: () -> Unit,
     onSuccess: () -> Unit,
+    navigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    Analytics.forgotPasswordOpened()
 
-    LaunchedEffect(state.forgotPasswordState) {
-        if (state.forgotPasswordState is ForgotPasswordViewModel.ForgotPasswordState.Success) {
-            onSuccess()
-        }
+    LaunchedEffect(Unit) {
+        Analytics.forgotPasswordOpened()
+
+        viewModel.navDestination.onEach { screen ->
+            when (screen) {
+                Screen.Login -> onSuccess()
+                Screen.SignUp -> navigateToSignUp()
+
+                else -> { /*NOOP*/
+                }
+            }
+        }.launchIn(this)
     }
 
-    SnackbarHandler(
-        snackbarState = state.snackBar,
-        onDismissSnackbar = state.dismissSnackBar
-    )
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     ScreenContent(
-        modifier = modifier,
+        modifier = modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { keyboardController?.hide() })
+        },
         state = state,
         onBackClicked = onBackClicked
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ScreenContent(
     state: ForgotPasswordViewModel.State,
@@ -77,20 +91,27 @@ private fun ScreenContent(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            EmailField(
-                emailValue = state.emailValue,
-                onEmailChanged = state.onEmailChanged,
-                fieldStateEmail = state.fieldStateEmail,
+            AppTextField(
+                value = state.email.text,
+                onValueChanged = state.onEmailChanged,
+                fieldState = state.email.state,
+                onInputComplete = state.onInputComplete,
+                labelRes = R.string.email,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            val keyboardController = LocalSoftwareKeyboardController.current
             PrimaryButton(
                 buttonText = stringResource(id = R.string.restore_password),
-                loading = state.forgotPasswordState == ForgotPasswordViewModel.ForgotPasswordState.Loading,
+                loading = state.loading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Dimens.PaddingLarge),
                 enabled = state.isResetBtnEnabled,
-                onClick = { state.onRestorePasswordClicked() }
+                onClick = {
+                    state.onRestorePasswordClicked()
+                    keyboardController?.hide()
+                }
             )
         }
     }
