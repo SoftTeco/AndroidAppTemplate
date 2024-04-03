@@ -3,18 +3,26 @@ package com.softteco.template.ui.feature.resetPassword
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
+import com.softteco.template.R
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
-import com.softteco.template.ui.feature.PasswordFieldState
+import com.softteco.template.navigation.Screen
+import com.softteco.template.ui.components.FieldState
+import com.softteco.template.ui.components.snackbar.SnackbarController
+import com.softteco.template.ui.components.snackbar.SnackbarState
 import com.softteco.template.utils.MainDispatcherExtension
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -31,17 +39,27 @@ class ResetPasswordViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var repository: ProfileRepository
     private lateinit var viewModel: ResetPasswordViewModel
+    private val snackbarController = SnackbarController()
 
     @Test
-    fun `when valid password and reset password button is enabled then success state is emitted`() =
+    fun `when password reset success then navigate to login`() {
         runTest {
             coEvery {
                 repository.changePassword(TOKEN, NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD))
             } returns Result.Success(Unit)
+
             val savedStateHandle = SavedStateHandle().apply {
                 set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
             }
-            viewModel = ResetPasswordViewModel(repository, savedStateHandle, appDispatchers)
+
+            viewModel = ResetPasswordViewModel(
+                savedStateHandle,
+                repository,
+                appDispatchers,
+                snackbarController
+            )
+
+            val navDestination = async { viewModel.navDestination.first() }
 
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD)
@@ -52,10 +70,11 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onResetPasswordClicked()
                 }
 
-                awaitItem().run {
-                    resetPasswordState.shouldBeTypeOf<ResetPasswordViewModel.ResetPasswordState.Success>()
-                    snackBar.show shouldBe true
-                }
+                snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
+            }
+
+            launch {
+                navDestination.await() shouldBe Screen.Login
             }
 
             coVerify(exactly = 1) {
@@ -65,69 +84,83 @@ class ResetPasswordViewModelTest : BaseTest() {
                 )
             }
         }
+    }
 
     @Test
-    fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() =
+    fun `when password hasn't capital letter then password field error is shown and button isn't enabled`() {
         runTest {
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
+
             viewModel.state.test {
-                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
-                delay(1.seconds)
+                awaitItem().run {
+                    onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
+                    onInputComplete()
+                }
                 expectMostRecentItem().run {
-                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
-                    (fieldStatePassword as PasswordFieldState.Error).isUppercase shouldBe false
+                    password.state.shouldBeTypeOf<FieldState.PasswordError>()
+                    (password.state as FieldState.PasswordError).isUppercase shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
         }
+    }
 
     @Test
-    fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() =
+    fun `when password hasn't enough letters then password field error is shown and button isn't enabled`() {
         runTest {
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
+
             viewModel.state.test {
-                awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
-                delay(1.seconds)
+                awaitItem().run {
+                    onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
+                    onInputComplete()
+                }
                 expectMostRecentItem().run {
-                    fieldStatePassword.shouldBeTypeOf<PasswordFieldState.Error>()
-                    (fieldStatePassword as PasswordFieldState.Error).isRightLength shouldBe false
+                    password.state.shouldBeTypeOf<FieldState.PasswordError>()
+                    (password.state as FieldState.PasswordError).isRightLength shouldBe false
                     isResetBtnEnabled shouldBe false
                 }
             }
         }
+    }
 
     @Test
-    fun `when empty password then password field error is shown and button isn't enabled`() =
+    fun `when empty password then password field error is shown and button isn't enabled`() {
         runTest {
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
+
             viewModel.state.test {
                 awaitItem().run {
                     isResetBtnEnabled shouldBe false
-                    fieldStatePassword shouldBe PasswordFieldState.Empty
+                    password.state shouldBe FieldState.Empty
                 }
             }
         }
+    }
 
     @Test
-    fun `when reset password button clicked and request in progress then loading is shown`() =
+    fun `when reset password button clicked and request in progress then loading is shown`() {
         runTest {
             coEvery {
                 repository.changePassword(
@@ -138,12 +171,14 @@ class ResetPasswordViewModelTest : BaseTest() {
                 delay(1.seconds)
                 Result.Success(Unit)
             }
+
             viewModel = ResetPasswordViewModel(
-                repository,
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                appDispatchers
+                repository,
+                appDispatchers,
+                snackbarController,
             )
 
             viewModel.state.test {
@@ -155,9 +190,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                     onResetPasswordClicked()
                 }
 
-                awaitItem().run {
-                    resetPasswordState.shouldBeTypeOf<ResetPasswordViewModel.ResetPasswordState.Loading>()
-                }
+                awaitItem().loading shouldBe true
             }
 
             coVerify(exactly = 1) {
@@ -167,4 +200,5 @@ class ResetPasswordViewModelTest : BaseTest() {
                 )
             }
         }
+    }
 }

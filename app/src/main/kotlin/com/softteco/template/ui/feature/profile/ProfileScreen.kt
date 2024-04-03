@@ -59,14 +59,13 @@ import com.softteco.template.ui.components.Avatar
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EditTextDialog
 import com.softteco.template.ui.components.SecondaryButton
-import com.softteco.template.ui.components.SnackBarState
-import com.softteco.template.ui.components.TextSnackbarContainer
 import com.softteco.template.ui.components.skeletonBackground
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.Dimens.PaddingLarge
 import com.softteco.template.ui.theme.Dimens.PaddingNormal
 import com.softteco.template.ui.theme.Dimens.PaddingSmall
+import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.DateUtils
 import java.util.Locale
 
@@ -79,6 +78,9 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        Analytics.profileOpened()
+    }
 
     LaunchedEffect(state.profileState) {
         if (state.profileState is ProfileViewModel.GetProfileState.Logout) {
@@ -113,32 +115,25 @@ fun ProfileScreen(
 @Composable
 private fun ScreenContent(
     state: ProfileViewModel.State,
-    modifier: Modifier = Modifier,
     onAvatarClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    TextSnackbarContainer(
-        modifier = modifier,
-        snackbarText = stringResource(state.snackbar.textId),
-        showSnackbar = state.snackbar.show,
-        onDismissSnackbar = state.dismissSnackBar,
+    Column(
+        modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            CustomTopAppBar(
-                stringResource(id = R.string.profile),
-                modifier = Modifier.fillMaxWidth(),
+        CustomTopAppBar(
+            stringResource(id = R.string.profile),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (state.profileState is ProfileViewModel.GetProfileState.Success) {
+            Profile(
+                state,
+                onAvatarClicked,
             )
-            if (state.profileState is ProfileViewModel.GetProfileState.Success) {
-                Profile(
-                    state,
-                    onAvatarClicked,
-                )
-            } else {
-                Skeleton()
-            }
+        } else {
+            Skeleton()
         }
     }
 }
@@ -464,12 +459,8 @@ private fun Preview() {
                         createdAt = "2023-10-30 06:58:31.108922",
                     )
                 ),
-                snackbar = SnackBarState(
-                    textId = 0,
-                    show = false
-                )
             ),
-            onAvatarClicked = {},
+            onAvatarClicked = {}
         )
     }
 }
@@ -480,7 +471,7 @@ private fun PreviewLoading() {
     AppTheme {
         ScreenContent(
             state = ProfileViewModel.State(profileState = ProfileViewModel.GetProfileState.Loading),
-            onAvatarClicked = {},
+            onAvatarClicked = {}
         )
     }
 }

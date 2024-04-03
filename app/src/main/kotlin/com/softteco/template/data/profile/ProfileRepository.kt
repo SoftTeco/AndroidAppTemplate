@@ -5,13 +5,14 @@ import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.data.profile.dto.ResetPasswordDto
+import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.data.profile.entity.Profile
 
 interface ProfileRepository {
 
     suspend fun getUser(): Result<Profile>
 
-    suspend fun login(credentials: CredentialsDto): Result<Unit>
+    suspend fun login(credentials: CredentialsDto): Result<AuthToken>
 
     suspend fun registration(user: CreateUserDto): Result<String>
 

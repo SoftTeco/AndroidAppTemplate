@@ -17,6 +17,7 @@ import com.softteco.template.navigation.AppNavHost.RESET_TOKEN_ARG
 import com.softteco.template.ui.feature.forgotPassword.ForgotPasswordScreen
 import com.softteco.template.ui.feature.home.HomeScreen
 import com.softteco.template.ui.feature.login.LoginScreen
+import com.softteco.template.ui.feature.openSourceLicenses.OpenSourceLicensesScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
 import com.softteco.template.ui.feature.resetPassword.ResetPasswordScreen
 import com.softteco.template.ui.feature.settings.SettingsScreen
@@ -33,7 +34,7 @@ fun AppNavHost(
     navController: NavHostController,
     startDestination: String,
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
@@ -42,6 +43,7 @@ fun AppNavHost(
     ) {
         bottomBarGraph(navController, Modifier.padding(paddingValues = paddingValues))
         loginGraph(navController)
+        settingsGraph(navController)
     }
 }
 
@@ -64,13 +66,16 @@ fun NavGraphBuilder.bottomBarGraph(
                     navController.navigate(Graph.Login.route) {
                         popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
-                },
+                }
             )
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
                 modifier = modifier,
-                onBackClicked = { navController.navigateUp() }
+                onBackClicked = { navController.navigateUp() },
+                onLicensesClicked = {
+                    navController.navigate(Screen.OpenSourceLicenses.route)
+                }
             )
         }
     }
@@ -86,7 +91,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 onBackClicked = { navController.navigateUp() },
                 onSuccess = {
                     navController.navigate(Graph.BottomBar.route) {
-                        popUpTo(Graph.Login.route) { inclusive = true }
+                        popUpTo(Graph.BottomBar.route) { inclusive = true }
                     }
                 },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
@@ -114,8 +119,20 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClicked = { navController.navigateUp() },
-                onSuccess = { navController.navigate(Screen.Login.route) }
+                onSuccess = { navController.navigate(Screen.Login.route) },
+                navigateToSignUp = { navController.navigate(Screen.SignUp.route) },
             )
+        }
+    }
+}
+
+fun NavGraphBuilder.settingsGraph(navController: NavController) {
+    navigation(
+        startDestination = Screen.Settings.route,
+        route = Graph.Settings.route,
+    ) {
+        composable(Screen.OpenSourceLicenses.route) {
+            OpenSourceLicensesScreen(onBackClicked = { navController.navigateUp() })
         }
     }
 }

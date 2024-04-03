@@ -15,6 +15,7 @@ import androidx.compose.material.icons.sharp.ArrowForwardIos
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,6 +37,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
+import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.sendMail
 
 private const val ABOUT_URL = "https://softteco.com"
@@ -44,12 +46,18 @@ private const val PRIVACY_POLICY = "https://softteco.com/privacy-policy"
 @Composable
 fun SettingsScreen(
     onBackClicked: () -> Unit,
+    onLicensesClicked: () -> Unit,
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        Analytics.settingsOpened()
+    }
+
     ScreenContent(
         modifier = modifier,
         onBackClicked = onBackClicked,
+        onLicensesClicked = onLicensesClicked,
         setThemeMode = settingsViewModel::setThemeMode,
     )
 }
@@ -58,6 +66,7 @@ fun SettingsScreen(
 @Composable
 private fun ScreenContent(
     onBackClicked: () -> Unit,
+    onLicensesClicked: () -> Unit,
     setThemeMode: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -65,7 +74,6 @@ private fun ScreenContent(
         mutableStateOf(false)
     }
     val context = LocalContext.current
-
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column(
             modifier = Modifier
@@ -128,6 +136,14 @@ private fun ScreenContent(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider()
+                AppListItem(
+                    onClick = onLicensesClicked,
+                    title = stringResource(id = R.string.open_source_licenses),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.open_source_licenses),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Divider()
             }
 
             AppLinkText(
@@ -158,6 +174,6 @@ private fun ScreenContent(
 @Composable
 private fun Preview() {
     AppTheme {
-        ScreenContent(onBackClicked = {}, setThemeMode = {})
+        ScreenContent(onBackClicked = {}, onLicensesClicked = {}, setThemeMode = {})
     }
 }

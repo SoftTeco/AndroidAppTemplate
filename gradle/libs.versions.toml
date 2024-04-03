@@ -6,11 +6,13 @@ minSdk = "26"
 # @keep
 targetSdk = "34"
 
-applicationPlugin = "8.1.0"
+applicationPlugin = "8.1.1"
+ossLicensesPlugin = "0.10.6"
 kotlinAndroidPlugin = "1.9.20"
 ktlinPlugin = "10.2.1"
 detektPlugin = "1.22.0"
 kspPlugin = "1.9.20-1.0.14"
+crashlyticsPlugin = "2.9.9"
 
 ktx = "1.12.0"
 appcompat = "1.6.1"
@@ -51,6 +53,7 @@ kotlinxSerializationConverter = "1.0.0"
 kotlinReflect = "1.9.21"
 firebaseBom = "32.6.0"
 accompanist = "0.30.1"
+playServicesOssLicenses = "17.0.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -86,6 +89,7 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "kotlinxSerializationConverter" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
+play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "testExtJunit" }
@@ -103,6 +107,8 @@ app-cash-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine
 io-kotest-kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
 [plugins]

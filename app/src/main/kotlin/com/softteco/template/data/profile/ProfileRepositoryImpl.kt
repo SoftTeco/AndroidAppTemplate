@@ -1,11 +1,17 @@
 package com.softteco.template.data.profile
 
 import androidx.datastore.core.DataStore
+import com.softteco.template.Constants.REQUEST_RETRY_DELAY
 import com.softteco.template.data.RestCountriesApi
 import com.softteco.template.data.TemplateApi
-import com.softteco.template.data.base.error.ErrorEntity
-import com.softteco.template.data.base.error.ErrorHandler
+import com.softteco.template.data.base.ApiError
+import com.softteco.template.data.base.ApiException
+import com.softteco.template.data.base.ApiSuccess
+import com.softteco.template.data.base.error.AppError
 import com.softteco.template.data.base.error.Result
+import com.softteco.template.data.base.error.handleError
+import com.softteco.template.data.base.map
+import com.softteco.template.data.base.requestWithRetry
 import com.softteco.template.data.profile.dto.AuthTokenDto
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.data.profile.dto.CredentialsDto
@@ -17,13 +23,13 @@ import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 internal class ProfileRepositoryImpl @Inject constructor(
     private val templateApi: TemplateApi,
-    private val errorHandler: ErrorHandler,
     private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>,
     private val userProfileEncryptedDataStore: DataStore<ProfileDto>,
     private val countriesApi: RestCountriesApi,
@@ -31,41 +37,60 @@ internal class ProfileRepositoryImpl @Inject constructor(
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun getUser(): Result<Profile> {
-        return try {
-            val token: String = authTokenEncryptedDataStore.data.first().toModel().token
-            if (token.isEmpty()) return Result.Error(ErrorEntity.Unknown)
-            val authToken = AuthToken(token)
-            var profile = templateApi.getUser(authHeader = authToken.composeHeader()).toModel()
-            val cachedProfile = getCachedProfile()
-            if (cachedProfile is Result.Success) {
-                if (cachedProfile.data.username == profile.username) {
-                    profile = cachedProfile.data
+        val token: String = authTokenEncryptedDataStore.data.first().toModel().token
+        if (token.isEmpty()) {
+            Timber.i("AuthToken not found")
+            return Result.Error(AppError.LocalStorageAppError.AuthTokenNotFound)
+        }
+
+        val authToken = AuthToken(token)
+
+        val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
+            templateApi.getUser(authHeader = authToken.composeHeader())
+        }
+
+        return when (result) {
+            is ApiSuccess -> {
+                var profile = result.data.toModel()
+                val cachedProfile = getCachedProfile()
+                if (cachedProfile is Result.Success) {
+                    if (cachedProfile.data.username == profile.username) {
+                        profile = cachedProfile.data
+                    }
                 }
+                Result.Success(profile)
             }
-            Result.Success(profile)
-        } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+
+            is ApiError -> Result.Error(AppError.AuthError.findByCode(result.errorBody?.code))
+
+            is ApiException -> Result.Error(AppError.NetworkError())
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
-    override suspend fun login(credentials: CredentialsDto): Result<Unit> {
-        return try {
-            val authToken = templateApi.login(credentials).toModel()
-            authTokenEncryptedDataStore.updateData { token -> token.copy(token = authToken.token) }
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+    override suspend fun login(credentials: CredentialsDto): Result<AuthToken> {
+        val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
+            templateApi.login(credentials)
+        }
+        return when (result) {
+            is ApiSuccess -> {
+                val authToken = result.data.toModel()
+                authTokenEncryptedDataStore.updateData { token -> token.copy(token = authToken.token) }
+                Result.Success(authToken)
+            }
+
+            else -> handleError(result.map(AuthTokenDto::toModel))
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun registration(user: CreateUserDto): Result<String> {
-        return try {
-            val newUser = templateApi.registration(user)
-            Result.Success(newUser.email)
-        } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+        val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
+            templateApi.registration(user)
+        }
+        return when (result) {
+            is ApiSuccess -> Result.Success(result.data.email)
+            else -> handleError(result.map { it.toString() })
         }
     }
 
@@ -74,21 +99,23 @@ internal class ProfileRepositoryImpl @Inject constructor(
         resetToken: String,
         newPasswordDto: NewPasswordDto
     ): Result<Unit> {
-        return try {
+        val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
             templateApi.changePassword(resetToken, newPasswordDto)
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+        }
+        return when (result) {
+            is ApiSuccess -> Result.Success(Unit)
+            else -> handleError(result)
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun resetPassword(email: ResetPasswordDto): Result<Unit> {
-        return try {
+        val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
             templateApi.resetPassword(email)
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+        }
+        return when (result) {
+            is ApiSuccess -> Result.Success(Unit)
+            else -> handleError(result)
         }
     }
 
@@ -99,7 +126,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
                 authTokenEncryptedDataStore.data.first().token.isNotEmpty()
             )
         } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+            Timber.e(e)
+            Result.Error(AppError.LocalStorageAppError.AuthTokenNotFound)
         }
     }
 
@@ -120,7 +148,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+            Timber.e(e)
+            Result.Error(AppError.UnknownError())
         }
     }
 
@@ -128,11 +157,15 @@ internal class ProfileRepositoryImpl @Inject constructor(
     override suspend fun getCachedProfile(): Result<Profile> {
         return try {
             val profileJson = userProfileEncryptedDataStore.data.first().toModel().toJson()
-            if (profileJson.isEmpty()) return Result.Error(ErrorEntity.Unknown)
+            if (profileJson.isEmpty()) {
+                Timber.i("Profile is empty")
+                return Result.Error(AppError.UnknownError())
+            }
             val profile = Profile.fromJson(profileJson)
             Result.Success(profile)
         } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+            Timber.e(e)
+            Result.Error(AppError.UnknownError())
         }
     }
 
@@ -142,7 +175,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
             authTokenEncryptedDataStore.updateData { token -> token.copy(token = "") }
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+            Timber.e(e)
+            Result.Error(AppError.UnknownError())
         }
     }
 
@@ -152,7 +186,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
             val countries = countriesApi.getCountryList(name).map { it.name.common }
             Result.Success(countries)
         } catch (e: Exception) {
-            Result.Error(errorHandler.getError(e))
+            Timber.e(e)
+            Result.Error(AppError.UnknownError())
         }
     }
 }

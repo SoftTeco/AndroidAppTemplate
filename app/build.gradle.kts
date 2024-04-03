@@ -3,6 +3,8 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services") version "4.4.0"
+    id("com.google.android.gms.oss-licenses-plugin")
+    id("com.google.firebase.crashlytics")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.kapt)
@@ -106,6 +108,8 @@ dependencies {
 
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.messaging)
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.google.firebase.crashlytics)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
@@ -133,6 +137,9 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.converter)
     implementation(libs.kotlin.reflect)
+
+    implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.oss.licenses)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

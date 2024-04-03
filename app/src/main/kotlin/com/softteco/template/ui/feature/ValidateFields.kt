@@ -1,78 +1,58 @@
 package com.softteco.template.ui.feature
 
 import com.softteco.template.Constants
-import com.softteco.template.ui.feature.ValidateFields.isEmailCorrect
-import com.softteco.template.ui.feature.ValidateFields.isHasCapitalizedLetter
-import com.softteco.template.ui.feature.ValidateFields.isHasMinimum
-import com.softteco.template.utils.AppDispatchers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
+import com.softteco.template.R
+import com.softteco.template.ui.components.FieldState
+import com.softteco.template.ui.components.FieldType
 
-private const val INPUT_DELAY: Long = 600
-
-object ValidateFields {
-
-    fun String.isEmailCorrect(): Boolean {
-        return this.matches(Regex(Constants.EMAIL_PATTERN))
-    }
-
-    fun String.isHasMinimum(): Boolean {
-        return this.matches(Regex(Constants.PASSWORD_PATTERN_MIN))
-    }
-
-    fun String.isHasCapitalizedLetter(): Boolean {
-        return this.matches(Regex(Constants.PASSWORD_PATTERN_CAPITALIZED_LETTER))
+fun String.validateInputValue(fieldType: FieldType): FieldState {
+    return if (isEmpty()) {
+        FieldState.Empty
+    } else {
+        when (fieldType) {
+            FieldType.EMAIL -> validateEmail()
+            FieldType.USERNAME -> validateUsername()
+            FieldType.PASSWORD -> validatePassword()
+        }
     }
 }
 
-sealed class EmailFieldState {
-    object Success : EmailFieldState()
-    object Empty : EmailFieldState()
-    object Waiting : EmailFieldState()
-    object Error : EmailFieldState()
-}
-
-sealed class PasswordFieldState {
-    object Success : PasswordFieldState()
-    object Empty : PasswordFieldState()
-    class Error(val isRightLength: Boolean, val isUppercase: Boolean) : PasswordFieldState()
-}
-
-@OptIn(FlowPreview::class)
-internal fun validateEmail(
-    fieldValue: MutableStateFlow<String>,
-    fieldState: MutableStateFlow<EmailFieldState>,
-    coroutineScope: CoroutineScope,
-    appDispatchers: AppDispatchers
-) {
-    coroutineScope.launch(appDispatchers.ui) {
-        fieldValue
-            .onEach { fieldState.value = EmailFieldState.Waiting }
-            .debounce(INPUT_DELAY.milliseconds).collect { value ->
-                fieldState.value = when {
-                    value.isEmailCorrect() -> EmailFieldState.Success
-                    value.isEmpty() -> EmailFieldState.Empty
-                    else -> EmailFieldState.Error
-                }
-            }
+private fun String.validateEmail(): FieldState {
+    val regex = Constants.EMAIL_PATTERN.toRegex()
+    return if (regex.matches(this)) {
+        FieldState.Valid
+    } else {
+        FieldState.EmailError(R.string.email_not_valid)
     }
 }
 
-internal fun validatePassword(password: String): PasswordFieldState {
+private fun String.validateUsername(): FieldState {
+    val regex = Constants.USERNAME_PATTERN.toRegex()
+    return if (regex.matches(this)) {
+        FieldState.Valid
+    } else {
+        FieldState.UsernameError(R.string.username_not_valid)
+    }
+}
+
+private fun String.validatePassword(): FieldState {
     return when {
-        password.isBlank() -> PasswordFieldState.Empty
-        !password.isHasMinimum() || !password.isHasCapitalizedLetter() -> {
-            PasswordFieldState.Error(
-                isRightLength = password.isHasMinimum(),
-                isUppercase = password.isHasCapitalizedLetter()
+        isEmpty() -> FieldState.Empty
+        !isHasMinimum() || !isHasCapitalizedLetter() -> {
+            FieldState.PasswordError(
+                isRightLength = isHasMinimum(),
+                isUppercase = isHasCapitalizedLetter()
             )
         }
 
-        else -> PasswordFieldState.Success
+        else -> FieldState.Valid
     }
+}
+
+private fun String.isHasMinimum(): Boolean {
+    return this.matches(Regex(Constants.PASSWORD_PATTERN_MIN))
+}
+
+private fun String.isHasCapitalizedLetter(): Boolean {
+    return this.matches(Regex(Constants.PASSWORD_PATTERN_CAPITALIZED_LETTER))
 }
