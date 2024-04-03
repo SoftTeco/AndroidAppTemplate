@@ -1,16 +1,16 @@
 package com.softteco.template.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,18 +23,17 @@ fun CustomBottomSheet(
 ) {
     val sheetState = rememberModalBottomSheetState()
 
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.background
-    ) {
-        if (isSheetOpen) {
-            ModalBottomSheet(sheetState = sheetState, onDismissRequest = { onDismissRequest() }) {
-                ThemeListItem(ThemeMode.SystemDefault, onThemeSelected)
-                Divider()
-                ThemeListItem(ThemeMode.Dark, onThemeSelected)
-                Divider()
-                ThemeListItem(ThemeMode.Light, onThemeSelected)
-            }
+    if (isSheetOpen) {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = { onDismissRequest() },
+            modifier = modifier,
+        ) {
+            ThemeListItem(ThemeMode.SystemDefault, onThemeSelected)
+            Divider(Modifier.padding(horizontal = PaddingDefault))
+            ThemeListItem(ThemeMode.Dark, onThemeSelected)
+            Divider(Modifier.padding(horizontal = PaddingDefault))
+            ThemeListItem(ThemeMode.Light, onThemeSelected)
         }
     }
 }

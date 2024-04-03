@@ -20,7 +20,7 @@
     <string name="success">Success</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="forgot_password">Forgot password</string>
+    <string name="forgot_password">Forgot password?</string>
     <string name="restore_password">Restore password</string>
     <string name="check_email">Check your email</string>
 

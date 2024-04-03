@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,11 +14,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,18 +31,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.ui.theme.Dimens.PaddingDefault
 import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.getHyperLinks
 
@@ -113,10 +110,7 @@ fun ItemView(
     val listOfUrls = getHyperLinks(license.license)
 
     Column(
-        modifier = Modifier
-            .clickable {
-                showDialog = true
-            }
+        modifier = modifier.clickable { showDialog = true }
     ) {
         Text(
             license.name,
@@ -125,48 +119,26 @@ fun ItemView(
                 .padding(vertical = Dimens.PaddingSmall, horizontal = Dimens.PaddingDefault)
                 .fillMaxWidth()
         )
-        Divider()
+
+        Divider(Modifier.padding(horizontal = PaddingDefault))
+
         if (showDialog) {
-            Dialog(
-                onDismissRequest = { showDialog = false }
-            ) {
-                ElevatedCard(
-                    shape = ShapeDefaults.Small,
-                    modifier = Modifier
-                        .padding(vertical = Dimens.PaddingExtraLarge)
-                        .background(MaterialTheme.colorScheme.background)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(
-                                horizontal = Dimens.PaddingNormal,
-                                vertical = Dimens.PaddingNormal
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = license.name,
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(bottom = Dimens.PaddingSmall)
-                        )
-                        AnnotateText(
-                            highlightList = listOfUrls,
-                            originalText = license.license,
-                            modifier = modifier,
-                        )
-                        Text(
-                            text = stringResource(id = R.string.cancel),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier
-                                .padding(top = Dimens.PaddingSmall)
-                                .clickable { showDialog = false }
-                        )
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text(stringResource(R.string.cancel))
                     }
-                }
-            }
+                },
+                title = { Text(license.name) },
+                text = {
+                    AnnotateText(
+                        highlightList = listOfUrls,
+                        originalText = license.license,
+                        modifier = Modifier.padding(top = PaddingDefault),
+                    )
+                },
+            )
         }
     }
 }
@@ -203,9 +175,7 @@ fun AnnotateText(
 
     ClickableText(
         text = annotatedString,
-        style = TextStyle(color = MaterialTheme.colorScheme.onSurface),
-        modifier = modifier
-            .verticalScroll(rememberScrollState()),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         onClick = {
             annotatedString
                 .getStringAnnotations(TAG, it, it)

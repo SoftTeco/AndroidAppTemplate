@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,10 +41,11 @@ internal fun Avatar(
             CircleShape
         ),
         shape = CircleShape,
-        color = if (imageUri != null) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.primary,
     ) {
         val context = LocalContext.current
-        val painter = imageUri?.let { avatar ->
+
+        val painter: Painter? = imageUri?.let { avatar ->
             val imageLoader = ImageLoader.Builder(context)
                 .crossfade(ANIMATION_DURATION)
                 .respectCacheHeaders(respectCacheHeaders)
@@ -50,14 +53,22 @@ internal fun Avatar(
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .build()
             rememberAsyncImagePainter(model = avatar.toUri(), imageLoader = imageLoader)
-        } ?: painterResource(id = R.drawable.baseline_person_24)
+        }
 
         Box(contentAlignment = Alignment.Center) {
-            Image(
-                painter = painter,
-                modifier = Modifier.fillMaxSize(if (imageUri == null) PLACEHOLDER_FRACTION else 1f),
-                contentDescription = stringResource(R.string.avatar),
-            )
+            if (painter != null) {
+                Image(
+                    painter = painter,
+                    contentDescription = stringResource(R.string.avatar),
+                )
+            } else {
+                Icon(
+                    painterResource(R.drawable.baseline_person_24),
+                    contentDescription = stringResource(R.string.avatar),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.fillMaxSize(PLACEHOLDER_FRACTION),
+                )
+            }
         }
     }
 }

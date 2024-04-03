@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,7 +65,6 @@ fun AppTextField(
                     is FieldState.UsernameError -> stringResource(fieldState.errorRes)
                     else -> ""
                 },
-                color = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
             )
         },
         keyboardOptions = KeyboardOptions(

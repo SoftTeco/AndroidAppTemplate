@@ -17,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,7 +67,9 @@ fun PasswordField(
             Text(text = stringResource(id = R.string.password))
         },
         isError = isError,
-        supportingText = { SupportingText(passwordState = fieldStatePassword) },
+        supportingText = {
+            SupportingText(passwordState = fieldStatePassword)
+        },
         trailingIcon = {
             IconButton(onClick = {
                 passwordVisibility = !passwordVisibility
@@ -97,14 +98,14 @@ fun PasswordField(
             onInputComplete()
         }),
         singleLine = true,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-        )
     )
 }
 
 @Composable
-private fun SupportingText(passwordState: FieldState, modifier: Modifier = Modifier) {
+private fun SupportingText(
+    passwordState: FieldState,
+    modifier: Modifier = Modifier
+) {
     Column(modifier.height(48.dp)) {
         when (passwordState) {
             FieldState.Empty -> Text(stringResource(R.string.required))
@@ -112,11 +113,11 @@ private fun SupportingText(passwordState: FieldState, modifier: Modifier = Modif
                 Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall)) {
                     ConditionRow(
                         condition = stringResource(R.string.registration_password_condition1),
-                        check = passwordState.isRightLength
+                        check = passwordState.isRightLength,
                     )
                     ConditionRow(
                         condition = stringResource(R.string.registration_password_condition2),
-                        check = passwordState.isUppercase
+                        check = passwordState.isUppercase,
                     )
                 }
             }

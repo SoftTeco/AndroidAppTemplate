@@ -1,10 +1,7 @@
 package com.softteco.template.ui.feature.login
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,18 +11,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.R
@@ -93,11 +89,6 @@ private fun ScreenContent(
     onSignUpClicked: () -> Unit = {},
     onForgotPasswordClicked: () -> Unit = {}
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val color =
-        if (isPressed) MaterialTheme.colorScheme.inversePrimary else MaterialTheme.colorScheme.primary
-
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
@@ -150,19 +141,9 @@ private fun ScreenContent(
                 onClick = { onSignUpClicked() }
             )
             Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
-            Text(
-                text = stringResource(id = R.string.forgot_password),
-                modifier = Modifier.clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    onForgotPasswordClicked()
-                },
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    textDecoration = TextDecoration.Underline,
-                    color = color
-                )
-            )
+            TextButton(onClick = onForgotPasswordClicked) {
+                Text(stringResource(id = R.string.forgot_password))
+            }
         }
     }
 }
