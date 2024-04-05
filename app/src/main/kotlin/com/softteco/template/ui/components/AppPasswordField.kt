@@ -90,7 +90,7 @@ fun PasswordField(
         },
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Email,
+            keyboardType = KeyboardType.Password,
         ),
         keyboardActions = KeyboardActions(onDone = {
             keyboardController?.hide()

@@ -19,6 +19,8 @@
             android:name="com.softteco.template.MainActivity"
             android:exported="true"
             android:theme="@style/AppTheme.Splash"
+            android:taskAffinity=""
+            android:allowTaskReparenting="false"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
