@@ -1,9 +1,12 @@
 package com.softteco.template.navigation
 
+import android.app.Activity
+import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -45,6 +48,8 @@ fun AppNavHost(
         loginGraph(navController)
         settingsGraph(navController)
     }
+
+    RemoveDeepLink()
 }
 
 fun NavGraphBuilder.bottomBarGraph(
@@ -113,13 +118,21 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
             )
         ) {
             ResetPasswordScreen(
-                onSuccess = { navController.navigate(Screen.Login.route) },
+                onSuccess = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Graph.Login.route) { inclusive = true }
+                    }
+                },
             )
         }
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onBackClicked = { navController.navigateUp() },
-                onSuccess = { navController.navigate(Screen.Login.route) },
+                onSuccess = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Graph.Login.route) { inclusive = true }
+                    }
+                },
                 navigateToSignUp = { navController.navigate(Screen.SignUp.route) },
             )
         }
@@ -134,5 +147,21 @@ fun NavGraphBuilder.settingsGraph(navController: NavController) {
         composable(Screen.OpenSourceLicenses.route) {
             OpenSourceLicensesScreen(onBackClicked = { navController.navigateUp() })
         }
+    }
+}
+
+/*
+ * It looks like the navigation library tries to get a deep link from Intent every time it
+ * recomposes NavHost. This results in an unwanted screen opening on the link.
+ * Removing the link after creating the navigation graph fixes this problem.
+ * Issue: [#161](https://github.com/SoftTeco/AndroidAppTemplate/issues/161);
+ */
+@Composable
+private fun RemoveDeepLink() {
+    val activity = LocalContext.current as? Activity
+    val intent = activity?.intent
+    val isDeepLink = intent?.data?.host == Uri.parse(DEEP_LINK_URI).host
+    if (isDeepLink) {
+        activity?.intent = null
     }
 }
