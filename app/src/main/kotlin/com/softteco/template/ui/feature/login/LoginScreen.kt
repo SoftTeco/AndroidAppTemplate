@@ -65,6 +65,7 @@ fun LoginScreen(
                 }
 
                 Screen.SignUp -> onSignUpClicked()
+                Screen.ForgotPassword -> onForgotPasswordClicked()
 
                 else -> { /*NOOP*/
                 }
@@ -80,7 +81,7 @@ fun LoginScreen(
         state = state,
         onBackClicked = onBackClicked,
         onSignUpClicked = onSignUpClicked,
-        onForgotPasswordClicked = onForgotPasswordClicked
+        onForgotPasswordClicked = { state.onNavClick(Screen.ForgotPassword) }
     )
 }
 

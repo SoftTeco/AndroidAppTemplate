@@ -16,7 +16,7 @@ crashlyticsPlugin = "2.9.9"
 
 ktx = "1.12.0"
 appcompat = "1.6.1"
-lifecycle = "2.6.2"
+lifecycle = "2.7.0"
 hilt = "2.48"
 hiltNavigationCompose = "1.1.0"
 composeBom = "2023.10.01"
@@ -54,12 +54,14 @@ kotlinReflect = "1.9.21"
 firebaseBom = "32.6.0"
 accompanist = "0.30.1"
 playServicesOssLicenses = "17.0.1"
+lifecycleRuntimeCompose = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
