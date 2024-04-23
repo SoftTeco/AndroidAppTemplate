@@ -17,14 +17,14 @@ import androidx.navigation.navigation
 import com.softteco.template.navigation.AppNavHost.DEEP_LINK_URI
 import com.softteco.template.navigation.AppNavHost.RESET_PASSWORD_PATH
 import com.softteco.template.navigation.AppNavHost.RESET_TOKEN_ARG
-import com.softteco.template.ui.feature.forgotPassword.ForgotPasswordScreen
 import com.softteco.template.ui.feature.home.HomeScreen
-import com.softteco.template.ui.feature.login.LoginScreen
-import com.softteco.template.ui.feature.openSourceLicenses.OpenSourceLicensesScreen
+import com.softteco.template.ui.feature.onboarding.login.LoginScreen
+import com.softteco.template.ui.feature.onboarding.password.forgot.ForgotPasswordScreen
+import com.softteco.template.ui.feature.onboarding.password.reset.ResetPasswordScreen
+import com.softteco.template.ui.feature.onboarding.signup.SignUpScreen
 import com.softteco.template.ui.feature.profile.ProfileScreen
-import com.softteco.template.ui.feature.resetPassword.ResetPasswordScreen
 import com.softteco.template.ui.feature.settings.SettingsScreen
-import com.softteco.template.ui.feature.signUp.SignUpScreen
+import com.softteco.template.ui.feature.settings.licences.OpenSourceLicensesScreen
 
 object AppNavHost {
     const val DEEP_LINK_URI = "https://template.softteco.com.deep_link"

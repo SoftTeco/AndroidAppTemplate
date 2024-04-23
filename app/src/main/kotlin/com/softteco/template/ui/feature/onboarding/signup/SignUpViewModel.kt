@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.signUp
+package com.softteco.template.ui.feature.onboarding.signup
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel

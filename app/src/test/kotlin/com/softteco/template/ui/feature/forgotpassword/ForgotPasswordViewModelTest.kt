@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.forgotPassword
+package com.softteco.template.ui.feature.forgotpassword
 
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
@@ -11,6 +11,7 @@ import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
+import com.softteco.template.ui.feature.onboarding.password.forgot.ForgotPasswordViewModel
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe

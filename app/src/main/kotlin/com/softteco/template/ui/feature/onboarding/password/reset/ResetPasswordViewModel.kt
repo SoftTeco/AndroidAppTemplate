@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.resetPassword
+package com.softteco.template.ui.feature.onboarding.password.reset
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle

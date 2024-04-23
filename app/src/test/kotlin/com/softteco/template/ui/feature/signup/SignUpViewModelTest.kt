@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.signUp
+package com.softteco.template.ui.feature.signup
 
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
@@ -11,6 +11,7 @@ import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
+import com.softteco.template.ui.feature.onboarding.signup.SignUpViewModel
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
