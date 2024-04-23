@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.openSourceLicenses
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.utils.Analytics
+import com.softteco.template.utils.LockScreenOrientation
 import com.softteco.template.utils.getHyperLinks
 
 private const val TAG = "URL"
@@ -55,6 +57,8 @@ fun OpenSourceLicensesScreen(
     modifier: Modifier = Modifier,
     viewModel: OpenSourceLicensesViewModel = hiltViewModel(),
 ) {
+    LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+
     val licenses by viewModel.licensesList.collectAsState()
     LaunchedEffect(Unit) {
         Analytics.licensesOpened()

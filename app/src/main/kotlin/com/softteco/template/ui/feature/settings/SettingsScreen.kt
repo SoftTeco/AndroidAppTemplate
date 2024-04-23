@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.settings
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
@@ -39,6 +40,7 @@ import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
 import com.softteco.template.utils.Analytics
+import com.softteco.template.utils.LockScreenOrientation
 import com.softteco.template.utils.sendMail
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,6 +55,8 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+
     LaunchedEffect(Unit) {
         Analytics.settingsOpened()
 

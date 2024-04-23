@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.login
 
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -37,8 +38,11 @@ import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.theme.AppTheme
-import com.softteco.template.ui.theme.Dimens
+import com.softteco.template.ui.theme.Dimens.PaddingDefault
+import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
+import com.softteco.template.ui.theme.Dimens.PaddingNormal
 import com.softteco.template.utils.Analytics
+import com.softteco.template.utils.LockScreenOrientation
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -52,6 +56,8 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
+    LockScreenOrientation(ORIENTATION_PORTRAIT)
+
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -103,7 +109,7 @@ private fun ScreenContent(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+        verticalArrangement = Arrangement.spacedBy(PaddingExtraLarge),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CustomTopAppBar(
@@ -112,8 +118,8 @@ private fun ScreenContent(
             onBackClicked = onBackClicked
         )
         Column(
-            modifier = Modifier.padding(Dimens.PaddingNormal),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingDefault),
+            modifier = Modifier.padding(PaddingNormal),
+            verticalArrangement = Arrangement.spacedBy(PaddingDefault),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppTextField(
@@ -150,7 +156,7 @@ private fun ScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onSignUpClicked() }
             )
-            Spacer(modifier = Modifier.height(Dimens.PaddingDefault))
+            Spacer(modifier = Modifier.height(PaddingDefault))
             Text(
                 text = stringResource(id = R.string.forgot_password),
                 modifier = Modifier.clickable(

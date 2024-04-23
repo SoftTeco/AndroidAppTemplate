@@ -1,5 +1,6 @@
 package com.softteco.template.ui.feature.signUp
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
@@ -10,8 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -39,9 +38,11 @@ import com.softteco.template.ui.components.PasswordField
 import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.TextFieldState
 import com.softteco.template.ui.theme.AppTheme
-import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingDefault
+import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
+import com.softteco.template.ui.theme.Dimens.PaddingNormal
 import com.softteco.template.utils.Analytics
+import com.softteco.template.utils.LockScreenOrientation
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -53,6 +54,8 @@ fun SignUpScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
+    LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -83,14 +86,13 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit,
 ) {
-    val scrollState = rememberScrollState()
     val context = LocalContext.current
 
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraLarge),
+        verticalArrangement = Arrangement.spacedBy(PaddingExtraLarge),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CustomTopAppBar(
@@ -100,9 +102,7 @@ private fun ScreenContent(
             onBackClicked = onBackClicked
         )
         Column(
-            modifier = Modifier
-                .padding(Dimens.PaddingNormal)
-                .verticalScroll(scrollState),
+            modifier = Modifier.padding(PaddingNormal),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

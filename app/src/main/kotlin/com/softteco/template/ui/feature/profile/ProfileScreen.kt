@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.profile
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,6 +68,7 @@ import com.softteco.template.ui.theme.Dimens.PaddingNormal
 import com.softteco.template.ui.theme.Dimens.PaddingSmall
 import com.softteco.template.utils.Analytics
 import com.softteco.template.utils.DateUtils
+import com.softteco.template.utils.LockScreenOrientation
 import java.util.Locale
 
 @Composable
@@ -76,6 +78,8 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
+    LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
