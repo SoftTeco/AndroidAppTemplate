@@ -1,6 +1,7 @@
 package com.softteco.template.ui.feature.settings
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
@@ -30,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.softteco.template.Constants
 import com.softteco.template.Constants.TERMS_OF_SERVICES_URL
 import com.softteco.template.R
+import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.AppLinkText
 import com.softteco.template.ui.components.AppListItem
 import com.softteco.template.ui.components.CustomBottomSheet
@@ -38,7 +40,10 @@ import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.ThemeMode
 import com.softteco.template.utils.Analytics
+import com.softteco.template.utils.LockScreenOrientation
 import com.softteco.template.utils.sendMail
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 private const val ABOUT_URL = "https://softteco.com"
 private const val PRIVACY_POLICY = "https://softteco.com/privacy-policy"
@@ -48,17 +53,23 @@ fun SettingsScreen(
     onBackClicked: () -> Unit,
     onLicensesClicked: () -> Unit,
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+
     LaunchedEffect(Unit) {
         Analytics.settingsOpened()
+
+        viewModel.navDestination.onEach { screen ->
+            if (screen == Screen.OpenSourceLicenses) onLicensesClicked()
+        }.launchIn(this)
     }
 
     ScreenContent(
         modifier = modifier,
         onBackClicked = onBackClicked,
-        onLicensesClicked = onLicensesClicked,
-        setThemeMode = settingsViewModel::setThemeMode,
+        onLicensesClicked = { viewModel.onNavClick(Screen.OpenSourceLicenses) },
+        setThemeMode = viewModel::setThemeMode,
     )
 }
 

@@ -1,5 +1,6 @@
-package com.softteco.template.ui.feature.resetPassword
+package com.softteco.template.ui.feature.onboarding.password.reset
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import com.softteco.template.ui.theme.AppTheme
 import com.softteco.template.ui.theme.Dimens
 import com.softteco.template.ui.theme.Dimens.PaddingExtraLarge
 import com.softteco.template.utils.Analytics
+import com.softteco.template.utils.LockScreenOrientation
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -38,6 +40,8 @@ fun ResetPasswordScreen(
     modifier: Modifier = Modifier,
     viewModel: ResetPasswordViewModel = hiltViewModel()
 ) {
+    LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {

@@ -1,6 +1,8 @@
 package com.softteco.template.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 
@@ -11,4 +13,10 @@ fun Context.sendMail(recipient: String, subject: String) {
         putExtra(Intent.EXTRA_SUBJECT, subject)
         startActivity(this)
     }
+}
+
+fun Context.getActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.getActivity()
+    else -> null
 }

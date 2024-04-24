@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.openSourceLicenses
+package com.softteco.template.ui.feature.settings.licences
 
 import android.app.Application
 import android.content.Context

@@ -13,6 +13,7 @@ import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.dialog.DialogController
 import com.softteco.template.ui.components.snackbar.SnackbarController
+import com.softteco.template.ui.feature.onboarding.login.LoginViewModel
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery

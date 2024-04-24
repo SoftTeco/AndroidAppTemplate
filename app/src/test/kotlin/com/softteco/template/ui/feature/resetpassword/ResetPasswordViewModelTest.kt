@@ -1,4 +1,4 @@
-package com.softteco.template.ui.feature.resetPassword
+package com.softteco.template.ui.feature.resetpassword
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
@@ -12,6 +12,7 @@ import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
+import com.softteco.template.ui.feature.onboarding.password.reset.ResetPasswordViewModel
 import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
