@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="E2E" type="JUnit" factoryName="JUnit">
+    <module name="Template.app.androidTest" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="jbr-17" />
+    <option name="PACKAGE_NAME" value="com.softteco.template" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="pattern" />
+    <option name="TEST_SEARCH_SCOPE">
+      <value defaultName="moduleWithDependencies" />
+    </option>
+    <dir value="./src/androidTest/e2e" />
+    <category value="com.softteco.template.LogInTest" />
+    <patterns>
+      <pattern testClass="com.softteco.template.LogInTest" />
+      <pattern testClass="com.softteco.template.SignUpTest" />
+    </patterns>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

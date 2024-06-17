@@ -6,7 +6,7 @@ minSdk = "26"
 # @keep
 targetSdk = "34"
 
-applicationPlugin = "8.1.1"
+applicationPlugin = "8.2.2"
 ossLicensesPlugin = "0.10.6"
 kotlinAndroidPlugin = "1.9.20"
 ktlinPlugin = "10.2.1"
@@ -26,13 +26,15 @@ composeActivity = "1.8.1"
 composeMaterial3 = "1.1.2"
 splashscreen = "1.0.1"
 junit = "4.13.2"
-junit5 = "5.9.3"
-junit5Plugin = "1.9.3.0"
+junit5 = "5.10.2"
+junit5Plugin = "1.10.0.0"
 kotlinTestCoroutines = "1.7.3"
 testExtJunit = "1.1.5"
 espresso = "3.5.1"
-composeUiTestManifest = "1.5.4"
+composeUiTestManifest = "1.6.8"
+appiumClient = "9.2.3"
 mockk = "1.13.8"
+truth = "1.4.2"
 turbine = "1.0.0"
 kotest = "5.6.2"
 composeDetektRules = "0.0.26"
@@ -112,6 +114,8 @@ google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-k
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+io-appium-client = { module = "io.appium:java-client", version.ref = "appiumClient" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "applicationPlugin" }
