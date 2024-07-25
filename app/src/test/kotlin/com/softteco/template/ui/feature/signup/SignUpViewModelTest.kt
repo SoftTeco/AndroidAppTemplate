@@ -70,7 +70,7 @@ class SignUpViewModelTest : BaseTest() {
                     onRegisterClicked()
                 }
 
-                snackbarController.snackbars.value shouldContain SnackbarState(R.string.success)
+                snackbarController.snackbars.value shouldContain SnackbarState(R.string.success_signup)
             }
 
             launch { navDestination.await() shouldBe Screen.Login }
