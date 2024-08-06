@@ -37,6 +37,7 @@ android {
             }
         }
         android.buildFeatures.buildConfig = true
+//        testInstrumentationRunnerArguments["notPackage"] = "src/androidTest/e2e"
     }
 
     buildTypes {
@@ -84,6 +85,11 @@ android {
     testOptions {
         packaging {
             jniLibs { useLegacyPackaging = true }
+        }
+    }
+    sourceSets {
+        getByName("androidTest") {
+            kotlin.srcDirs("src/androidTest/e2e")
         }
     }
 }
@@ -143,6 +149,13 @@ dependencies {
     implementation(libs.play.services.oss.licenses)
 
     testImplementation(libs.junit)
+    testImplementation(libs.org.jetbrains.kotlinx.coroutines.test)
+    testImplementation(libs.org.junit.jupiter.jupiter)
+    testImplementation(libs.org.junit.vintage.engine)
+    testImplementation(libs.io.mockk.mockk)
+    testImplementation(libs.app.cash.turbine)
+    testImplementation(libs.io.kotest.kotest.assertions)
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -150,14 +163,12 @@ dependencies {
     androidTestImplementation(libs.io.mockk.mockk.android)
     androidTestImplementation(libs.io.mockk.mockk.agent)
     androidTestImplementation(libs.org.junit.jupiter.jupiter)
+    androidTestImplementation(libs.io.appium.client)
+    androidTestImplementation(libs.truth)
+
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    testImplementation(libs.org.jetbrains.kotlinx.coroutines.test)
-    testImplementation(libs.org.junit.jupiter.jupiter)
-    testImplementation(libs.org.junit.vintage.engine)
-    testImplementation(libs.io.mockk.mockk)
-    testImplementation(libs.app.cash.turbine)
-    testImplementation(libs.io.kotest.kotest.assertions)
+
 }
 
 tasks.withType<Test> {
