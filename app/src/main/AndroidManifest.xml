@@ -33,7 +33,8 @@
 
                 <data android:scheme="https" />
                 <data android:scheme="http" />
-                <data android:host="template.softteco.com.deep_link" />
+                <data android:scheme="tmplt" />
+                <data android:host="template.softteco.com.deep_link"/>
             </intent-filter>
         </activity>
         <service
