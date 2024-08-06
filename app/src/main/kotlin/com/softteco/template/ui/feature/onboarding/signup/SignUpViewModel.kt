@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
 import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
+import com.softteco.template.data.base.error.AppError.AuthError.InvalidUsername
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldState.EmailError
+import com.softteco.template.ui.components.FieldState.UsernameError
 import com.softteco.template.ui.components.FieldState.Valid
 import com.softteco.template.ui.components.FieldType
 import com.softteco.template.ui.components.TextFieldState
@@ -115,17 +117,31 @@ class SignUpViewModel @Inject constructor(
 
             when (result) {
                 is Result.Success -> {
-                    snackbarController.showSnackbar(R.string.success)
+                    snackbarController.showSnackbar(R.string.success_signup)
                     _navDestination.tryEmit(Screen.Login)
                 }
 
                 is Result.Error -> {
-                    if (result.error == InvalidEmail) {
-                        usernameState.update {
-                            TextFieldState(
-                                it.text,
-                                EmailError(R.string.email_not_valid)
-                            )
+                    when (result.error) {
+                        InvalidUsername -> {
+                            usernameState.update {
+                                TextFieldState(
+                                    it.text,
+                                    EmailError(R.string.username_not_valid)
+                                )
+                            }
+                        }
+
+                        InvalidEmail -> {
+                            emailState.update {
+                                TextFieldState(
+                                    it.text,
+                                    UsernameError(R.string.email_not_valid)
+                                )
+                            }
+                        }
+
+                        else -> { /*NOOP*/
                         }
                     }
                     snackbarController.showSnackbar(result.error.messageRes)

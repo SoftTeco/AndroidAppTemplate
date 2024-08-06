@@ -35,6 +35,7 @@
     <string name="error_email_not_found">No user found with this email. Please sign up for an account.</string>
     <string name="error_network">Check your internet connection and try again.</string>
     <string name="error_unknown">Something went wrong. We are already looking into it. Please try again later or contact our support team if the error persists.</string>
+    <string name="error_unconfirmed_user">Your account is not confirmed yet. Please click the link in the confirmation email we sent you.</string>
     <string name="dialog_user_not_found_title">User not found</string>
     <string name="dialog_user_not_found_message">No user with this e-mail address was found. Do you want to register a new account?</string>
 
@@ -66,4 +67,5 @@
     <!-- Sign up screen -->
     <string name="accept_terms_conditions">I have read and accept the\u0020</string>
     <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="success_signup">Thank you for signing up! We sent a confirmation email to you.</string>
 </resources>

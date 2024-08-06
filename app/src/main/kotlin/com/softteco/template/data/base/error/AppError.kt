@@ -29,6 +29,7 @@ sealed class AppError(val messageRes: Int) {
 
         data object EmailInUse : AuthError("email_in_use", R.string.error_email_already_exists)
         data object EmailNotExist : AuthError("email_not_exist", R.string.error_email_not_found)
+        data object UnconfirmedUser : AuthError("unconfirmed_user", R.string.error_unconfirmed_user)
 
         companion object {
             private fun values() = listOf(
@@ -39,7 +40,8 @@ sealed class AppError(val messageRes: Int) {
                 InvalidToken,
                 UnavailableUsername,
                 EmailInUse,
-                EmailNotExist
+                EmailNotExist,
+                UnconfirmedUser,
             )
 
             fun findByCode(code: String?): AppError {
