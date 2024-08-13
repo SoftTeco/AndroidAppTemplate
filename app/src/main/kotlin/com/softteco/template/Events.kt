@@ -12,4 +12,5 @@ object Events {
     const val SIGN_UP_SUCCESS = "sign_up_success"
     const val LOG_IN_SUCCESS = "log_in_success"
     const val RESET_PASSWORD_SUCCESS = "reset_password_success"
+    const val NAVIGATION_OPENED = "navigation_opened"
 }

@@ -1,5 +1,6 @@
 package com.softteco.template.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -19,6 +20,8 @@ import com.softteco.template.ui.theme.AppTheme
 
 @Composable
 fun PermissionDialog(
+    @StringRes titleRes: Int,
+    @StringRes descriptionRes: Int,
     modifier: Modifier = Modifier,
     onRequestPermission: () -> Unit = {}
 ) {
@@ -27,8 +30,8 @@ fun PermissionDialog(
     if (showWarningDialog) {
         AlertDialog(
             modifier = modifier.fillMaxWidth(),
-            title = { Text(text = stringResource(id = R.string.notification_permission_title)) },
-            text = { Text(text = stringResource(id = R.string.notification_permission_description)) },
+            title = { Text(text = stringResource(id = titleRes)) },
+            text = { Text(text = stringResource(id = descriptionRes)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -40,7 +43,7 @@ fun PermissionDialog(
 
                         contentColor = Color.White
                     )
-                ) { Text(text = stringResource(id = R.string.request_notification_permission)) }
+                ) { Text(text = stringResource(id = R.string.request_permission)) }
             },
             onDismissRequest = { }
         )
@@ -48,7 +51,11 @@ fun PermissionDialog(
 }
 
 @Composable
-fun RationaleDialog(modifier: Modifier = Modifier) {
+fun RationaleDialog(
+    @StringRes titleRes: Int,
+    @StringRes descriptionRes: Int,
+    modifier: Modifier = Modifier,
+) {
     var showWarningDialog by remember { mutableStateOf(true) }
 
     if (showWarningDialog) {
@@ -56,10 +63,10 @@ fun RationaleDialog(modifier: Modifier = Modifier) {
             modifier = modifier.fillMaxWidth(),
             title = {
                 Text(
-                    text = stringResource(id = R.string.notification_permission_title)
+                    text = stringResource(id = titleRes)
                 )
             },
-            text = { Text(text = stringResource(id = R.string.notification_permission_description)) },
+            text = { Text(text = stringResource(id = descriptionRes)) },
             confirmButton = {
                 Button(
                     onClick = { showWarningDialog = false },
@@ -78,7 +85,10 @@ fun RationaleDialog(modifier: Modifier = Modifier) {
 @Composable
 private fun Preview() {
     AppTheme {
-        PermissionDialog {
+        PermissionDialog(
+            titleRes = R.string.location_permission_title,
+            descriptionRes = R.string.location_permission_description
+        ) {
         }
     }
 }

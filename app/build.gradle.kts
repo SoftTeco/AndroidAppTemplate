@@ -142,6 +142,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.oss.licenses)
 
+    implementation(libs.mapbox.androidauto)
+    implementation(libs.mapbox.ui.dropin)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

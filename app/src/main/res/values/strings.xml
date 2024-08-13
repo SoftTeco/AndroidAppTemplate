@@ -23,6 +23,7 @@
     <string name="forgot_password">Forgot password</string>
     <string name="restore_password">Restore password</string>
     <string name="check_email">Check your email</string>
+    <string name="navigation">Navigation</string>
 
     <!-- Error messages -->
     <string name="error_wrong_credentials">Incorrect email or password. Please check the data and try again.</string>
@@ -62,10 +63,14 @@
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="notification_permission_title">Notification permission</string>
     <string name="notification_permission_description">The notification permission is important for this app. Please grant the permission.</string>
-    <string name="request_notification_permission">Request permission</string>
+    <string name="request_permission">Request permission</string>
 
     <!-- Sign up screen -->
     <string name="accept_terms_conditions">I have read and accept the\u0020</string>
     <string name="terms_conditions">Terms &amp; Conditions</string>
     <string name="success_signup">Thank you for signing up! We sent a confirmation email to you.</string>
+
+    <!-- Location permission -->
+    <string name="location_permission_title">Location permission</string>
+    <string name="location_permission_description">The location permission is important for this app. Please grant the permission.</string>
 </resources>

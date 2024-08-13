@@ -1,3 +1,18 @@
+import java.util.Properties
+
+fun loadLocalProperties(): Properties {
+    val properties = Properties()
+    val localPropertiesFile = rootDir.resolve("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { properties.load(it) }
+    } else {
+        throw GradleException("local.properties not found")
+    }
+    return properties
+}
+
+val localProperties = loadLocalProperties()
+
 pluginManagement {
     resolutionStrategy {
         eachPlugin {
@@ -18,6 +33,16 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+            credentials {
+                username = "mapbox"
+                password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
     }
 }
 
