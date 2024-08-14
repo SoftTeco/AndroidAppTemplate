@@ -55,6 +55,8 @@ firebaseBom = "32.6.0"
 accompanist = "0.30.1"
 playServicesOssLicenses = "17.0.1"
 lifecycleRuntimeCompose = "2.7.0"
+androidauto = "0.18.1"
+uiDropin = "2.9.5"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
@@ -112,6 +114,8 @@ google-firebase-messaging = { module = "com.google.firebase:firebase-messaging-k
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+mapbox-androidauto = { module = "com.mapbox.navigation:ui-androidauto", version.ref = "androidauto"}
+mapbox-ui-dropin = { module = "com.mapbox.navigation:ui-dropin", version.ref = "uiDropin"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "applicationPlugin" }

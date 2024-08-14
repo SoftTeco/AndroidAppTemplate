@@ -29,7 +29,7 @@ fun AppBottomBar(
     val currentDestination: NavDestination? = navBackStackEntry?.destination
 
     when (navBackStackEntry?.destination?.route) {
-        Screen.Profile.route, Screen.Home.route, Screen.Settings.route -> {
+        Screen.Profile.route, Screen.Home.route, Screen.Settings.route, Screen.Navigation.route -> {
             bottomBarState.value = true
         }
 

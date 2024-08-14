@@ -18,6 +18,7 @@ import com.softteco.template.navigation.AppNavHost.DEEP_LINK_URI
 import com.softteco.template.navigation.AppNavHost.RESET_PASSWORD_PATH
 import com.softteco.template.navigation.AppNavHost.RESET_TOKEN_ARG
 import com.softteco.template.ui.feature.home.HomeScreen
+import com.softteco.template.ui.feature.navigation.NavigationScreen
 import com.softteco.template.ui.feature.onboarding.login.LoginScreen
 import com.softteco.template.ui.feature.onboarding.password.forgot.ForgotPasswordScreen
 import com.softteco.template.ui.feature.onboarding.password.reset.ResetPasswordScreen
@@ -79,6 +80,12 @@ fun NavGraphBuilder.bottomBarGraph(
                 modifier = modifier,
                 onBackClicked = { navController.navigateUp() },
                 onLicensesClicked = { navController.navigate(Screen.OpenSourceLicenses.route) }
+            )
+        }
+        composable(Screen.Navigation.route) {
+            NavigationScreen(
+                modifier = modifier,
+                onBackClicked = { navController.popBackStack() },
             )
         }
     }

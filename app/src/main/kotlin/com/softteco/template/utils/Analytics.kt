@@ -53,4 +53,8 @@ object Analytics {
     fun resetPasswordSuccess() {
         provider?.logEvent(Events.RESET_PASSWORD_SUCCESS)
     }
+
+    fun navigationOpened() {
+        provider?.logEvent(Events.NAVIGATION_OPENED)
+    }
 }
