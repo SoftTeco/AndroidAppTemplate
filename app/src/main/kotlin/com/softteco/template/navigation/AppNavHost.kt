@@ -94,7 +94,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController, modifier: Modifier 
                 onBackClicked = { navController.navigateUp() },
                 onSuccess = {
                     navController.navigate(Graph.BottomBar.route) {
-                        popUpTo(Graph.BottomBar.route) { inclusive = true }
+                        popUpTo(Graph.Login.route) { inclusive = true }
                     }
                 },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
