@@ -74,7 +74,6 @@ import java.util.Locale
 @Composable
 fun ProfileScreen(
     onBackClicked: () -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -87,9 +86,7 @@ fun ProfileScreen(
     }
 
     LaunchedEffect(state.profileState) {
-        if (state.profileState is ProfileViewModel.GetProfileState.Logout) {
-            onLogout()
-        } else if (state.profileState == ProfileViewModel.GetProfileState.Error) onBackClicked()
+        if (state.profileState == ProfileViewModel.GetProfileState.Error) onBackClicked()
     }
 
     val pickMediaLauncher = rememberLauncherForActivityResult(

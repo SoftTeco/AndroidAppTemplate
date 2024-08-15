@@ -7,10 +7,11 @@ import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.data.profile.entity.Profile
+import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
 
-    suspend fun getUser(): Result<Profile>
+    fun getUser(): Flow<Result<Profile>>
 
     suspend fun login(credentials: CredentialsDto): Result<AuthToken>
 

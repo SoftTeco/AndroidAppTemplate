@@ -100,7 +100,7 @@ class LoginViewModel @Inject constructor(
             val result = repository.login(credentials)
 
             when (result) {
-                is Result.Success -> _navDestination.tryEmit(Screen.Home)
+                is Result.Success -> {}
 
                 is Result.Error -> {
                     when (result.error) {

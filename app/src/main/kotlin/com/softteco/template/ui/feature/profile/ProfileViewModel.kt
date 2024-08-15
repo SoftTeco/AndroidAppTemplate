@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -61,7 +62,7 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(appDispatchers.io) {
-            profileRepository.getUser().let { result ->
+            profileRepository.getUser().first().let { result ->
                 profileState.value = when (result) {
                     is Result.Success -> GetProfileState.Success(result.data)
 
