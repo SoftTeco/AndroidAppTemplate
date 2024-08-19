@@ -44,14 +44,14 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        bottomBarGraph(navController, Modifier.padding(paddingValues))
+        mainGraph(navController, Modifier.padding(paddingValues))
         loginGraph(navController, Modifier.padding(paddingValues))
     }
 
     RemoveDeepLink()
 }
 
-fun NavGraphBuilder.bottomBarGraph(
+fun NavGraphBuilder.mainGraph(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
