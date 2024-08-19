@@ -69,6 +69,9 @@ class ProfileViewModel @Inject constructor(
                     is Result.Error -> {
                         snackbarController.showSnackbar(result.error.messageRes)
                         if (result.error == InvalidToken || result.error == AuthTokenNotFound) {
+                            // could be moved to more proper place,
+                            // will be resolved as separate feature
+                            profileRepository.logout()
                             GetProfileState.Logout
                         } else {
                             GetProfileState.Error
