@@ -1,12 +1,22 @@
 package com.softteco.template.ui.feature.login
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
+import com.softteco.template.MainViewModel
 import com.softteco.template.R
+import com.softteco.template.data.RestCountriesApi
+import com.softteco.template.data.TemplateApi
+import com.softteco.template.data.base.ApiSuccess
 import com.softteco.template.data.base.error.AppError
 import com.softteco.template.data.base.error.Result
 import com.softteco.template.data.profile.ProfileRepository
+import com.softteco.template.data.profile.ProfileRepositoryImpl
+import com.softteco.template.data.profile.dto.AuthTokenDto
 import com.softteco.template.data.profile.dto.CredentialsDto
+import com.softteco.template.data.profile.dto.ProfileDto
+import com.softteco.template.data.profile.dto.toModel
 import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
@@ -18,10 +28,12 @@ import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -41,13 +53,41 @@ class LoginViewModelTest : BaseTest() {
     private val snackbarController = SnackbarController()
     private val dialogController = DialogController()
 
+    @RelaxedMockK
+    private lateinit var tokenStore: DataStore<AuthTokenDto>
+
+    @RelaxedMockK
+    private lateinit var profileStore: DataStore<ProfileDto>
+
+    @RelaxedMockK
+    private lateinit var preferencesStore: DataStore<Preferences>
+
+    @MockK
+    private lateinit var templateApi: TemplateApi
+
+    @MockK
+    private lateinit var restCountriesApi: RestCountriesApi
+
     @Test
-    fun `when login success then navigate to home`() {
+    fun `when login success then data saved to data store`() {
         runTest {
             val credentials = CredentialsDto(email = EMAIL, password = PASSWORD)
+            val authTokenDto = AuthTokenDto("_token")
+
+            val repository = ProfileRepositoryImpl(
+                templateApi,
+                tokenStore,
+                profileStore,
+                restCountriesApi
+            )
+
             coEvery {
-                repository.login(credentials)
-            } returns Result.Success(AuthToken("token_"))
+                tokenStore.updateData { authTokenDto }
+            } returns authTokenDto
+
+            coEvery {
+                templateApi.login(credentials)
+            } returns ApiSuccess(200, AuthTokenDto("token"))
 
             viewModel = LoginViewModel(
                 repository,
@@ -55,8 +95,6 @@ class LoginViewModelTest : BaseTest() {
                 snackbarController,
                 dialogController
             )
-
-            val navDestination = async { viewModel.navDestination.first() }
 
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
@@ -69,11 +107,49 @@ class LoginViewModelTest : BaseTest() {
                 cancelAndConsumeRemainingEvents()
             }
 
-            launch {
-                navDestination.await() shouldBe Screen.Home
+            coVerify(exactly = 1) { tokenStore.updateData(any()) }
+            coVerify(exactly = 1) { templateApi.login(credentials) }
+        }
+    }
+
+    @Test
+    fun `when auth data saved to datastore then user is logged in`() {
+        runTest {
+            val authTokenDto = AuthTokenDto("_token")
+            val profile = ProfileDto(1, username = "test", email = "", createdAt = "")
+
+            val repository = ProfileRepositoryImpl(
+                templateApi,
+                tokenStore,
+                profileStore,
+                restCountriesApi
+            )
+
+            coEvery {
+                tokenStore.data
+            } returns flowOf(authTokenDto)
+
+            coEvery {
+                templateApi.getUser(authTokenDto.toModel().composeHeader())
+            } returns ApiSuccess(200, profile)
+
+            coEvery {
+                profileStore.data
+            } returns flowOf(profile)
+
+            val mainViewModel = MainViewModel(
+                dataStore = preferencesStore,
+                appDispatchers = appDispatchers,
+                profileRepository = repository,
+            )
+
+            mainViewModel.isUserLoggedIn.test {
+                awaitItem() shouldBe true
             }
 
-            coVerify(exactly = 1) { repository.login(credentials) }
+            coVerify(exactly = 1) { tokenStore.data }
+            coVerify(exactly = 1) { profileStore.data }
+            coVerify(exactly = 1) { templateApi.getUser(any()) }
         }
     }
 

@@ -50,7 +50,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun LoginScreen(
     onBackClicked: () -> Unit,
-    onSuccess: () -> Unit,
     onSignUpClicked: () -> Unit,
     onForgotPasswordClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -67,7 +66,6 @@ fun LoginScreen(
             when (screen) {
                 Screen.Home -> {
                     Analytics.logInSuccess()
-                    onSuccess()
                 }
 
                 Screen.SignUp -> onSignUpClicked()

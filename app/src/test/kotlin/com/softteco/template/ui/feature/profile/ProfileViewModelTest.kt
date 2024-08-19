@@ -12,10 +12,12 @@ import com.softteco.template.utils.MainDispatcherExtension
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
-import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -32,9 +34,11 @@ class ProfileViewModelTest : BaseTest() {
     @Test
     fun `when screen is open and data isn't received then loading is shown`() {
         runTest {
-            coEvery { profileRepository.getUser() } coAnswers {
-                delay(1.seconds) // emulation a delay in receiving data
-                Result.Success(testProfile)
+            every { profileRepository.getUser() } answers {
+                flow {
+                    delay(1.seconds)
+                    emit(Result.Success(testProfile))
+                }
             }
 
             viewModel = ProfileViewModel(
@@ -52,7 +56,9 @@ class ProfileViewModelTest : BaseTest() {
     @Test
     fun `when screen is open and data received then profile data is shown`() {
         runTest {
-            coEvery { profileRepository.getUser() } returns Result.Success(testProfile)
+            every { profileRepository.getUser() } answers {
+                flowOf(Result.Success(testProfile))
+            }
 
             viewModel = ProfileViewModel(
                 profileRepository,
@@ -74,7 +80,9 @@ class ProfileViewModelTest : BaseTest() {
     fun `when screen is open and network error happened then snackbar is shown`() {
         runTest {
             val error = AppError.NetworkError()
-            coEvery { profileRepository.getUser() } returns Result.Error(error)
+            every { profileRepository.getUser() } answers {
+                flowOf(Result.Error(error))
+            }
 
             viewModel = ProfileViewModel(
                 profileRepository,

@@ -56,11 +56,13 @@ class MainActivity : ComponentActivity() {
 
             key(isUserLoggedIn) {
                 AppTheme(theme) {
-                    when (isUserLoggedIn) {
-                        true -> AppContent(Graph.BottomBar.route, snackbarController, dialogController)
-                        false -> AppContent(Graph.Login.route, snackbarController, dialogController)
-                        null -> { /*NOOP*/
-                        }
+                    isUserLoggedIn?.let { isLoggedIn ->
+                        val graph = if (isLoggedIn) Graph.Main else Graph.Login
+                        AppContent(
+                            startDestination = graph.route,
+                            snackbarController = snackbarController,
+                            dialogController = dialogController
+                        )
                     }
                 }
             }

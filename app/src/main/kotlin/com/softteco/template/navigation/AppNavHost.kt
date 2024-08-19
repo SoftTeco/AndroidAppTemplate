@@ -44,21 +44,20 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        bottomBarGraph(navController, Modifier.padding(paddingValues))
+        mainGraph(navController, Modifier.padding(paddingValues))
         loginGraph(navController, Modifier.padding(paddingValues))
-        settingsGraph(navController, Modifier.padding(paddingValues))
     }
 
     RemoveDeepLink()
 }
 
-fun NavGraphBuilder.bottomBarGraph(
+fun NavGraphBuilder.mainGraph(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
     navigation(
         startDestination = Screen.Home.route,
-        route = Graph.BottomBar.route
+        route = Graph.Main.route
     ) {
         composable(Screen.Home.route) {
             HomeScreen(modifier = modifier)
@@ -67,11 +66,6 @@ fun NavGraphBuilder.bottomBarGraph(
             ProfileScreen(
                 modifier = modifier,
                 onBackClicked = { navController.popBackStack() },
-                onLogout = {
-                    navController.navigate(Graph.Login.route) {
-                        popUpTo(Graph.BottomBar.route) { inclusive = true }
-                    }
-                },
             )
         }
         composable(Screen.Settings.route) {
@@ -79,6 +73,12 @@ fun NavGraphBuilder.bottomBarGraph(
                 modifier = modifier,
                 onBackClicked = { navController.navigateUp() },
                 onLicensesClicked = { navController.navigate(Screen.OpenSourceLicenses.route) }
+            )
+        }
+        composable(Screen.OpenSourceLicenses.route) {
+            OpenSourceLicensesScreen(
+                onBackClicked = { navController.navigateUp() },
+                modifier = modifier,
             )
         }
     }
@@ -92,11 +92,6 @@ fun NavGraphBuilder.loginGraph(navController: NavController, modifier: Modifier 
         composable(Screen.Login.route) {
             LoginScreen(
                 onBackClicked = { navController.navigateUp() },
-                onSuccess = {
-                    navController.navigate(Graph.BottomBar.route) {
-                        popUpTo(Graph.BottomBar.route) { inclusive = true }
-                    }
-                },
                 onSignUpClicked = { navController.navigate(Screen.SignUp.route) },
                 onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) },
                 modifier = modifier,
@@ -135,20 +130,6 @@ fun NavGraphBuilder.loginGraph(navController: NavController, modifier: Modifier 
                     }
                 },
                 navigateToSignUp = { navController.navigate(Screen.SignUp.route) },
-                modifier = modifier,
-            )
-        }
-    }
-}
-
-fun NavGraphBuilder.settingsGraph(navController: NavController, modifier: Modifier = Modifier) {
-    navigation(
-        startDestination = Screen.Settings.route,
-        route = Graph.Settings.route,
-    ) {
-        composable(Screen.OpenSourceLicenses.route) {
-            OpenSourceLicensesScreen(
-                onBackClicked = { navController.navigateUp() },
                 modifier = modifier,
             )
         }

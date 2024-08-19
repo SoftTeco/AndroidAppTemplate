@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -61,13 +62,16 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(appDispatchers.io) {
-            profileRepository.getUser().let { result ->
+            profileRepository.getUser().first().let { result ->
                 profileState.value = when (result) {
                     is Result.Success -> GetProfileState.Success(result.data)
 
                     is Result.Error -> {
                         snackbarController.showSnackbar(result.error.messageRes)
                         if (result.error == InvalidToken || result.error == AuthTokenNotFound) {
+                            // could be moved to more proper place,
+                            // will be resolved as separate feature
+                            profileRepository.logout()
                             GetProfileState.Logout
                         } else {
                             GetProfileState.Error

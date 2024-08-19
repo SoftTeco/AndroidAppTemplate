@@ -22,7 +22,10 @@ import com.softteco.template.data.profile.dto.toModel
 import com.softteco.template.data.profile.entity.AuthToken
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,35 +38,36 @@ internal class ProfileRepositoryImpl @Inject constructor(
     private val countriesApi: RestCountriesApi,
 ) : ProfileRepository {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Suppress("TooGenericExceptionCaught")
-    override suspend fun getUser(): Result<Profile> {
-        val token: String = authTokenEncryptedDataStore.data.first().toModel().token
+    override fun getUser(): Flow<Result<Profile>> = authTokenEncryptedDataStore.data.mapLatest {
+        val token: String = it.toModel().token
         if (token.isEmpty()) {
             Timber.i("AuthToken not found")
-            return Result.Error(AppError.LocalStorageAppError.AuthTokenNotFound)
-        }
+            Result.Error(AppError.LocalStorageAppError.AuthTokenNotFound)
+        } else {
+            val authToken = AuthToken(token)
 
-        val authToken = AuthToken(token)
-
-        val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
-            templateApi.getUser(authHeader = authToken.composeHeader())
-        }
-
-        return when (result) {
-            is ApiSuccess -> {
-                var profile = result.data.toModel()
-                val cachedProfile = getCachedProfile()
-                if (cachedProfile is Result.Success) {
-                    if (cachedProfile.data.username == profile.username) {
-                        profile = cachedProfile.data
-                    }
-                }
-                Result.Success(profile)
+            val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
+                templateApi.getUser(authHeader = authToken.composeHeader())
             }
 
-            is ApiError -> Result.Error(AppError.AuthError.findByCode(result.errorBody?.code))
+            when (result) {
+                is ApiSuccess -> {
+                    var profile = result.data.toModel()
+                    val cachedProfile = getCachedProfile()
+                    if (cachedProfile is Result.Success) {
+                        if (cachedProfile.data.username == profile.username) {
+                            profile = cachedProfile.data
+                        }
+                    }
+                    Result.Success(profile)
+                }
 
-            is ApiException -> Result.Error(AppError.NetworkError())
+                is ApiError -> Result.Error(AppError.AuthError.findByCode(result.errorBody?.code))
+
+                is ApiException -> Result.Error(AppError.NetworkError())
+            }
         }
     }
 
