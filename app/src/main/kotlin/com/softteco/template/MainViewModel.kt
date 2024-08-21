@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.softteco.template.data.profile.ProfileRepository
+import com.softteco.template.data.profile.repository.ProfileRepository
 import com.softteco.template.ui.feature.settings.PreferencesKeys
 import com.softteco.template.ui.theme.ThemeMode
 import com.softteco.template.utils.AppDispatchers

@@ -1,4 +1,4 @@
-package com.softteco.template.data.profile.entity
+package com.softteco.template.data.auth.entity
 
 private const val TOKEN_SCHEME = "Bearer"
 

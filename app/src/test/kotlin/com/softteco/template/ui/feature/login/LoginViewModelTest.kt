@@ -6,18 +6,20 @@ import app.cash.turbine.test
 import com.softteco.template.BaseTest
 import com.softteco.template.MainViewModel
 import com.softteco.template.R
-import com.softteco.template.data.RestCountriesApi
-import com.softteco.template.data.TemplateApi
+import com.softteco.template.data.auth.AuthApi
+import com.softteco.template.data.auth.dto.AuthTokenDto
+import com.softteco.template.data.auth.dto.toModel
+import com.softteco.template.data.auth.entity.AuthToken
+import com.softteco.template.data.auth.repository.AuthRepository
+import com.softteco.template.data.auth.repository.AuthRepositoryImpl
 import com.softteco.template.data.base.ApiSuccess
 import com.softteco.template.data.base.error.AppError
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.ProfileRepositoryImpl
-import com.softteco.template.data.profile.dto.AuthTokenDto
+import com.softteco.template.data.profile.ProfileApi
+import com.softteco.template.data.profile.RestCountriesApi
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.data.profile.dto.ProfileDto
-import com.softteco.template.data.profile.dto.toModel
-import com.softteco.template.data.profile.entity.AuthToken
+import com.softteco.template.data.profile.repository.ProfileRepositoryImpl
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
@@ -48,7 +50,7 @@ private const val INVALID_EMAIL = "invalid@email"
 class LoginViewModelTest : BaseTest() {
 
     @RelaxedMockK
-    private lateinit var repository: ProfileRepository
+    private lateinit var repository: AuthRepository
     private lateinit var viewModel: LoginViewModel
     private val snackbarController = SnackbarController()
     private val dialogController = DialogController()
@@ -63,7 +65,10 @@ class LoginViewModelTest : BaseTest() {
     private lateinit var preferencesStore: DataStore<Preferences>
 
     @MockK
-    private lateinit var templateApi: TemplateApi
+    private lateinit var authApi: AuthApi
+
+    @MockK
+    private lateinit var profileApi: ProfileApi
 
     @MockK
     private lateinit var restCountriesApi: RestCountriesApi
@@ -74,11 +79,9 @@ class LoginViewModelTest : BaseTest() {
             val credentials = CredentialsDto(email = EMAIL, password = PASSWORD)
             val authTokenDto = AuthTokenDto("_token")
 
-            val repository = ProfileRepositoryImpl(
-                templateApi,
+            val repository = AuthRepositoryImpl(
+                authApi,
                 tokenStore,
-                profileStore,
-                restCountriesApi
             )
 
             coEvery {
@@ -86,7 +89,7 @@ class LoginViewModelTest : BaseTest() {
             } returns authTokenDto
 
             coEvery {
-                templateApi.login(credentials)
+                authApi.login(credentials)
             } returns ApiSuccess(200, AuthTokenDto("token"))
 
             viewModel = LoginViewModel(
@@ -108,7 +111,7 @@ class LoginViewModelTest : BaseTest() {
             }
 
             coVerify(exactly = 1) { tokenStore.updateData(any()) }
-            coVerify(exactly = 1) { templateApi.login(credentials) }
+            coVerify(exactly = 1) { authApi.login(credentials) }
         }
     }
 
@@ -119,7 +122,7 @@ class LoginViewModelTest : BaseTest() {
             val profile = ProfileDto(1, username = "test", email = "", createdAt = "")
 
             val repository = ProfileRepositoryImpl(
-                templateApi,
+                profileApi,
                 tokenStore,
                 profileStore,
                 restCountriesApi
@@ -130,7 +133,7 @@ class LoginViewModelTest : BaseTest() {
             } returns flowOf(authTokenDto)
 
             coEvery {
-                templateApi.getUser(authTokenDto.toModel().composeHeader())
+                profileApi.getUser(authTokenDto.toModel().composeHeader())
             } returns ApiSuccess(200, profile)
 
             coEvery {
@@ -149,7 +152,7 @@ class LoginViewModelTest : BaseTest() {
 
             coVerify(exactly = 1) { tokenStore.data }
             coVerify(exactly = 1) { profileStore.data }
-            coVerify(exactly = 1) { templateApi.getUser(any()) }
+            coVerify(exactly = 1) { profileApi.getUser(any()) }
         }
     }
 

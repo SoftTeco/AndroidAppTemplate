@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
 import com.softteco.template.R
+import com.softteco.template.data.auth.dto.NewPasswordDto
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
@@ -38,7 +38,7 @@ private const val NEW_PASSWORD_NOT_VALID_2 = "neW"
 class ResetPasswordViewModelTest : BaseTest() {
 
     @RelaxedMockK
-    private lateinit var repository: ProfileRepository
+    private lateinit var authRepository: AuthRepository
     private lateinit var viewModel: ResetPasswordViewModel
     private val snackbarController = SnackbarController()
 
@@ -46,7 +46,7 @@ class ResetPasswordViewModelTest : BaseTest() {
     fun `when password reset success then navigate to login`() {
         runTest {
             coEvery {
-                repository.changePassword(TOKEN, NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD))
+                authRepository.changePassword(TOKEN, NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD))
             } returns Result.Success(Unit)
 
             val savedStateHandle = SavedStateHandle().apply {
@@ -55,7 +55,7 @@ class ResetPasswordViewModelTest : BaseTest() {
 
             viewModel = ResetPasswordViewModel(
                 savedStateHandle,
-                repository,
+                authRepository,
                 appDispatchers,
                 snackbarController
             )
@@ -79,7 +79,7 @@ class ResetPasswordViewModelTest : BaseTest() {
             }
 
             coVerify(exactly = 1) {
-                repository.changePassword(
+                authRepository.changePassword(
                     TOKEN,
                     NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD)
                 )
@@ -94,7 +94,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                repository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )
@@ -120,7 +120,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                repository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )
@@ -146,7 +146,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                repository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )
@@ -164,7 +164,7 @@ class ResetPasswordViewModelTest : BaseTest() {
     fun `when reset password button clicked and request in progress then loading is shown`() {
         runTest {
             coEvery {
-                repository.changePassword(
+                authRepository.changePassword(
                     TOKEN,
                     NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD)
                 )
@@ -177,7 +177,7 @@ class ResetPasswordViewModelTest : BaseTest() {
                 SavedStateHandle().apply {
                     set(AppNavHost.RESET_TOKEN_ARG, TOKEN)
                 },
-                repository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )
@@ -195,7 +195,7 @@ class ResetPasswordViewModelTest : BaseTest() {
             }
 
             coVerify(exactly = 1) {
-                repository.changePassword(
+                authRepository.changePassword(
                     TOKEN,
                     NewPasswordDto(NEW_PASSWORD, NEW_PASSWORD)
                 )

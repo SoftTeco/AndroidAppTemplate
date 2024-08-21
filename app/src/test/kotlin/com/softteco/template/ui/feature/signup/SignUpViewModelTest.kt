@@ -3,9 +3,9 @@ package com.softteco.template.ui.feature.signup
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
 import com.softteco.template.R
+import com.softteco.template.data.auth.dto.CreateUserDto
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
@@ -40,7 +40,7 @@ private const val SELECTED_TERMS_CHECKBOX = true
 class SignUpViewModelTest : BaseTest() {
 
     @RelaxedMockK
-    private lateinit var repository: ProfileRepository
+    private lateinit var authRepository: AuthRepository
     private lateinit var viewModel: SignUpViewModel
     private val snackbarController = SnackbarController()
 
@@ -52,9 +52,9 @@ class SignUpViewModelTest : BaseTest() {
                 email = EMAIL,
                 password = PASSWORD
             )
-            coEvery { repository.registration(createUserDto) } returns Result.Success("")
+            coEvery { authRepository.registration(createUserDto) } returns Result.Success("")
 
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
 
             val navDestination = async { viewModel.navDestination.first() }
 
@@ -75,14 +75,14 @@ class SignUpViewModelTest : BaseTest() {
 
             launch { navDestination.await() shouldBe Screen.Login }
 
-            coVerify(exactly = 1) { repository.registration(createUserDto) }
+            coVerify(exactly = 1) { authRepository.registration(createUserDto) }
         }
     }
 
     @Test
     fun `when invalid email then email field error is shown and sign-up button isn't enabled`() {
         runTest {
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onEmailChanged(INVALID_EMAIL)
                 awaitItem().onUsernameChanged(USERNAME)
@@ -102,7 +102,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when password hasn't capital letter then password field error is shown and sign-up button isn't enabled`() {
         runTest {
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onPasswordChanged(NEW_PASSWORD_NOT_VALID_1)
                 awaitItem().onUsernameChanged(USERNAME)
@@ -123,7 +123,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when password hasn't enough symbols then password field error is shown and sign-up button isn't enabled`() {
         runTest {
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().run {
                     onPasswordChanged(NEW_PASSWORD_NOT_VALID_2)
@@ -145,7 +145,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when empty username then sign-up button isn't enabled`() {
         runTest {
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onPasswordChanged(PASSWORD)
                 awaitItem().onEmailChanged(EMAIL)
@@ -162,7 +162,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when empty username, email, password then password, email fields error are shown and button isn't enabled`() {
         runTest {
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().run {
                     password.state shouldBe FieldState.Empty
@@ -176,7 +176,7 @@ class SignUpViewModelTest : BaseTest() {
     @Test
     fun `when checkbox isn't selected and sign-up button isn't enabled`() {
         runTest {
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
             viewModel.state.test {
                 awaitItem().onEmailChanged(EMAIL)
                 awaitItem().onUsernameChanged(USERNAME)
@@ -194,12 +194,12 @@ class SignUpViewModelTest : BaseTest() {
                 email = EMAIL,
                 password = PASSWORD
             )
-            coEvery { repository.registration(createUserDto) } coAnswers {
+            coEvery { authRepository.registration(createUserDto) } coAnswers {
                 delay(1.seconds)
                 Result.Success("")
             }
 
-            viewModel = SignUpViewModel(repository, appDispatchers, snackbarController)
+            viewModel = SignUpViewModel(authRepository, appDispatchers, snackbarController)
 
             viewModel.state.test {
                 awaitItem().onUsernameChanged(USERNAME)
@@ -219,7 +219,7 @@ class SignUpViewModelTest : BaseTest() {
                 )
             }
 
-            coVerify(exactly = 1) { repository.registration(createUserDto) }
+            coVerify(exactly = 1) { authRepository.registration(createUserDto) }
         }
     }
 }

@@ -3,9 +3,9 @@ package com.softteco.template.ui.feature.forgotpassword
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
 import com.softteco.template.R
+import com.softteco.template.data.auth.dto.ResetPasswordDto
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.dialog.DialogController
@@ -34,7 +34,7 @@ private const val INVALID_EMAIL = "invalid@email"
 class ForgotPasswordViewModelTest : BaseTest() {
 
     @RelaxedMockK
-    private lateinit var repository: ProfileRepository
+    private lateinit var repository: AuthRepository
     private lateinit var viewModel: ForgotPasswordViewModel
     private val snackbarController = SnackbarController()
     private val dialogController = DialogController()

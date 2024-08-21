@@ -3,11 +3,12 @@ package com.softteco.template.ui.feature.profile
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.AppError.AuthError.InvalidToken
 import com.softteco.template.data.base.error.AppError.LocalStorageAppError.AuthTokenNotFound
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
+import com.softteco.template.data.profile.repository.ProfileRepository
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.utils.AppDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,7 @@ private const val COUNTRY_DEBOUNCE = 600
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    private val authRepository: AuthRepository,
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
 ) : ViewModel() {
@@ -49,7 +51,7 @@ class ProfileViewModel @Inject constructor(
             onCountryChanged = { country -> countryState.value = country },
             onLogoutClicked = {
                 viewModelScope.launch(appDispatchers.io) {
-                    profileRepository.logout()
+                    authRepository.logout()
                     profileState.value = GetProfileState.Logout
                 }
             },
@@ -71,7 +73,7 @@ class ProfileViewModel @Inject constructor(
                         if (result.error == InvalidToken || result.error == AuthTokenNotFound) {
                             // could be moved to more proper place,
                             // will be resolved as separate feature
-                            profileRepository.logout()
+                            authRepository.logout()
                             GetProfileState.Logout
                         } else {
                             GetProfileState.Error

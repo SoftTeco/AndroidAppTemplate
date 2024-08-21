@@ -3,9 +3,10 @@ package com.softteco.template.data.di
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.softteco.template.BuildConfig
-import com.softteco.template.data.RestCountriesApi
-import com.softteco.template.data.TemplateApi
+import com.softteco.template.data.auth.AuthApi
 import com.softteco.template.data.base.ApiResultCallAdapterFactory
+import com.softteco.template.data.profile.ProfileApi
+import com.softteco.template.data.profile.RestCountriesApi
 import com.softteco.template.utils.AppDispatchers
 import dagger.Module
 import dagger.Provides
@@ -48,9 +49,16 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTemplateApi(okHttpClient: OkHttpClient): TemplateApi {
+    fun provideAuthApi(okHttpClient: OkHttpClient): AuthApi {
         val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
-        return retrofit.create(TemplateApi::class.java)
+        return retrofit.create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileApi(okHttpClient: OkHttpClient): ProfileApi {
+        val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
+        return retrofit.create(ProfileApi::class.java)
     }
 
     @Provides

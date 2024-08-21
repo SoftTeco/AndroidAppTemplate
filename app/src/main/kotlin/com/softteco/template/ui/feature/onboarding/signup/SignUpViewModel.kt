@@ -4,11 +4,11 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.auth.dto.CreateUserDto
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.AppError.AuthError.InvalidUsername
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.CreateUserDto
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldState.EmailError
@@ -35,7 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val repository: ProfileRepository,
+    private val authRepository: AuthRepository,
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
 ) : ViewModel() {
@@ -113,7 +113,7 @@ class SignUpViewModel @Inject constructor(
                 password = passwordState.value.text,
             )
 
-            val result = repository.registration(createUserDto)
+            val result = authRepository.registration(createUserDto)
 
             when (result) {
                 is Result.Success -> {

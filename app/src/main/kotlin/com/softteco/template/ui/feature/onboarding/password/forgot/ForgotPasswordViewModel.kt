@@ -4,11 +4,11 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.auth.dto.ResetPasswordDto
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.AppError.AuthError.EmailNotExist
 import com.softteco.template.data.base.error.AppError.AuthError.InvalidEmail
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.ResetPasswordDto
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
 import com.softteco.template.ui.components.FieldType
@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val repository: ProfileRepository,
+    private val authRepository: AuthRepository,
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
     private val dialogController: DialogController,
@@ -78,7 +78,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
             val email = ResetPasswordDto(email = emailState.value.text)
 
-            val result = repository.resetPassword(email)
+            val result = authRepository.resetPassword(email)
 
             when (result) {
                 is Result.Success -> {
