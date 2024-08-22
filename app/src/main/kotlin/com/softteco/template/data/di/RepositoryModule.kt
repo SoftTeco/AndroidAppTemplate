@@ -14,7 +14,7 @@ import dagger.hilt.components.SingletonComponent
 internal interface RepositoryModule {
 
     @Binds
-    fun bindFeature1Repository(impl: ProfileRepositoryImpl): ProfileRepository
+    fun bindProfileRepository(impl: ProfileRepositoryImpl): ProfileRepository
 
     @Binds
     fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository

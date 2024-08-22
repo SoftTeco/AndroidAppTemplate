@@ -14,7 +14,6 @@ import com.softteco.template.data.base.requestWithRetry
 import com.softteco.template.data.profile.ProfileApi
 import com.softteco.template.data.profile.RestCountriesApi
 import com.softteco.template.data.profile.dto.ProfileDto
-import com.softteco.template.data.profile.dto.UpdateUserDto
 import com.softteco.template.data.profile.dto.toModel
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
@@ -103,22 +102,6 @@ internal class ProfileRepositoryImpl @Inject constructor(
             Timber.e(e)
             Result.Error(AppError.UnknownError())
         }
-    }
-
-    override suspend fun updateUser(updateUserDto: UpdateUserDto): Result<ProfileDto> {
-        return TODO()
-/*        return try {
-            val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
-                templateApi.updateUser(updateUserDto)
-            }
-            when (result) {
-                is ApiError -> TODO()
-                is ApiException -> TODO()
-                is ApiSuccess -> TODO()
-            }
-        } catch (e: Exception) {
-
-        }*/
     }
 
     @Suppress("TooGenericExceptionCaught")

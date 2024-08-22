@@ -1,10 +1,13 @@
 package com.softteco.template.data.di
 
+import androidx.datastore.core.DataStore
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.softteco.template.BuildConfig
 import com.softteco.template.data.auth.AuthApi
+import com.softteco.template.data.auth.dto.AuthTokenDto
 import com.softteco.template.data.base.ApiResultCallAdapterFactory
+import com.softteco.template.data.base.interceptors.AuthTokenInterceptor
 import com.softteco.template.data.profile.ProfileApi
 import com.softteco.template.data.profile.RestCountriesApi
 import com.softteco.template.utils.AppDispatchers
@@ -19,6 +22,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -39,6 +43,14 @@ object NetworkModule {
     }
 
     @Provides
+    fun provideAuthTokenInterceptor(
+        dataStore: DataStore<AuthTokenDto>
+    ): AuthTokenInterceptor {
+        return AuthTokenInterceptor(dataStore)
+    }
+
+    @Provides
+    @Named("okHttpClient")
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
@@ -48,22 +60,34 @@ object NetworkModule {
     }
 
     @Provides
+    @Named("authOkHttpClient")
+    fun provideAuthOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        authTokenInterceptor: AuthTokenInterceptor,
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authTokenInterceptor)
+            .build()
+    }
+
+    @Provides
     @Singleton
-    fun provideAuthApi(okHttpClient: OkHttpClient): AuthApi {
-        val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
+    fun provideAuthApi(@Named("authOkHttpClient") authOkHttpClient: OkHttpClient): AuthApi {
+        val retrofit = buildRetrofit(authOkHttpClient, BuildConfig.BASE_URL)
         return retrofit.create(AuthApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideProfileApi(okHttpClient: OkHttpClient): ProfileApi {
+    fun provideProfileApi(@Named("okHttpClient") okHttpClient: OkHttpClient): ProfileApi {
         val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
         return retrofit.create(ProfileApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideRestCountriesApi(okHttpClient: OkHttpClient): RestCountriesApi {
+    fun provideRestCountriesApi(@Named("okHttpClient") okHttpClient: OkHttpClient): RestCountriesApi {
         val retrofit = buildRetrofit(okHttpClient, RestCountriesApi.BASE_URL)
         return retrofit.create(RestCountriesApi::class.java)
     }
