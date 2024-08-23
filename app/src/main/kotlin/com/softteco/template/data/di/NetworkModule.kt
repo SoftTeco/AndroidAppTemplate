@@ -73,15 +73,15 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthApi(@Named("authOkHttpClient") authOkHttpClient: OkHttpClient): AuthApi {
-        val retrofit = buildRetrofit(authOkHttpClient, BuildConfig.BASE_URL)
+    fun provideAuthApi(@Named("okHttpClient") okHttpClient: OkHttpClient): AuthApi {
+        val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
         return retrofit.create(AuthApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideProfileApi(@Named("okHttpClient") okHttpClient: OkHttpClient): ProfileApi {
-        val retrofit = buildRetrofit(okHttpClient, BuildConfig.BASE_URL)
+    fun provideProfileApi(@Named("authOkHttpClient") authOkHttpClient: OkHttpClient): ProfileApi {
+        val retrofit = buildRetrofit(authOkHttpClient, BuildConfig.BASE_URL)
         return retrofit.create(ProfileApi::class.java)
     }
 

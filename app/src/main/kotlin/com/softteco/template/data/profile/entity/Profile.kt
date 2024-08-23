@@ -2,6 +2,7 @@ package com.softteco.template.data.profile.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.softteco.template.data.profile.dto.UpdateUserDto
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -35,4 +36,13 @@ data class Profile(
             .toString()
             .ifBlank { "" }
     }
+}
+
+fun Profile.toUpdateUserDto(): UpdateUserDto {
+    return UpdateUserDto(
+        firstName = firstName,
+        lastName = lastName,
+        country = country,
+        birthDate = birthDate
+    )
 }

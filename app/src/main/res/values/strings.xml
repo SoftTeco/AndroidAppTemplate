@@ -44,6 +44,7 @@
     <string name="birth_date_title">Birth date</string>
     <string name="country_title">Country</string>
     <string name="logout">Log Out</string>
+    <string name="save">Save</string>
     <string name="avatar">Avatar</string>
     <string name="edit_name_dialog_title">Change full name</string>
     <string name="change_country_dialog_title">Change country</string>

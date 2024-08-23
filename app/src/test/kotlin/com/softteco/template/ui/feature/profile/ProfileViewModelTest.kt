@@ -53,7 +53,7 @@ class ProfileViewModelTest : BaseTest() {
             )
 
             viewModel.state.test {
-                awaitItem().profileState shouldBe ProfileViewModel.GetProfileState.Loading
+                awaitItem().profileState shouldBe ProfileViewModel.ProfileState.Loading
             }
         }
     }
@@ -74,8 +74,8 @@ class ProfileViewModelTest : BaseTest() {
 
             viewModel.state.test {
                 awaitItem().run {
-                    profileState.shouldBeTypeOf<ProfileViewModel.GetProfileState.Success>()
-                    (profileState as ProfileViewModel.GetProfileState.Success).profile shouldBe testProfile
+                    profileState.shouldBeTypeOf<ProfileViewModel.ProfileState.Success>()
+                    (profileState as ProfileViewModel.ProfileState.Success).profile shouldBe testProfile
                 }
             }
             coVerify(exactly = 1) { profileRepository.getUser() }

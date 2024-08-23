@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import com.softteco.template.Constants.REQUEST_RETRY_DELAY
 import com.softteco.template.data.auth.dto.AuthTokenDto
 import com.softteco.template.data.auth.dto.toModel
-import com.softteco.template.data.auth.entity.AuthToken
 import com.softteco.template.data.base.ApiError
 import com.softteco.template.data.base.ApiException
 import com.softteco.template.data.base.ApiSuccess
@@ -14,6 +13,7 @@ import com.softteco.template.data.base.requestWithRetry
 import com.softteco.template.data.profile.ProfileApi
 import com.softteco.template.data.profile.RestCountriesApi
 import com.softteco.template.data.profile.dto.ProfileDto
+import com.softteco.template.data.profile.dto.UpdateUserDto
 import com.softteco.template.data.profile.dto.toModel
 import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.data.profile.entity.Profile.Companion.toJson
@@ -41,10 +41,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
             Timber.i("AuthToken not found")
             Result.Error(AppError.LocalStorageAppError.AuthTokenNotFound)
         } else {
-            val authToken = AuthToken(token)
-
             val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
-                profileApi.getUser(authHeader = authToken.composeHeader())
+                profileApi.getUser()
             }
 
             when (result) {
@@ -98,6 +96,29 @@ internal class ProfileRepositoryImpl @Inject constructor(
             }
             val profile = Profile.fromJson(profileJson)
             Result.Success(profile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(AppError.UnknownError())
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun updateUser(updateUserDto: UpdateUserDto): Result<Profile> {
+        return try {
+            val result = requestWithRetry(delay = REQUEST_RETRY_DELAY) {
+                profileApi.updateUser(updateUserDto)
+            }
+            when (result) {
+                is ApiError -> Result.Error(AppError.AuthError.findByCode(result.errorBody?.code))
+                is ApiException -> Result.Error(AppError.NetworkError())
+                is ApiSuccess -> {
+                    val profile = result.data.toModel()
+                    when (val cacheResult = cacheProfile(profile)) {
+                        is Result.Error -> Result.Error(cacheResult.error)
+                        is Result.Success -> Result.Success(profile)
+                    }
+                }
+            }
         } catch (e: Exception) {
             Timber.e(e)
             Result.Error(AppError.UnknownError())
