@@ -8,7 +8,6 @@ import com.softteco.template.MainViewModel
 import com.softteco.template.R
 import com.softteco.template.data.auth.AuthApi
 import com.softteco.template.data.auth.dto.AuthTokenDto
-import com.softteco.template.data.auth.dto.toModel
 import com.softteco.template.data.auth.entity.AuthToken
 import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.auth.repository.AuthRepositoryImpl
@@ -133,7 +132,7 @@ class LoginViewModelTest : BaseTest() {
             } returns flowOf(authTokenDto)
 
             coEvery {
-                profileApi.getUser(authTokenDto.toModel().composeHeader())
+                profileApi.getUser()
             } returns ApiSuccess(200, profile)
 
             coEvery {
@@ -152,7 +151,7 @@ class LoginViewModelTest : BaseTest() {
 
             coVerify(exactly = 1) { tokenStore.data }
             coVerify(exactly = 1) { profileStore.data }
-            coVerify(exactly = 1) { profileApi.getUser(any()) }
+            coVerify(exactly = 1) { profileApi.getUser() }
         }
     }
 

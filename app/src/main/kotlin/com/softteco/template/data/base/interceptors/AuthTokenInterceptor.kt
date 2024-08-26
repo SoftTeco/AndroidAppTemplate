@@ -17,14 +17,8 @@ class AuthTokenInterceptor(
     private val authTokenEncryptedDataStore: DataStore<AuthTokenDto>
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val authToken = runBlocking {
-            try {
-                authTokenEncryptedDataStore.data.first().toModel()
-            } catch (e: IOException) {
-                Timber.e(e)
-                AuthToken("")
-            }
-        }
+        val authToken = getAuthToken()
+
         // could be checked if token is empty
 
         val request = chain
@@ -36,5 +30,16 @@ class AuthTokenInterceptor(
         // could be updated to handle 401 error
 
         return chain.proceed(request)
+    }
+
+    private fun getAuthToken(): AuthToken {
+        return runBlocking {
+            try {
+                authTokenEncryptedDataStore.data.first().toModel()
+            } catch (e: IOException) {
+                Timber.e(e)
+                AuthToken("")
+            }
+        }
     }
 }
