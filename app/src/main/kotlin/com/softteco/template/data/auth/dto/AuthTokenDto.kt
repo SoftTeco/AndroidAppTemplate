@@ -1,6 +1,6 @@
-package com.softteco.template.data.profile.dto
+package com.softteco.template.data.auth.dto
 
-import com.softteco.template.data.profile.entity.AuthToken
+import com.softteco.template.data.auth.entity.AuthToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -5,6 +5,9 @@ import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,6 +63,7 @@ import com.softteco.template.data.profile.entity.Profile
 import com.softteco.template.ui.components.Avatar
 import com.softteco.template.ui.components.CustomTopAppBar
 import com.softteco.template.ui.components.EditTextDialog
+import com.softteco.template.ui.components.PrimaryButton
 import com.softteco.template.ui.components.SecondaryButton
 import com.softteco.template.ui.components.skeletonBackground
 import com.softteco.template.ui.theme.AppTheme
@@ -86,13 +91,13 @@ fun ProfileScreen(
     }
 
     LaunchedEffect(state.profileState) {
-        if (state.profileState == ProfileViewModel.GetProfileState.Error) onBackClicked()
+        if (state.profileState == ProfileViewModel.ProfileState.Error) onBackClicked()
     }
 
     val pickMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
-        val profile = (state.profileState as? ProfileViewModel.GetProfileState.Success)?.profile
+        val profile = (state.profileState as? ProfileViewModel.ProfileState.Success)?.profile
         if (uri != null && profile != null) {
             val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
             context.contentResolver.takePersistableUriPermission(uri, flag)
@@ -128,10 +133,10 @@ private fun ScreenContent(
             stringResource(id = R.string.profile),
             modifier = Modifier.fillMaxWidth(),
         )
-        if (state.profileState is ProfileViewModel.GetProfileState.Success) {
+        if (state.isProfileLoaded()) {
             Profile(
-                state,
-                onAvatarClicked,
+                state = state,
+                onAvatarClicked = onAvatarClicked,
             )
         } else {
             Skeleton()
@@ -147,10 +152,11 @@ private fun Profile(
 ) {
     Column(
         modifier
+            .fillMaxHeight()
             .padding(horizontal = PaddingNormal)
             .verticalScroll(rememberScrollState()),
     ) {
-        (state.profileState as? ProfileViewModel.GetProfileState.Success)?.profile?.run {
+        state.getProfile()?.run {
             Spacer(Modifier.height(PaddingDefault))
             ProfileHeader(
                 username = username,
@@ -159,13 +165,26 @@ private fun Profile(
                 onAvatarClicked = onAvatarClicked,
             )
             ProfileData(
-                state,
-                Modifier.padding(top = PaddingDefault)
+                modifier = Modifier.padding(top = PaddingDefault),
+                state = state
             )
+            Spacer(modifier = Modifier.weight(1f))
+            AnimatedVisibility(
+                visible = state.hasProfileChanged(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                PrimaryButton(
+                    modifier = Modifier.padding(top = PaddingNormal),
+                    buttonText = stringResource(R.string.save),
+                    loading = state.profileState.saving(),
+                    onClick = { state.onSave(this@run) },
+                )
+            }
             SecondaryButton(
-                stringResource(R.string.logout),
+                modifier = Modifier.padding(top = PaddingNormal),
+                title = stringResource(R.string.logout),
                 loading = false,
-                Modifier.padding(top = PaddingNormal),
                 onClick = { state.onLogoutClicked() }
             )
             Spacer(Modifier.height(PaddingNormal))
@@ -212,7 +231,7 @@ private fun ProfileData(
     state: ProfileViewModel.State,
     modifier: Modifier = Modifier,
 ) {
-    (state.profileState as? ProfileViewModel.GetProfileState.Success)?.run {
+    state.getProfile()?.let { profile ->
         ElevatedCard(
             modifier,
             shape = ShapeDefaults.Small,
@@ -449,7 +468,7 @@ private fun Preview() {
     AppTheme {
         ScreenContent(
             ProfileViewModel.State(
-                ProfileViewModel.GetProfileState.Success(
+                ProfileViewModel.ProfileState.Success(
                     Profile(
                         id = 1,
                         username = "John",
@@ -471,7 +490,7 @@ private fun Preview() {
 private fun PreviewLoading() {
     AppTheme {
         ScreenContent(
-            state = ProfileViewModel.State(profileState = ProfileViewModel.GetProfileState.Loading),
+            state = ProfileViewModel.State(profileState = ProfileViewModel.ProfileState.Loading),
             onAvatarClicked = {}
         )
     }

@@ -4,10 +4,10 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.AppError.AuthError.EmailNotExist
 import com.softteco.template.data.base.error.AppError.AuthError.WrongCredentials
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.dto.CredentialsDto
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: ProfileRepository,
+    private val authRepository: AuthRepository,
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
     private val dialogController: DialogController,
@@ -97,7 +97,7 @@ class LoginViewModel @Inject constructor(
                 password = passwordState.value.text,
             )
 
-            val result = repository.login(credentials)
+            val result = authRepository.login(credentials)
 
             when (result) {
                 is Result.Success -> {}

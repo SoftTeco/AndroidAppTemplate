@@ -1,4 +1,4 @@
-package com.softteco.template.data
+package com.softteco.template.data.profile
 
 import com.softteco.template.data.profile.dto.CountryDto
 import retrofit2.http.GET

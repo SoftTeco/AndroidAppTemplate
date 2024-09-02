@@ -5,9 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softteco.template.R
+import com.softteco.template.data.auth.dto.NewPasswordDto
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
-import com.softteco.template.data.profile.dto.NewPasswordDto
 import com.softteco.template.navigation.AppNavHost
 import com.softteco.template.navigation.Screen
 import com.softteco.template.ui.components.FieldState
@@ -33,7 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: ProfileRepository,
+    private val authRepository: AuthRepository,
     private val appDispatchers: AppDispatchers,
     private val snackbarController: SnackbarController,
 ) : ViewModel() {
@@ -87,7 +87,7 @@ class ResetPasswordViewModel @Inject constructor(
                 confirmation = passwordState.value.text,
             )
 
-            val result = repository.changePassword(token, newPassword)
+            val result = authRepository.changePassword(token, newPassword)
 
             when (result) {
                 is Result.Success -> {

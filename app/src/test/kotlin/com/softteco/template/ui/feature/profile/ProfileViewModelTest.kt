@@ -2,10 +2,11 @@ package com.softteco.template.ui.feature.profile
 
 import app.cash.turbine.test
 import com.softteco.template.BaseTest
+import com.softteco.template.data.auth.repository.AuthRepository
 import com.softteco.template.data.base.error.AppError
 import com.softteco.template.data.base.error.Result
-import com.softteco.template.data.profile.ProfileRepository
 import com.softteco.template.data.profile.entity.Profile
+import com.softteco.template.data.profile.repository.ProfileRepository
 import com.softteco.template.ui.components.snackbar.SnackbarController
 import com.softteco.template.ui.components.snackbar.SnackbarState
 import com.softteco.template.utils.MainDispatcherExtension
@@ -28,6 +29,9 @@ class ProfileViewModelTest : BaseTest() {
 
     @RelaxedMockK
     private lateinit var profileRepository: ProfileRepository
+
+    @RelaxedMockK
+    private lateinit var authRepository: AuthRepository
     private lateinit var viewModel: ProfileViewModel
     private val snackbarController = SnackbarController()
 
@@ -43,12 +47,13 @@ class ProfileViewModelTest : BaseTest() {
 
             viewModel = ProfileViewModel(
                 profileRepository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )
 
             viewModel.state.test {
-                awaitItem().profileState shouldBe ProfileViewModel.GetProfileState.Loading
+                awaitItem().profileState shouldBe ProfileViewModel.ProfileState.Loading
             }
         }
     }
@@ -62,14 +67,15 @@ class ProfileViewModelTest : BaseTest() {
 
             viewModel = ProfileViewModel(
                 profileRepository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )
 
             viewModel.state.test {
                 awaitItem().run {
-                    profileState.shouldBeTypeOf<ProfileViewModel.GetProfileState.Success>()
-                    (profileState as ProfileViewModel.GetProfileState.Success).profile shouldBe testProfile
+                    profileState.shouldBeTypeOf<ProfileViewModel.ProfileState.Success>()
+                    (profileState as ProfileViewModel.ProfileState.Success).profile shouldBe testProfile
                 }
             }
             coVerify(exactly = 1) { profileRepository.getUser() }
@@ -86,6 +92,7 @@ class ProfileViewModelTest : BaseTest() {
 
             viewModel = ProfileViewModel(
                 profileRepository,
+                authRepository,
                 appDispatchers,
                 snackbarController,
             )

@@ -1,7 +1,7 @@
 package com.softteco.template.utils
 
 import androidx.datastore.core.Serializer
-import com.softteco.template.data.profile.dto.AuthTokenDto
+import com.softteco.template.data.auth.dto.AuthTokenDto
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import timber.log.Timber

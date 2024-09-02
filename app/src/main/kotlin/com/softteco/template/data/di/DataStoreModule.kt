@@ -10,7 +10,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.softteco.template.data.profile.dto.AuthTokenDto
+import com.softteco.template.data.auth.dto.AuthTokenDto
 import com.softteco.template.data.profile.dto.ProfileDto
 import com.softteco.template.utils.AuthTokenSerializer
 import com.softteco.template.utils.CryptoManager
