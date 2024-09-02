@@ -113,10 +113,8 @@ internal class ProfileRepositoryImpl @Inject constructor(
                 is ApiException -> Result.Error(AppError.NetworkError())
                 is ApiSuccess -> {
                     val profile = result.data.toModel()
-                    when (val cacheResult = cacheProfile(profile)) {
-                        is Result.Error -> Result.Error(cacheResult.error)
-                        is Result.Success -> Result.Success(profile)
-                    }
+                    cacheProfile(profile)
+                    Result.Success(profile)
                 }
             }
         } catch (e: Exception) {

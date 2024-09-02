@@ -118,7 +118,6 @@ class ProfileViewModel @Inject constructor(
                 profileState.value = ProfileState.Saving(profile)
                 when (val result = profileRepository.updateUser(profile.toUpdateUserDto())) {
                     is Result.Success -> {
-                        profileRepository.cacheProfile(result.data)
                         profileState.value = ProfileState.Success(result.data)
                         originProfile.value = result.data
                     }
