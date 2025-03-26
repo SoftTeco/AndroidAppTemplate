@@ -21,3 +21,16 @@ Sample application to demonstrate usage of Jetpack Compose, Kotlin Flow, Android
 * Detekt - for checking code style
 
 To enable Detekt, execute `pre-commit install` in the terminal from the project root folder.
+
+###  To set the admin of a fully managed device, follow these steps:
+1. Enable developer mode on your device;
+2. Enable USB debugging;
+3. Install the app;
+4. Run the following command in the Android Debug Bridge (adb) shell:
+```bash
+    adb shell dpm set-device-owner com.softteco.template/.AppDeviceAdminReceiver
+```
+5. To remove the admin of a fully managed device:
+```bash
+    adb shell dpm remove-active-admin com.softteco.template/.AppDeviceAdminReceiver
+```

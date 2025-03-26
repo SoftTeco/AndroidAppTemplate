@@ -1,8 +1,10 @@
 package com.softteco.template.ui.feature.settings
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.provider.Settings
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -155,6 +157,16 @@ private fun ScreenContent(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider()
+                AppListItem(
+                    onClick = {
+                        val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                        context.startActivity(intent)
+                    },
+                    title = stringResource(id = R.string.settings_languages),
+                    imageIcon = Icons.Sharp.ArrowForwardIos,
+                    iconDescription = stringResource(id = R.string.settings_languages),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             AppLinkText(

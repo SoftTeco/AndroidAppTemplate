@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_SAFE_BOOT" />
 
     <application
         android:name=".App"
@@ -13,17 +14,21 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/Theme.AppTheme"
         tools:targetApi="33">
         <activity
             android:name="com.softteco.template.MainActivity"
+            android:allowTaskReparenting="false"
             android:exported="true"
             android:theme="@style/AppTheme.Splash"
-            android:allowTaskReparenting="false"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -34,7 +39,7 @@
                 <data android:scheme="https" />
                 <data android:scheme="http" />
                 <data android:scheme="tmplt" />
-                <data android:host="template.softteco.com.deep_link"/>
+                <data android:host="template.softteco.com.deep_link" />
             </intent-filter>
         </activity>
         <service
@@ -44,6 +49,19 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <receiver
+            android:name=".AppDeviceAdminReceiver"
+            android:description="@string/app_name"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_receiver" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
